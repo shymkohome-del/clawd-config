@@ -43,3 +43,18 @@ Workflow file: `.github/workflows/flutter-ci.yml` (name: Flutter CI). Triggers o
 Caching: Flutter SDK and pub packages (`~/.pub-cache`).
 
 
+## Testing
+
+- Folders:
+  - `test/unit/` for unit and widget tests
+  - `test/integration/` for integration tests
+  - `test/e2e/` for end-to-end tests (optional for now)
+
+- Run locally:
+  - Analyze and format check: `flutter analyze --fatal-infos --fatal-warnings && dart format --output=none --set-exit-if-changed .`
+  - Tests (expanded reporter): `flutter test --reporter expanded`
+
+- Sample test:
+  - `test/unit/widgets/sample_widget_test.dart`
+
+

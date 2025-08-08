@@ -38,7 +38,7 @@ jobs:
       - name: Format check
         run: dart format --output=none --set-exit-if-changed .
 
-      - name: Run tests
-        run: flutter test --no-pub
+      - name: Run tests (expanded reporter)
+        run: flutter test --no-pub --reporter expanded
 
 
