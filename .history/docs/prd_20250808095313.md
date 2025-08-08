@@ -1,0 +1,617 @@
+# Decentralized P2P Cryptocurrency Marketplace - Product Requirements Document
+
+## 0. MVP Scope (ICP-First)
+
+### 0.1 Goals & Principles
+- Deliver a usable, secure ICP-native P2P marketplace with atomic swap escrow and hybrid authentication.
+- Optimize for reliability and UX; minimize cross-chain complexity in Phase 1.
+- Ship quickly with a narrow slice; expand features post validation.
+
+### 0.2 In Scope (Phase 1)
+- Platforms: Flutter mobile (iOS/Android)
+- Chain: Internet Computer (ICP) only
+- Canisters: Marketplace, Atomic Swap (HTLC), Identity Mapping, Messaging (simple)
+- Auth: Hybrid (email/password + social OAuth) with ICP principal mapping
+- Listings: Create, browse, filter, basic reputation
+- Escrow: HTLC-based swaps, time locks, refunds, dispute workflow (manual/admin)
+- Pricing: ICP-native oracle with staleness checks; conservative limits
+- Compliance: Tiered limits with optional KYC; logging and audit trail
+- Security: Rate limiting, RBAC, circuit breakers; internal review prior to beta
+
+### 0.3 Out of Scope (Phase 1)
+- Broad cross-chain support beyond core ICP integrations
+- Advanced DeFi, NFTs, governance, complex derivatives
+- Full on-chain dispute arbitration; automated adjudication
+- Direct Web3 wallet connect for the mainstream flow (optional later)
+- Sophisticated ML fraud detection (use heuristics and rules first)
+
+### 0.4 Technical Constraints
+- ICP as the execution environment; threshold ECDSA leveraged where applicable
+- Minimal off-chain services (only where required for auth and compliance)
+- Privacy-first logging; avoid unnecessary identity linkage
+
+### 0.5 MVP KPIs
+- Swap success rate: >= 90% within SLA
+- Median swap completion time: <= 30 minutes (ICP-only path)
+- Day-1 retention (D1): >= 25%; 4-week retention: >= 15%
+- Dispute rate: <= 3% of completed swaps; average resolution time <= 24h
+- Crash-free sessions: >= 99.5%; P95 API latency: <= 2s
+
+### 0.6 Stage Gates & Exit Criteria
+- Gate A (Beta):
+  - Security review passed; critical issues resolved
+  - Swap success rate >= 85% on testnet; P95 completion <= 45 minutes
+  - Core flows user-tested with SUS >= 70
+- Gate B (Mainnet Limited Release):
+  - Swap success rate >= 90%; incident runbook ready; on-call
+  - Compliance sign-off for target jurisdictions; DSAR process defined
+  - Telemetry live; dashboard for KPIs and alerts
+- Gate C (Scale & Expansion):
+  - Retention and dispute KPIs on target for 4 consecutive weeks
+  - External security audit with no critical findings outstanding
+  - Readiness review for additional currencies and features
+
+### 0.7 Risks & Mitigations (MVP)
+- Atomic swap UX: hide complexity; guided steps; resilient retries; clear timeouts
+- Identity mapping: strict rate limits; audit trails; privacy by design
+- App distribution: align flows with store policies; region-gate if needed
+- Compliance: launch in friendlier jurisdictions; modular KYC tiers
+
+## 1. Executive Summary
+
+### 1.1 Vision Statement
+To create a secure, user-friendly, and fully decentralized peer-to-peer cryptocurrency marketplace that enables direct trading between users without intermediaries, leveraging atomic swap technology and the Internet Computer blockchain for enhanced security and transparency.
+
+### 1.2 Project Overview
+This project aims to develop a comprehensive decentralized P2P marketplace where users can buy and sell cryptocurrencies directly with each other using atomic swaps for secure, trustless transactions. The platform will combine traditional Web2 accessibility with Web3 decentralization benefits.
+
+### 1.3 Key Differentiators
+- **True Decentralization**: No single point of failure or control
+- **Atomic Swap Technology**: Secure, trustless transactions using HTLC
+- **Progressive Decentralization**: Gradual transition from centralized to decentralized infrastructure
+- **Cross-Chain Support (Roadmap)**: Multi-cryptocurrency trading capabilities planned post-MVP; Phase 1 focuses on ICP-only path
+- **Enhanced Security**: Formal verification and comprehensive audit processes
+
+## 2. Market Analysis
+
+### 2.1 Target Market
+- **Primary**: Cryptocurrency traders seeking P2P exchanges
+- **Secondary**: Users in regions with limited banking access
+- **Tertiary**: Privacy-focused individuals wanting direct crypto transactions
+
+### 2.2 Market Size and Growth
+- Global P2P cryptocurrency market: $50+ billion annually
+- Growing at 25% CAGR due to increasing cryptocurrency adoption
+- Rising demand for non-custodial trading solutions
+
+### 2.3 Competitive Landscape
+- **Centralized Exchanges**: Binance, Coinbase, Kraken
+- **P2P Platforms**: LocalBitcoins (closed), Paxful, Bisq
+- **DEX Platforms**: Uniswap, PancakeSwap (limited P2P functionality)
+
+### 2.4 Unique Value Proposition
+- **Security**: Atomic swaps eliminate counterparty risk
+- **Privacy**: Non-custodial with optional KYC
+- **Accessibility**: User-friendly interface with low barriers to entry
+- **Transparency**: All transactions on-chain and verifiable
+
+## 3. Product Architecture
+
+### 3.1 System Architecture Overview
+```
+┌─────────────────┐    ┌─────────────────────────────────┐
+│   Frontend      │    │   Internet Computer (ICP)       │
+│   (Flutter)     │◄──►│   Canisters (Smart Contracts)   │
+└─────────────────┘    └─────────────────────────────────┘
+         │                             │
+         ▼                             ▼
+┌─────────────────┐    ┌─────────────────────────────────┐
+│   Mobile App    │    │   Marketplace Canister          │
+│   (iOS/Android) │    │   Atomic Swap Canister          │
+└─────────────────┘    │   User Management Canister      │
+                       │   Price Oracle Canister         │
+                       │   Messaging Canister            │
+                       └─────────────────────────────────┘
+```
+
+### 3.2 Technology Stack
+- **Frontend**: Flutter/Dart for cross-platform mobile applications
+- **Backend**: Internet Computer (ICP) canisters (no traditional backend)
+- **Smart Contracts**: Motoko for business logic and data persistence
+- **Database**: On-chain storage in ICP canisters
+- **Authentication**: Hybrid authentication with ICP identity mapping
+- **Storage**: IPFS for large file storage + on-chain metadata
+
+### 3.3 Smart Contract Architecture
+The marketplace will implement three core smart contracts:
+
+#### 3.3.1 Marketplace Contract
+```motoko
+actor Marketplace {
+    // User management
+    private stable var users : HashMap.Principal = HashMap.HashMap<Principal, User>();
+    private stable var listings : HashMap.Nat = HashMap.HashMap<Nat, Listing>();
+    private stable var nextListingId : Nat = 1;
+    
+    // User type definition
+    private type User = {
+        id : Principal;
+        username : Text;
+        reputation : Nat;
+        createdAt : Int;
+        isActive : Bool;
+    };
+    
+    // Listing type definition
+    private type Listing = {
+        id : Nat;
+        seller : Principal;
+        amount : Nat;
+        price : Nat;
+        cryptocurrency : Text;
+        paymentMethod : Text;
+        status : Text;
+        createdAt : Int;
+    };
+    
+    // Create new listing
+    public shared ({ caller }) func createListing(
+        amount : Nat,
+        price : Nat,
+        cryptocurrency : Text,
+        paymentMethod : Text
+    ) : async Result<Nat, Text> {
+        // Implementation details
+    };
+    
+    // Get all active listings
+    public query func getActiveListings() : async [Listing] {
+        // Implementation details
+    };
+}
+```
+
+#### 3.3.2 Atomic Swap Escrow Contract
+```motoko
+actor AtomicSwapEscrow {
+    private stable var swaps : HashMap.Nat = HashMap.HashMap<Nat, AtomicSwap>();
+    private stable var nextSwapId : Nat = 1;
+    
+    private type AtomicSwap = {
+        id : Nat;
+        initiator : Principal;
+        participant : Principal;
+        amount : Nat;
+        hashLock : [Nat8];
+        timeLock : Int;
+        status : Text;
+        secret : ?[Nat8];
+        createdAt : Int;
+    };
+    
+    // Initiate atomic swap
+    public shared ({ caller }) func initiateSwap(
+        participant : Principal,
+        amount : Nat,
+        hashLock : [Nat8],
+        timeLock : Int
+    ) : async Result<Nat, Text> {
+        // Implementation details
+    };
+    
+    // Complete atomic swap
+    public shared ({ caller }) func completeSwap(
+        swapId : Nat,
+        secret : [Nat8]
+    ) : async Result<(), Text> {
+        // Implementation details
+    };
+    
+    // Refund atomic swap
+    public shared ({ caller }) func refundSwap(
+        swapId : Nat
+    ) : async Result<(), Text> {
+        // Implementation details
+    };
+}
+```
+
+#### 3.3.3 Cross-Chain Price Oracle
+```motoko
+actor PriceOracle {
+    private stable var prices : HashMap.Text = HashMap.HashMap<Text, Nat>();
+    private stable var lastUpdate : Int = 0;
+    
+    // Update price data
+    public shared ({ caller }) func updatePrice(
+        cryptocurrency : Text,
+        price : Nat
+    ) : async Result<(), Text> {
+        // Implementation details
+    };
+    
+    // Get current price
+    public query func getPrice(
+        cryptocurrency : Text
+    ) : async Result<Nat, Text> {
+        // Implementation details
+    };
+}
+```
+
+### 3.4 Identity & Authentication Architecture
+
+The platform uses a hybrid authentication model to balance mainstream UX with decentralized security, while standardizing on ICP principals for all on-chain operations.
+
+- Traditional authentication: Email/password and social OAuth (Google, GitHub, Apple)
+- Optional Web3: Wallet connection for advanced users (progressive onboarding)
+- Identity mapping: An ICP "Identity Mapping" canister maps user accounts to ICP principals for consistent authorization across contracts
+
+High-level flow:
+1. User signs in via traditional auth (or social OAuth)
+2. App/backend requests or creates an ICP principal via the Identity Mapping canister
+3. Principal is associated with the user for all marketplace, swap, and messaging actions
+4. Sensitive operations (e.g., high-value swaps) can require step-up auth (2FA)
+
+Security considerations (summarized; see Risks):
+- Principal issuance: prevent duplicate mappings and enforce rate limits
+- Token/session handling: short-lived JWTs, secure storage, rotation
+- Privacy: avoid unnecessary linkage between Web2 identity and ICP principal in logs/analytics
+
+### 3.5 Technology Alternatives & Selection Rationale
+
+Decision: Standardize on Internet Computer (ICP) for smart contracts and execution environment.
+
+Rationale for ICP:
+- Reverse gas model and predictable operating costs (cycles)
+- Native HTTPS outcalls and threshold ECDSA enable direct BTC/ETH integrations
+- Strong performance characteristics suitable for consumer apps
+- Unified on-chain state and canister model simplifies multi-component orchestration
+
+Alternative considered — Tezos:
+- Strengths: formal verification, low fees, PoS governance
+- Trade-offs: weaker direct cross-chain primitives vs ICP threshold ECDSA; fewer native web integrations for our use case
+
+Conclusion: ICP provides better end-to-end alignment with our goals (atomic swaps, cross-chain support, consumer-grade UX). Tezos remains a viable future expansion target if requirements shift.
+
+## 4. Functional Requirements
+
+### 4.1 User Management
+- **User Registration**: Email, phone, and ICP identity-based registration
+- **Profile Management**: Editable user profiles with reputation system
+- **KYC Verification**: Optional KYC for higher trading limits
+- **Two-Factor Authentication**: SMS and app-based 2FA support
+- **Session Management**: Secure session handling with refresh tokens
+
+### 4.2 Trading Functions
+- **Create Listings**: Users can create buy/sell orders with custom terms
+- **Search & Filter**: Advanced search by currency, payment method, location
+- **Price Discovery**: Real-time pricing from multiple oracles
+- **Order Matching**: Automatic matching based on criteria
+- **Trade Execution**: Atomic swap-based settlement
+
+### 4.3 Atomic Swap Implementation
+- **HTLC Support**: Hashed Timelock Contracts for secure escrow
+- **Multi-Signature**: Optional multi-signature for high-value trades
+- **Time Locks**: Configurable time locks for different trade sizes
+- **Secret Hashing**: SHA-256 based secret generation and verification
+- **Refund Mechanism**: Automatic refund if trade not completed
+
+### 4.4 Payment Methods
+- **Bank Transfer**: Support for major banking networks
+- **Digital Wallets**: Integration with popular digital wallets
+- **Cash Payment**: In-person cash payment options
+- **Gift Cards**: Various gift card redemption options
+- **Other Cryptocurrencies**: Cross-crypto payment support
+
+### 4.5 Communication System
+- **In-App Messaging**: Secure end-to-end encrypted messaging
+- **Dispute Resolution**: Structured dispute escalation process
+- **Notifications**: Push notifications for trade updates
+- **Chat History**: Persistent conversation storage
+- **Auto-Translation**: Multi-language support
+
+### 4.6 Security Features
+- **End-to-End Encryption**: All communications encrypted
+- **DDoS Protection**: Rate limiting and traffic analysis
+- **Anti-Money Laundering**: Transaction monitoring and reporting
+- **Fraud Detection**: Machine learning-based fraud detection
+- **Audit Trail**: Complete transaction history logging
+
+## 5. Non-Functional Requirements
+
+### 5.1 Performance Requirements
+- **App Interaction Response Time**: < 2 seconds for API calls and key UI interactions
+- **On-Chain Settlement Time (MVP - ICP only)**: Median ≤ 30 minutes for atomic swap completion
+- **On-Chain Settlement Time (Phase 3 Target)**: Median ≤ 5 minutes; P95 ≤ 15 minutes
+- **Throughput**: 1,000+ concurrent users
+- **Uptime**: 99.9% availability
+- **Scalability**: Handle 10x user growth
+
+### 5.2 Security Requirements
+- **Data Encryption**: AES-256 encryption for all sensitive data
+- **Secure Storage**: Hardware security modules for key management
+- **Access Control**: Role-based access control system
+- **Penetration Testing**: Quarterly security assessments
+- **Compliance**: GDPR, CCPA, and financial regulations
+
+### 5.3 Reliability Requirements
+- **Backup Systems**: Daily backups with off-site storage
+- **Disaster Recovery**: Geo-redundant infrastructure
+- **Error Handling**: Comprehensive error handling and recovery
+- **Monitoring**: 24/7 system health monitoring
+- **Failover**: Automatic failover to backup systems
+
+### 5.4 Usability Requirements
+- **Mobile Responsiveness**: Fully responsive design
+- **Accessibility**: WCAG 2.1 AA compliance
+- **Onboarding**: Guided onboarding process
+- **Help Documentation**: Comprehensive help center
+- **User Testing**: Regular usability testing
+
+## 6. Progressive Decentralization Strategy
+
+### 6.1 Phase 1: ICP-Native Foundation (Months 1-3)
+- **Infrastructure**: Internet Computer canisters as primary backend
+- **User Management**: Hybrid authentication with ICP identity mapping
+- **Transaction Processing**: All business logic in smart contracts
+- **Compliance**: On-chain KYC/AML with traditional verification
+- **Development**: Core marketplace and atomic swap functionality
+
+### 6.2 Phase 2: Enhanced Features (Months 4-6)
+- **Cross-Chain Integration**: Enhanced ICP cross-chain capabilities
+- **Advanced Atomic Swaps**: Multi-cryptocurrency support via ICP
+- **Optional Web3 Auth**: Direct wallet connection for advanced users
+- **Enhanced UI/UX**: Improved mobile experience and features
+- **Testing**: Comprehensive security audits and user feedback
+
+### 6.3 Phase 3: Ecosystem Expansion (Months 7-12)
+- **Additional Blockchains**: Expanded cross-chain support via ICP
+- **Advanced Features**: DeFi integrations, NFT capabilities
+- **Governance Features**: Community governance mechanisms
+- **Analytics & Insights**: On-chain analytics and reporting
+- **Ecosystem Development**: Third-party integrations and API
+
+## 7. Security Architecture
+
+### 7.1 Threat Model Analysis
+- **Smart Contract Vulnerabilities**: Reentrancy, overflow/underflow, access control
+- **Front-Running Attacks**: Transaction ordering manipulation
+- **Oracle Manipulation**: Price feed manipulation risks
+- **Sybil Attacks**: Multiple fake accounts for manipulation
+- **Regulatory Risks**: Compliance with changing regulations
+
+### 7.2 Security Measures
+- **Formal Verification**: Mathematical proof of contract correctness
+- **Multi-Signature Wallets**: Require multiple signatures for large transactions
+- **Rate Limiting**: Prevent spam and DoS attacks
+- **Time Locks**: Prevent immediate fund withdrawal
+- **Emergency Controls**: Circuit breakers and pause functions
+
+Additional risks stemming from hybrid identity & authentication:
+- Principal Mapping Service Security: Compromise, mis-issuance, or unauthorized remapping of user principals
+- Token/Session Handling: JWT leakage, improper expiry/rotation, insecure local storage on clients
+- Identity Linkage & Privacy: Unintended linkage of Web2 identities to ICP principals in logs/analytics
+- Rate Limiting & Abuse: Insufficient throttling on auth/mapping endpoints enabling enumeration or resource exhaustion
+
+### 7.3 Audit Process
+- **Internal Audits**: Regular code reviews by security team
+- **External Audits**: Third-party security firm assessments
+- **Bug Bounty Program**: Community-driven vulnerability discovery
+- **Continuous Monitoring**: Real-time security monitoring
+- **Incident Response**: Rapid response to security incidents
+
+## 8. Compliance and Legal
+
+### 8.1 Regulatory Compliance
+- **KYC/AML**: Know Your Customer and Anti-Money Laundering procedures
+- **Travel Rule**: Compliance with FATF Travel Rule
+- **Data Protection**: GDPR, CCPA, and other data protection regulations
+- **Securities Laws**: Compliance with securities regulations
+- **Tax Reporting**: Automated tax reporting tools
+
+### 8.2 Legal Structure
+- **Entity Formation**: Proper legal entity registration
+- **Terms of Service**: Clear user terms and conditions
+- **Privacy Policy**: Comprehensive privacy protection policy
+- **Dispute Resolution**: Clear dispute resolution procedures
+- **Jurisdiction**: Appropriate legal jurisdiction selection
+
+## 9. Development Timeline
+
+### 9.1 Phase 1: ICP-Native MVP (Months 1-3)
+- **Month 1**: ICP canister setup, Flutter app foundation, core smart contracts
+- **Month 2**: Marketplace functionality, atomic swap implementation, hybrid auth
+- **Month 3**: Testing, security audit, beta launch on ICP mainnet
+
+#### Gate A (Beta Readiness)
+- Security review passed; no critical vulnerabilities
+- Swap success rate ≥ 85% on testnet; P95 completion ≤ 45 minutes
+- Core flows usability tested (SUS ≥ 70)
+
+### 9.2 Phase 2: Enhanced Features (Months 4-6)
+- **Month 4**: Cross-chain integration via ICP, additional cryptocurrencies
+- **Month 5**: Advanced features, mobile optimization, user feedback integration
+- **Month 6**: Security audit, performance optimization, marketing launch
+
+#### Gate B (Mainnet Limited Release)
+- Swap success rate ≥ 90%; incident runbook and on-call in place
+- Compliance sign-off for target jurisdictions; DSAR process defined
+- Telemetry dashboards live for KPIs and alerts
+
+### 9.3 Phase 3: Ecosystem Expansion (Months 7-12)
+- **Months 7-9**: DeFi integrations, advanced governance features
+- **Months 10-12**: Ecosystem development, third-party integrations, scaling
+
+#### Gate C (Scale & Expansion)
+- Retention and dispute KPIs on target for 4 consecutive weeks
+- External security audit: no critical findings outstanding
+- Readiness review for adding currencies/features
+
+## 10. Budget and Resources
+
+### 10.1 Development Costs
+- **Smart Contract Development**: $200,000 (ICP canisters are primary backend)
+- **Frontend Development**: $250,000 (Flutter + ICP integration)
+- **Backend Development**: $50,000 (minimal traditional backend support)
+- **Security Audits**: $120,000 (enhanced smart contract focus)
+- **Legal and Compliance**: $80,000
+
+### 10.2 Infrastructure Costs
+- **ICP Cycles and Operations**: $40,000/year
+- **Minimal Cloud Infrastructure**: $15,000/year (CDN, monitoring)
+- **Security Services**: $35,000/year
+- **Monitoring and Alerting**: $15,000/year
+
+### 10.3 Team Requirements
+- **Smart Contract Developers**: 3-4 developers (ICP/Motoko focus)
+- **Frontend Developers**: 3-4 developers (Flutter + ICP integration)
+- **Backend Developers**: 1-2 developers (minimal traditional support)
+- **Security Engineers**: 2-3 engineers (smart contract focus)
+- **Product Manager**: 1 manager
+- **UI/UX Designers**: 2 designers
+
+## 11. Risk Assessment
+
+### 11.1 Technical Risks
+- **Smart Contract Vulnerabilities**: Critical security flaws in ICP canisters
+- **ICP Platform Risks**: Dependency on ICP platform stability and performance
+- **Cross-Chain Integration**: Complexity of multi-cryptocurrency support via ICP
+- **Performance Bottlenecks**: Canister performance under high load
+- **User Experience**: Complexity of atomic swaps for mainstream users
+
+### 11.2 Market Risks
+- **Competition**: Established competitors with similar offerings
+- **Regulatory Changes**: Unfavorable regulatory developments
+- **Market Volatility**: Cryptocurrency market fluctuations
+- **User Adoption**: Slow user acquisition and retention
+
+### 11.3 Operational Risks
+- **Team Dependencies**: Key personnel dependencies
+- **Budget Overruns**: Exceeding planned development costs
+- **Timeline Delays**: Project completion delays
+- **Security Breaches**: Successful attacks on the platform
+
+## 12. Success Metrics
+
+### 12.1 User Acquisition
+- **Monthly Active Users**: 10,000+ within first year
+- **User Growth Rate**: 20% month-over-month growth
+- **Retention Rate**: 60%+ user retention after 30 days
+- **Geographic Coverage**: Users in 50+ countries
+
+### 12.2 Transaction Metrics
+- **Daily Transaction Volume**: $1M+ within first year
+- **Transaction Success Rate**: 99%+ successful transactions
+- **Average Transaction Size**: $500-1000 per transaction
+- **Transaction Fees**: 0.5% fee structure
+
+### 12.3 Business Metrics
+- **Revenue**: $500,000+ in first year
+- **Profitability**: Break-even within 18 months
+- **Market Share**: 5% of P2P market within 2 years
+- **User Satisfaction**: 4.5/5 star rating
+
+### 12.4 MVP KPIs
+- Swap Success Rate: ≥ 90% within SLA
+- Median Swap Time: ≤ 30 minutes (ICP-only path)
+- Retention: D1 ≥ 25%, 4-week ≥ 15%
+- Dispute Rate: ≤ 3% of completed swaps; mean resolution ≤ 24h
+- Reliability: Crash-free sessions ≥ 99.5%; P95 API latency ≤ 2s
+
+## 13. Future Roadmap
+
+### 13.1 Short-term Goals (0-6 months)
+- **ICP-Native MVP Launch**: Complete P2P trading on ICP canisters
+- **Flutter Mobile Apps**: iOS and Android with direct ICP integration
+- **Core Smart Contracts**: Marketplace, atomic swap, and user management canisters
+- **Initial User Base**: 5,000+ active users
+
+### 13.2 Medium-term Goals (6-12 months)
+- **Enhanced Cross-Chain**: Multi-cryptocurrency support via ICP integrations
+- **Advanced Features**: DeFi integrations, NFT capabilities
+- **Governance Features**: Community governance mechanisms
+- **Ecosystem Expansion**: Third-party integrations and API
+
+### 13.3 Long-term Goals (12+ months)
+- **Full Ecosystem**: Comprehensive DeFi and marketplace features
+- **Institutional Tools**: Advanced trading and analytics
+- **Global Expansion**: Worldwide market coverage
+- **Developer Platform**: Third-party development tools and SDK
+
+## 14. Appendices
+
+### 14.1 Technical Specifications
+- **API Documentation**: Complete API reference
+- **Database Schema**: Detailed database structure
+- **Smart Contract Interfaces**: Contract ABI documentation
+- **Integration Guides**: Third-party integration instructions
+
+### 14.2 User Documentation
+- **User Guide**: Step-by-step user instructions
+- **Security Best Practices**: Security recommendations for users
+- **FAQ**: Frequently asked questions
+- **Video Tutorials**: Educational video content
+
+### 14.3 Legal Documents
+- **Terms of Service**: Complete terms and conditions
+- **Privacy Policy**: Data protection and privacy policies
+- **KYC/AML Policy**: Compliance procedures documentation
+- **Risk Disclosure**: Investment risk disclosures
+
+### 14.4 Sequence Diagrams
+
+Multi-Crypto Payment Flow (ICP):
+
+```mermaid
+sequenceDiagram
+    participant Buyer
+    participant App as Mobile App
+    participant Oracle as Price Oracle Canister
+    participant Market as Marketplace Canister
+    participant Escrow as Atomic Swap Canister
+    participant Seller
+
+    Buyer->>App: Select listing, choose crypto
+    App->>Oracle: Fetch latest price for selected crypto
+    Oracle-->>App: Price data
+    App->>Escrow: Initiate HTLC (hashLock, timeLock, amount)
+    Escrow-->>App: Swap created (#pending)
+    App-->>Seller: Notify pending swap
+    Seller->>Market: Lock listing / confirm availability
+    Buyer->>Escrow: Reveal secret to redeem
+    Escrow-->>Seller: Release funds (on redemption)
+    Market-->>Buyer: Mark order fulfilled
+    App-->>Buyer: Confirm completion
+
+    Note over Escrow,Seller: BTC/ETH via ICP threshold ECDSA; others via ICP integrations
+```
+
+### 14.5 Frontend Module Structure
+
+```text
+lib/
+  core/
+    config/
+    network/
+    storage/
+    blockchain/
+    auth/
+  shared/
+    widgets/
+    utils/
+    models/
+    theme/
+  features/
+    market/
+    payments/
+    atomic_swap/
+    messaging/
+    disputes/
+    profile/
+  main.dart
+```
+
+---
+
+*This document represents the merged requirements from the project brief and product requirements document, providing a comprehensive guide for the development of the decentralized P2P cryptocurrency marketplace.*
