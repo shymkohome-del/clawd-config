@@ -21,6 +21,7 @@ devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories
 slashPrefix: BMad
 
+
 # QA agent always-loaded resources
 qaLoadAlwaysFiles:
   - checklists/qa-intake-checklist.md

@@ -21,6 +21,10 @@ devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories
 slashPrefix: BMad
 
+# BMAD Core Config (repo-local declarative policies)
+
+# DEV agent loads files defined earlier under devLoadAlwaysFiles (deduplicated)
+
 # QA agent always-loaded resources
 qaLoadAlwaysFiles:
   - checklists/qa-intake-checklist.md

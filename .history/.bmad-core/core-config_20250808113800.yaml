@@ -12,14 +12,19 @@ architecture:
   architectureShardedLocation: docs/architecture
 customTechnicalDocuments: null
 devLoadAlwaysFiles:
-  - docs/architecture/coding-standards.md
-  - docs/architecture/tech-stack.md
-  - docs/architecture/source-tree.md
+lt- docs/architecture/coding-standards.md
+- docs/architecture/tech-stack.md
+- docs/architecture/source-tree.md
+- docs/architecture/source-strategy.md
   - checklists/story-git-init-checklist.md
   - checklists/story-dod-checklist.md
 devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories
 slashPrefix: BMad
+
+# BMAD Core Config (repo-local declarative policies)
+
+# DEV agent loads files defined earlier under devLoadAlwaysFiles (deduplicated)
 
 # QA agent always-loaded resources
 qaLoadAlwaysFiles:

@@ -1,0 +1,40 @@
+name: PR Lint
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  pr-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR has story reference and branch naming
+        shell: bash
+        run: |
+          set -euo pipefail
+          HEAD_REF="${{ github.event.pull_request.head.ref }}"
+          TITLE="${{ github.event.pull_request.title }}"
+          BODY="${{ github.event.pull_request.body }}"
+
+          echo "Branch: $HEAD_REF"
+          echo "Title: $TITLE"
+          echo "Body length: ${#BODY}"
+
+          fail=0
+
+          # Allow multi-part numeric ids like 0.1 or 1.2.3
+          if [[ ! "$HEAD_REF" =~ ^story/[0-9]+(\.[0-9]+)*-[a-z0-9-]+$ ]]; then
+            echo "::error::Branch name must match: story/<id>-<slug> (e.g., story/1.1-register-with-email-or-social)"
+            fail=1
+          fi
+
+          # Case-insensitive check allowing separators: space, hyphen, slash, or colon
+          TEXT=$(echo "$TITLE $BODY" | tr '[:upper:]' '[:lower:]')
+          if [[ ! "$TEXT" =~ story[[:space:]/:-]*[0-9]+(\.[0-9]+)* ]]; then
+            echo "::error::PR title or body must include a story id reference (e.g., story 1.1, story-1.1, story/1.1, or story: 1.1)"
+            fail=1
+          fi
+
+          exit $fail
+
+
