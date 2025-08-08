@@ -78,7 +78,7 @@ Workflow file: `.github/workflows/flutter-ci.yml` (name: Flutter CI). Triggers o
 - flutter pub get
 - flutter analyze --fatal-infos --fatal-warnings
 - dart format --output=none --set-exit-if-changed .
-- flutter test
+- flutter test --reporter expanded --no-pub
 
 ### Automated Story Flow
 
@@ -155,3 +155,16 @@ Behavior:
   4. Promote to Prod and verify.
   5. Revoke the old key and document the rotation in change logs/audit.
 
+## Testing
+
+- Folders:
+  - `test/unit/` for unit and widget tests
+  - `test/integration/` for integration tests
+  - `test/e2e/` for end-to-end tests (optional for now)
+
+- Run locally:
+  - Analyze and format check: `flutter analyze --fatal-infos --fatal-warnings && dart format --output=none --set-exit-if-changed .`
+  - Tests (expanded reporter): `flutter test --no-pub --reporter expanded`
+
+- Sample test:
+  - `test/unit/widgets/sample_widget_test.dart`
