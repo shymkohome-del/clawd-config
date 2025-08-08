@@ -23,12 +23,13 @@ Examples:
 
 ## Branching
 
-- main: protected, always green
+- main: production branch, protected, always green
+- develop: integration branch; open PRs from feature branches into `develop`
 - feature/<short-topic>: feature work (e.g., feature/market-search)
 - fix/<short-topic>: bug fixes
 - chore/<short-topic>: maintenance/tooling
 
-Open PRs from feature/fix/chore branches into main. CI must pass (analyze, format check, tests) before merge.
+Open PRs from feature/fix/chore branches into `develop`. For release, open a PR from `develop` to `main`. CI must pass (analyze, format check, tests) before merge.
 
 ## CI
 
