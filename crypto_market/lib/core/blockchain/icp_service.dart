@@ -39,39 +39,47 @@ class ICPService {
     return {'canisterId': canisterId};
   }
 
-  Future<Result<void, AuthError>> register({
+  Future<Result<T, AuthError>> _wrapAuthCall<T>(
+    Future<T> Function() action,
+  ) async {
+    try {
+      final value = await action();
+      return Result.ok(value);
+    } catch (e) {
+      return Result.err(mapAuthExceptionToAuthError(e));
+    }
+  }
+
+  Future<Result<Unit, AuthError>> register({
     required String email,
     required String password,
     required String username,
   }) async {
-    try {
-      // TODO: invoke userManagementActor.register
-      return const Result.ok(null);
-    } catch (e) {
-      return Result.err(mapAuthException(e));
-    }
+    // TODO: replace with actual canister actor call
+    return _wrapAuthCall<Unit>(() async {
+      // simulate actor call
+      return const Unit();
+    });
   }
 
-  Future<Result<void, AuthError>> loginWithOAuth({
+  Future<Result<Unit, AuthError>> loginWithOAuth({
     required String provider,
     required String token,
   }) async {
-    try {
-      // TODO: invoke userManagementActor.loginWithOAuth
-      return const Result.ok(null);
-    } catch (e) {
-      return Result.err(mapAuthException(e));
-    }
+    // TODO: replace with actual canister actor call
+    return _wrapAuthCall<Unit>(() async {
+      // simulate actor call
+      return const Unit();
+    });
   }
 
   Future<Result<Map<String, dynamic>, AuthError>> getUserProfile({
     required String principal,
   }) async {
-    try {
-      // TODO: invoke userManagementActor.getUserProfile
-      return Result.ok(<String, dynamic>{'principal': principal});
-    } catch (e) {
-      return Result.err(mapAuthException(e));
-    }
+    // TODO: replace with actual canister actor call
+    return _wrapAuthCall<Map<String, dynamic>>(() async {
+      // simulate actor call
+      return <String, dynamic>{'principal': principal};
+    });
   }
 }
