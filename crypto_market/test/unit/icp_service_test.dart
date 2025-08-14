@@ -62,6 +62,5 @@ void main() {
       mapAuthExceptionToAuthError(Exception('something else')),
       AuthError.unknown,
     );
->>>>>>> c438088 (feat(story-0.5): implement error mapping and wrap ICP service methods; add Unit type; tests green)
   });
 }
