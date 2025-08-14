@@ -33,7 +33,7 @@ policies:
     requireFeatureBranch: true
     requireUpstream: true
     requirePushOnCompletion: true
-    requirePrOnCompletion: false  # set to true to make PR creation mandatory
+    requirePrOnCompletion: true
     branchTemplate: "story/${id}-${slug}"
     commitTemplate: "feat(story-${id}): ${title}"
   qa:

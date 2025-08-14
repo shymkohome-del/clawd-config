@@ -12,12 +12,16 @@ Steps:
 2. Stage and commit with standardized message
    - Run: `git add -A`
    - Run: `git commit -m "feat(story-${id}): ${title}"` (use repo policy commitTemplate)
-3. Push to upstream
+3. Run local quality gates (must pass before push)
+   - Run: `dart format --output=none --set-exit-if-changed .` (fix with `dart format .` if needed)
+   - Run: `flutter analyze --fatal-infos --fatal-warnings`
+   - Run: `flutter test --no-pub`
+4. Push to upstream
    - Run: `git push`
-4. Optional PR creation (policy-driven)
+5. PR creation (policy-driven)
    - If `policies.git.requirePrOnCompletion = true` and GitHub CLI available:
      - Run: `gh pr create --fill --base main --head story/${id}-${slug}`
-5. Confirm CI status (if PR created)
+6. Confirm CI status (if PR created)
    - Ensure checks start and are visible on the PR
 
 Outcome:

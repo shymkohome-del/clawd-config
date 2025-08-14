@@ -3,11 +3,25 @@ name: PR Lint
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
+  push:
+    branches:
+      - 'story/**'
 
 jobs:
   pr-lint:
     runs-on: ubuntu-latest
     steps:
+      - name: Check branch when not a PR (push)
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          HEAD_REF="${GITHUB_REF_NAME}"
+          echo "Branch: $HEAD_REF"
+          if [[ ! "$HEAD_REF" =~ ^story/[0-9]+(\.[0-9]+)*-[a-z0-9-]+$ ]]; then
+            echo "::error::Branch name must match: story/<id>-<slug> (e.g., story/1.1-register-with-email-or-social)"
+            exit 1
+          fi
       - name: Validate PR has story reference and branch naming
         shell: bash
         run: |
