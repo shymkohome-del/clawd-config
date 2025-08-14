@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:dio/dio.dart';
+
 /// Simple Result type for success/error returns.
 class Result<T, E> {
   final T? _ok;
@@ -16,3 +19,24 @@ class Result<T, E> {
 }
 
 enum AuthError { invalidCredentials, oauthDenied, network, unknown }
+
+/// Domain-specific exceptions used for error mapping.
+class AuthInvalidCredentialsException implements Exception {}
+
+class OAuthDeniedException implements Exception {}
+
+/// Maps low-level exceptions to domain-specific [AuthError] values.
+AuthError mapAuthException(Object error) {
+  if (error is AuthInvalidCredentialsException) {
+    return AuthError.invalidCredentials;
+  }
+  if (error is OAuthDeniedException) {
+    return AuthError.oauthDenied;
+  }
+  if (error is DioException ||
+      error is SocketException ||
+      error is HttpException) {
+    return AuthError.network;
+  }
+  return AuthError.unknown;
+}

@@ -25,10 +25,10 @@ sections:
   - id: status
     title: Status
     type: choice
-    choices: [Draft, Ready for Review, Approved, InProgress, Review, Done, Blocked, Decision Needed]
+    choices: [Draft, Approved, InProgress, Ready for Review, Done, Blocked, Decision Needed]
     instruction: Select the current status of the story
     owner: scrum-master
-    editors: [scrum-master, dev-agent]
+    editors: [scrum-master, dev-agent, qa-agent]
     
   - id: story
     title: Story

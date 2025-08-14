@@ -21,8 +21,8 @@ Steps:
 6. Execute tests
    - Log results to `.ai/qa-log.md`. Include build hash and timestamps
 7. Report outcomes
-   - If pass: Mark QA results in the story, signal Ready for Review
-   - If fail: Open defects with clear repro steps and link them in `.ai/qa-log.md`
+   - If pass: Append QA results in the story and set `Status: Done`
+   - If fail: Open defects with clear repro steps, link them in `.ai/qa-log.md`, append a brief reason in the story Change Log, and set `Status: InProgress`
 
 Outcome:
 - QA has a clear, repeatable process to begin validation.

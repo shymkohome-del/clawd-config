@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:crypto_market/core/config/app_config.dart';
 import 'package:crypto_market/core/blockchain/icp_service.dart';
+import 'package:crypto_market/core/blockchain/errors.dart';
 
 void main() {
   test('ICPService.fromConfig constructs', () {
@@ -20,5 +21,20 @@ void main() {
     );
     final service = ICPService.fromConfig(cfg);
     expect(service, isA<ICPService>());
+    // Ensure actors are initialized with correct canister IDs
+    expect((service.marketActor as Map)['canisterId'], 'aaaaa-aa');
+    expect((service.userManagementActor as Map)['canisterId'], 'bbbbb-bb');
+    expect((service.atomicSwapActor as Map)['canisterId'], 'ccccc-cc');
+    expect((service.priceOracleActor as Map)['canisterId'], 'ddddd-dd');
+  });
+
+  group('Auth error mapping', () {
+    test('maps known exceptions to domain errors', () async {
+      expect(
+        mapAuthException(AuthInvalidCredentialsException()),
+        AuthError.invalidCredentials,
+      );
+      expect(mapAuthException(OAuthDeniedException()), AuthError.oauthDenied);
+    });
   });
 }
