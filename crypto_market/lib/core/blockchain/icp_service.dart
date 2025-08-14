@@ -12,27 +12,47 @@ class ICPService {
     return ICPService._(config);
   }
 
-  Future<Result<void, AuthError>> register({
+  Future<Result<T, AuthError>> _wrapAuthCall<T>(
+    Future<T> Function() action,
+  ) async {
+    try {
+      final value = await action();
+      return Result.ok(value);
+    } catch (e) {
+      return Result.err(mapAuthExceptionToAuthError(e));
+    }
+  }
+
+  Future<Result<Unit, AuthError>> register({
     required String email,
     required String password,
     required String username,
   }) async {
-    // TODO: call canister actor and map errors
-    return Result.ok(null);
+    // TODO: replace with actual canister actor call
+    return _wrapAuthCall<Unit>(() async {
+      // simulate actor call
+      return const Unit();
+    });
   }
 
-  Future<Result<void, AuthError>> loginWithOAuth({
+  Future<Result<Unit, AuthError>> loginWithOAuth({
     required String provider,
     required String token,
   }) async {
-    // TODO: call canister actor and map errors
-    return Result.ok(null);
+    // TODO: replace with actual canister actor call
+    return _wrapAuthCall<Unit>(() async {
+      // simulate actor call
+      return const Unit();
+    });
   }
 
   Future<Result<Map<String, dynamic>, AuthError>> getUserProfile({
     required String principal,
   }) async {
-    // TODO: call canister actor and map errors
-    return Result.ok(<String, dynamic>{'principal': principal});
+    // TODO: replace with actual canister actor call
+    return _wrapAuthCall<Map<String, dynamic>>(() async {
+      // simulate actor call
+      return <String, dynamic>{'principal': principal};
+    });
   }
 }
