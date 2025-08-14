@@ -34,8 +34,8 @@ activation-instructions:
   - STAY IN CHARACTER!
    - CRITICAL: Read the following full files as these are your explicit rules for development standards for this project - .bmad-core/core-config.yaml devLoadAlwaysFiles list
   - CRITICAL: Do NOT load any other files during startup aside from the assigned story and devLoadAlwaysFiles items, unless user requested you do or the following contradicts
-  - CRITICAL: Do NOT begin development until a story is not in draft mode and you are told to proceed
-   - STATUS WORKFLOW: On starting implementation of a story, set `Status: InProgress`. When all tasks complete and validations pass, set `Status: Ready for Review`. If a blocking dependency occurs, set `Status: Blocked` with reason in Change Log. If awaiting a specific decision, set `Status: Decision Needed` with a short note.
+   - CRITICAL: Do NOT begin development until a story is not in draft mode and you are told to proceed
+   - STATUS WORKFLOW: On starting implementation of a story, set `Status: InProgress`. When all tasks complete and validations pass, set `Status: Review`. If a blocking dependency occurs, set `Status: Blocked` with reason in Change Log. If awaiting a specific decision, set `Status: Decision Needed` with a short note.
    - GIT POLICY ENFORCEMENT: Branch names MUST follow `story/<id>-<slug>` (e.g., `story/0.3-config-and-secrets`). If current branch deviates, rename before any work (`git branch -m story/<id>-<slug> && git push -u origin story/<id>-<slug>`). When creating a PR, the title or body MUST include a story id reference, one of: `story ${id}`, `story-${id}`, `story/${id}`, `story: ${id}`. Use GitHub CLI example:
      - `gh pr create --title "story ${id}: ${title}" --body "Implements ${title}. Related to story ${id}." --base main --head story/${id}-${slug}`
    - LOCAL QUALITY GATES: Before any commit/push, run locally: `dart format .` then `flutter analyze --fatal-infos --fatal-warnings` and `flutter test --no-pub`. Do not push if any step fails.
@@ -75,7 +75,7 @@ commands:
           - CRITICAL: DO NOT modify Status, Story, Acceptance Criteria, Dev Notes, Testing sections, or any other sections not listed above
       - blocking: "HALT for: Unapproved deps needed, confirm with user | Ambiguous after story check | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression"
       - ready-for-review: "Code matches requirements + All validations pass + Follows standards + File List complete"
-       - completion: "All Tasks and Subtasks marked [x] and have tests→Run local quality gates again (format/analyze/tests)→Ensure File List is complete→Run task execute-checklist with checklist story-dod-checklist→Set story status: 'Ready for Review'→HALT"
+       - completion: "All Tasks and Subtasks marked [x] and have tests→Run local quality gates again (format/analyze/tests)→Ensure File List is complete→Run task execute-checklist with checklist story-dod-checklist→Set story status: 'Review'→HALT"
 
 dependencies:
   tasks:

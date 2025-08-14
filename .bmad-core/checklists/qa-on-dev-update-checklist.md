@@ -7,7 +7,7 @@ Preconditions:
 
 Steps:
 1. Detect update
-   - Monitor PR or branch for new commits (link stored in `.ai/qa-log.md` or PR)
+   - Monitor PR or branch for new commits (from PR link or branch naming policy)
 2. Pull and build
    - Run: `git fetch origin && git switch story/${id}-${slug} && git pull`
    - Rebuild app/tests as needed
@@ -17,7 +17,7 @@ Steps:
    - Re-execute only impacted BDD scenarios first
    - If risky change, perform lightweight regression
 5. Update QA log
-   - Append results with commit hash, timestamp, and impacted areas to `.ai/qa-log.md`
+   - Append results with commit hash, timestamp, and impacted areas to the story file's `## QA Results` section
 6. Communicate status
    - If pass: comment on PR or notify Dev that QA remains green
    - If fail: file/update defects with detailed repro steps

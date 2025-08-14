@@ -16,7 +16,15 @@ Steps:
    - Run: `dart format --output=none --set-exit-if-changed .` (fix with `dart format .` if needed)
    - Run: `flutter analyze --fatal-infos --fatal-warnings`
    - Run: `flutter test --no-pub`
-4. Push to upstream
+4. Ensure story file is fully updated
+   - Confirm `Status` is set to `Review`
+   - Confirm `Dev Agent Record` contains:
+     - Agent Model Used
+     - Debug Log References (e.g., `.ai/debug-log.md`)
+     - Completion Notes List (concise bullet points)
+     - File List (every added/modified/deleted file)
+   - Add a `Change Log` entry for the developer completion
+5. Push to upstream
    - Run: `git push`
 5. PR creation (policy-driven)
    - Validate branch name policy before creating a PR

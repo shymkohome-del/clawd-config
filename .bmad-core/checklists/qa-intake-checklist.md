@@ -3,7 +3,7 @@
 Purpose: Define the first actions QA should take when a story is handed off from Dev.
 
 Preconditions:
-- The story status is "Ready for QA" or a PR exists referencing the story id.
+- The story status is "Review" or a PR exists referencing the story id.
 - Handoff details are provided in the PR or `templates/qa-handoff.md` copy.
 
 Steps:
@@ -20,10 +20,10 @@ Steps:
 5. Prepare test plan
    - Derive test cases from Acceptance Criteria and BDD scenarios in the story
 6. Execute tests
-   - Log results to `.ai/qa-log.md`. Include build hash and timestamps
+   - Append results in the story file's `## QA Results` section. Include build hash and timestamps
 7. Report outcomes
-   - If pass: Mark QA results in the story, signal Ready for Review. If PR was missing required story reference, request Dev to update PR title/body before approval.
-   - If fail: Open defects with clear repro steps and link them in `.ai/qa-log.md`
+   - If pass: Complete the QA Results section and set story Status to `Done`. If PR was missing required story reference, request Dev to update PR title/body before approval.
+   - If fail: Open defects with clear repro steps and reference them in the story's QA Results section
 
 Outcome:
 - QA has a clear, repeatable process to begin validation.

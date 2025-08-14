@@ -82,8 +82,8 @@ Notes:
 ## Repeat Until Complete
 
 - **SM**: Create next story → Review → Approve
-- **Dev**: Implement story → Complete → Mark Ready for Review
-- **QA**: Review story → Mark done
+- **Dev**: Implement story → Complete → Mark Review
+- **QA**: Review story → Mark Done
 - **Commit**: All changes
 - **Push**: To remote
 - **Continue**: Until all features implemented

@@ -7,8 +7,9 @@ This index mirrors the execution order from `docs/prd/4b-user-stories-and-accept
 ## Status Legend
 
 - Draft: Story is being written or refined; not yet ready for review
-- Ready for Review: Content is complete and awaiting PO/tech review
+- Ready for Review: Content is complete and awaiting PO/tech review (story document stage)
 - Approved: Story is finalized and unblocked for implementation
+- Review: Code implementation is complete and awaiting QA review (development stage)
 - Blocked: Requires external dependency or prerequisite before proceeding
 - Decision Needed: Awaiting a specific product/technical decision before progressing
 
