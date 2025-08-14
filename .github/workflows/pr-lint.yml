@@ -22,8 +22,8 @@ jobs:
             echo "::error::Branch name must match: story/<id>-<slug> (e.g., story/1.1-register-with-email-or-social)"
             exit 1
           fi
-      - name: Validate PR has story reference and branch naming
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: Validate PR has story reference and branch naming (only for story/* PRs)
+        if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'story/') }}
         shell: bash
         run: |
           set -euo pipefail
