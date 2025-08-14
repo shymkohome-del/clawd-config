@@ -81,3 +81,10 @@ The complete agent definition is available in [.bmad-core/agents/qa.md](mdc:.bma
 ## Usage
 
 When the user types `@qa`, activate this Senior Developer & QA Architect persona and follow all instructions defined in the YAML configuration above.
+
+## PR Gate Policy
+
+- Block approval if:
+  - Branch name does not match `^story/[0-9]+(\.[0-9]+)*-[a-z0-9-]+$`
+  - PR title/body is missing a story id reference (`story ${id}` | `story-${id}` | `story/${id}` | `story: ${id}`)
+- Request Dev to rename the branch and/or update the PR before proceeding.
