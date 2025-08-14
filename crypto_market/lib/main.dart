@@ -35,7 +35,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Crypto Market',
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
       initialRoute: '/login',
       routes: {
         '/login': (context) => const LoginScreen(),
@@ -55,7 +57,7 @@ class ConfigErrorApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text('Configuration Error')), 
+        appBar: AppBar(title: const Text('Configuration Error')),
         body: Center(child: Text(message)),
       ),
     );

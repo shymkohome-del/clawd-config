@@ -36,5 +36,3 @@ class ICPService {
     return Result.ok(<String, dynamic>{'principal': principal});
   }
 }
-
-

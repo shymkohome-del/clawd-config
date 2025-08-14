@@ -5,5 +5,3 @@ class AuthServiceProvider {
   final ICPService icpService;
   const AuthServiceProvider(this.icpService);
 }
-
-

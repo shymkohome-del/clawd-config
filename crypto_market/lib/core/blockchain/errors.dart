@@ -15,11 +15,4 @@ class Result<T, E> {
   E get err => _err as E;
 }
 
-enum AuthError {
-  invalidCredentials,
-  oauthDenied,
-  network,
-  unknown,
-}
-
-
+enum AuthError { invalidCredentials, oauthDenied, network, unknown }

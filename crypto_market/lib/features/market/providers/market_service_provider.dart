@@ -5,5 +5,3 @@ class MarketServiceProvider {
   final ICPService icpService;
   const MarketServiceProvider(this.icpService);
 }
-
-
