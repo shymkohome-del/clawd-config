@@ -43,3 +43,29 @@ Workflow file: `.github/workflows/flutter-ci.yml` (name: Flutter CI). Triggers o
 Caching: Flutter SDK and pub packages (`~/.pub-cache`).
 
 
+## Config & Secrets
+
+- Use the `.env.example` at the repo root as a template. Do not commit a real `.env` file.
+- At runtime, values should be provided via `--dart-define` flags or a local `.env` loader used only for development.
+- Required keys (subset shown): `OAUTH_GOOGLE_CLIENT_ID`, `OAUTH_GOOGLE_CLIENT_SECRET`, `OAUTH_APPLE_TEAM_ID`, `OAUTH_APPLE_KEY_ID`, `IPFS_NODE_URL`, `IPFS_GATEWAY_URL`, `CANISTER_ID_MARKETPLACE`, `CANISTER_ID_USER_MANAGEMENT`, `CANISTER_ID_ATOMIC_SWAP`, `CANISTER_ID_PRICE_ORACLE`. Optional: `CHAINLINK_API_KEY`, `COINGECKO_API_KEY`, `KYC_PROVIDER_API_KEY`.
+
+Example run (abbreviated):
+
+```bash
+flutter run \
+  --dart-define=OAUTH_GOOGLE_CLIENT_ID=xxx \
+  --dart-define=OAUTH_GOOGLE_CLIENT_SECRET=xxx \
+  --dart-define=IPFS_NODE_URL=http://localhost:5001 \
+  --dart-define=IPFS_GATEWAY_URL=http://localhost:8080 \
+  --dart-define=CANISTER_ID_MARKETPLACE=aaaaa-aa \
+  --dart-define=CANISTER_ID_USER_MANAGEMENT=bbbbb-bb \
+  --dart-define=CANISTER_ID_ATOMIC_SWAP=ccccc-cc \
+  --dart-define=CANISTER_ID_PRICE_ORACLE=ddddd-dd
+```
+
+Behavior:
+
+- The config layer `lib/core/config/app_config.dart` enforces required keys. Missing keys cause a typed error which the UI can surface as: "Missing required config: <KEY>".
+- `--dart-define` values take precedence. Secrets are not stored in the repo.
+
+

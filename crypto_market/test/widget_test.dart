@@ -5,26 +5,24 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:crypto_market/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('Base routes are navigable', (WidgetTester tester) async {
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Initial route: /login
+    expect(find.text('Login Screen (placeholder)'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Navigate to /register
+    await tester.tap(find.text('Go to Register'));
+    await tester.pumpAndSettle();
+    expect(find.text('Register Screen (placeholder)'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Navigate to /home
+    await tester.tap(find.text('Go to Home'));
+    await tester.pumpAndSettle();
+    expect(find.text('Home Screen (placeholder)'), findsOneWidget);
   });
 }
