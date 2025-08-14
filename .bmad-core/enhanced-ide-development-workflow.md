@@ -63,6 +63,22 @@ This is a simple step-by-step guide to help you efficiently manage your developm
 1. **Commit changes**
 2. **Push to remote**
 
+## Open Pull Request (Policy-Driven)
+
+If PRs are required on completion (`policies.git.requirePrOnCompletion = true`) and you have GitHub CLI installed:
+
+```bash
+gh pr create \
+  --title "story ${id}: ${title}" \
+  --body "Implements ${title}. Related to story ${id}." \
+  --base main \
+  --head story/${id}-${slug}
+```
+
+Notes:
+- Branch name must match: `story/<id>-<slug>` (e.g., `story/1.1-register-with-email-or-social`)
+- PR title or body must contain a story id reference: one of `story ${id}`, `story-${id}`, `story/${id}`, `story: ${id}`
+
 ## Repeat Until Complete
 
 - **SM**: Create next story → Review → Approve

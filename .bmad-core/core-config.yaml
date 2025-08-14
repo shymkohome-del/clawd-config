@@ -36,6 +36,13 @@ policies:
     requirePrOnCompletion: true
     branchTemplate: "story/${id}-${slug}"
     commitTemplate: "feat(story-${id}): ${title}"
+    pr:
+      requireStoryReference: true
+      acceptableReferencePatterns:
+        - "story ${id}"
+        - "story-${id}"
+        - "story/${id}"
+        - "story: ${id}"
   qa:
     requireStoryLinkInPR: true
     trackPRs: true

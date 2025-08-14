@@ -9,7 +9,8 @@ Preconditions:
 Steps:
 1. Identify scope
    - Gather story id `${id}`, title `${title}`, and branch `story/${id}-${slug}`
-   - Locate PR (if any) and confirm it references the story
+   - Validate branch name matches `^story/[0-9]+(\.[0-9]+)*-[a-z0-9-]+$`; if not, block QA and notify Dev to rename branch
+   - Locate PR (if any) and confirm it references the story id in title or body (acceptable forms: `story ${id}`, `story-${id}`, `story/${id}`, `story: ${id}`)
 2. Pull latest changes
    - Run: `git fetch origin && git switch story/${id}-${slug} && git pull`
 3. Verify CI status
@@ -21,7 +22,7 @@ Steps:
 6. Execute tests
    - Log results to `.ai/qa-log.md`. Include build hash and timestamps
 7. Report outcomes
-   - If pass: Mark QA results in the story, signal Ready for Review
+   - If pass: Mark QA results in the story, signal Ready for Review. If PR was missing required story reference, request Dev to update PR title/body before approval.
    - If fail: Open defects with clear repro steps and link them in `.ai/qa-log.md`
 
 Outcome:
