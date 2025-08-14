@@ -23,7 +23,7 @@ jobs:
             exit 1
           fi
       - name: Validate PR has story reference and branch naming (only for story/* PRs)
-        if: ${{ github.event_name == 'pull_request' && startsWith(github.head_ref, 'story/') }}
+        if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'story/') }}
         shell: bash
         run: |
           set -euo pipefail
