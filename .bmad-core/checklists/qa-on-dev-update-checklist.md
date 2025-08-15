@@ -19,8 +19,8 @@ Steps:
 5. Update QA log
    - Append results with commit hash, timestamp, and impacted areas to the story file's `## QA Results` section
 6. Communicate status
-   - If pass: comment on PR or notify Dev that QA remains green
-   - If fail: file/update defects with detailed repro steps
+   - If pass: comment on PR or notify Dev that QA remains green and set the story `Status: Done`
+   - If fail: file/update defects with detailed repro steps, note reason in story Change Log, and set `Status: InProgress`
 
 Outcome:
 - QA efficiently responds to Dev updates without restarting the full cycle.

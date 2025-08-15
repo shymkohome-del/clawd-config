@@ -22,8 +22,8 @@ jobs:
             echo "::error::Branch name must match: story/<id>-<slug> (e.g., story/1.1-register-with-email-or-social)"
             exit 1
           fi
-      - name: Validate PR has story reference and branch naming (only for story/* PRs)
-        if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'story/') }}
+      - name: Validate PR has story reference and branch naming
+        if: ${{ github.event_name == 'pull_request' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -50,6 +50,11 @@ jobs:
             fail=1
           fi
 
+          # Optional status nudge: if a single story file is touched, warn if status isn't set to an expected state
+          CHANGED_STORIES=$(jq -r '.pull_request | .number' <(echo "${{ toJson(github.event) }}") >/dev/null 2>&1; echo "")
+          # GitHub doesn't expose changed files in this context directly without additional API calls.
+          # Keep lint simple; print reminder unconditionally.
+          echo "::notice::Reminder: Ensure the story's Status is updated: Dev → InProgress/Ready for Review; QA → Done after acceptance."
           exit $fail
 
 

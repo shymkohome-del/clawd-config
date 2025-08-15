@@ -4,6 +4,46 @@
 
 Repository baseline for a Flutter application with CI.
 
+## App Structure and Routing
+
+This repo follows a feature-first Flutter structure, aligned with the project architecture guidance.
+
+```
+lib/
+  core/
+    blockchain/          # ICP client and blockchain-related services
+    config/              # runtime configuration and constants
+    network/             # HTTP/Dio client wrappers
+    logger/              # logging setup (placeholder)
+    storage/             # local storage abstractions (placeholder)
+  features/
+    auth/                # auth feature (providers/services, UI screens)
+    market/              # marketplace feature and providers
+    chat/
+    payments/
+    profile/
+  shared/
+    models/
+    theme/
+    utils/
+    widgets/
+  main.dart              # app entry; base routes: /login, /register, /home
+```
+
+- Base routes are defined in `lib/main.dart` with placeholders for `LoginScreen`, `RegisterScreen`, and `HomeScreen`.
+- Directory layout aligns with the guidance in the architecture docs.
+
+References:
+- Frontend structure and routing: `docs/architecture/frontend-architecture.md`
+- Monorepo structure guidance: `docs/architecture/unified-project-structure.md`
+
+### Deltas from Monorepo Guidance
+
+- This repository is a single Flutter app (not a monorepo). Module boundaries are represented by `lib/` directories (`core/`, `features/`, `shared/`) instead of separate packages.
+- Providers/services live within their respective `features/*/providers` directories. Shared UI and utilities live under `shared/`.
+- Naming normalization: the feature folder is `market/` (avoids `marketplace/` to keep names concise).
+- State management note: current bootstrap uses `flutter_bloc` repository providers in `main.dart` as a lightweight placeholder. The broader architecture examples may reference Riverpod; migration can be done later without changing the folder structure.
+
 ## Commit Style
 
 Follow Conventional Commits:
@@ -68,4 +108,21 @@ Behavior:
 - The config layer `lib/core/config/app_config.dart` enforces required keys. Missing keys cause a typed error which the UI can surface as: "Missing required config: <KEY>".
 - `--dart-define` values take precedence. Secrets are not stored in the repo.
 
+
+### Environment conventions
+
+- Local: developer machines. Use a local `.env` (not committed) or pass values with `--dart-define` when running locally.
+- Dev: shared integration environment. Inject secrets via CI/CD variables or the platform secret manager. Do not use `.env` files on servers.
+- Prod: production environment. Inject secrets via the secret manager only. Audit access and changes.
+
+### Rotation strategy
+
+- Triggers: suspected exposure, team changes, scheduled rotation (e.g., quarterly), vendor-required rotations.
+- Owners: feature area owners (OAuth: Auth; IPFS: Infra; Price/KYC APIs: respective service owners).
+- Procedure:
+  1. Create a new key/secret in the provider.
+  2. Update CI/CD secret or secret manager entries with the new value. Keep the old value temporarily if dual-key is supported.
+  3. Deploy to Dev and verify functionality.
+  4. Promote to Prod and verify.
+  5. Revoke the old key and document the rotation in change logs/audit.
 
