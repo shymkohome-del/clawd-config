@@ -6,13 +6,12 @@ This index mirrors the execution order from `docs/prd/4b-user-stories-and-accept
 
 ## Status Legend
 
-- Draft: Story is being written or refined; not yet ready for implementation
+- Draft: Story is being written or refined; not yet ready for review
+- Ready for Review: Content is complete and awaiting PO/tech review (story document stage)
 - Approved: Story is finalized and unblocked for implementation
-- InProgress: Developer is actively implementing the story
-- Ready for Review: Developer finished; awaiting QA review
-- Done: QA approved; story meets acceptance criteria
-- Blocked: External dependency prevents progress; add reason in Change Log
-- Decision Needed: Awaiting a specific product/technical decision; add note
+- Review: Code implementation is complete and awaiting QA review (development stage)
+- Blocked: Requires external dependency or prerequisite before proceeding
+- Decision Needed: Awaiting a specific product/technical decision before progressing
 
 ## Epic 0: Baseline
 - [0.1 Repo and CI Baseline](./0.1.repo-and-ci-baseline.md)

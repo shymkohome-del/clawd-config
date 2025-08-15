@@ -25,10 +25,11 @@ sections:
   - id: status
     title: Status
     type: choice
-    choices: [Draft, Approved, InProgress, Ready for Review, Done, Blocked, Decision Needed]
-    instruction: Select the current status of the story
+    choices: [Draft, Ready for Review, Approved, InProgress, Review, Done, Blocked, Decision Needed]
+    instruction: |
+      Select the current status of the story. Standard flow: Draft → Approved → InProgress → Review → Done. Use Blocked when work cannot proceed, and Decision Needed to request PO/PM decision.
     owner: scrum-master
-    editors: [scrum-master, dev-agent, qa-agent]
+    editors: [scrum-master, dev-agent]
     
   - id: story
     title: Story
@@ -114,24 +115,65 @@ sections:
         
       - id: debug-log-references
         title: Debug Log References
+        template: |
+          - .ai/debug-log.md
         instruction: Reference any debug logs or traces generated during development
         owner: dev-agent
         editors: [dev-agent]
         
       - id: completion-notes
         title: Completion Notes List
+        template: |
+          - Briefly note key completion details and issues encountered
         instruction: Notes about the completion of tasks and any issues encountered
         owner: dev-agent
         editors: [dev-agent]
         
       - id: file-list
         title: File List
+        template: |
+          - Added: path/to/file
+          - Modified: path/to/file
+          - Deleted: path/to/file
         instruction: List all files created, modified, or affected during story implementation
         owner: dev-agent
         editors: [dev-agent]
         
   - id: qa-results
     title: QA Results
+    template: |
+      ### Review Date: YYYY-MM-DD
+      
+      ### Reviewed By: Quinn (Senior Developer QA)
+      
+      ### Code Quality Assessment
+      
+      [Overall assessment]
+      
+      ### Refactoring Performed
+      
+      - File: path/to/file
+        - Change: summary
+        - Why: rationale
+        - How: improvement
+      
+      ### Compliance Check
+      - Coding Standards: ✓/✗ notes
+      - Project Structure: ✓/✗ notes
+      - Testing Strategy: ✓/✗ notes
+      - All ACs Met: ✓/✗ notes
+      
+      ### Improvements Checklist
+      - [ ] Item for dev to address
+      
+      ### Security Review
+      [notes]
+      
+      ### Performance Considerations
+      [notes]
+      
+      ### Final Status
+      [✓ Approved - Ready for Done] / [✗ Changes Required]
     instruction: Results from QA Agent QA review of the completed story implementation
     owner: qa-agent
     editors: [qa-agent]
