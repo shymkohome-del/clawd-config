@@ -37,8 +37,13 @@ void main() {
         'CANISTER_ID_PRICE_ORACLE': 'ddddd-dd',
       },
     );
-    // ensure cfg is used to satisfy analyzer
-    expect(ICPService.fromConfig(cfg), isA<ICPService>());
+    // ensure cfg is used to satisfy analyzer and actors construct
+    final service = ICPService.fromConfig(cfg);
+    expect(service, isA<ICPService>());
+    expect((service.marketActor as Map)['canisterId'], 'aaaaa-aa');
+    expect((service.userManagementActor as Map)['canisterId'], 'bbbbb-bb');
+    expect((service.atomicSwapActor as Map)['canisterId'], 'ccccc-cc');
+    expect((service.priceOracleActor as Map)['canisterId'], 'ddddd-dd');
     // We cannot inject the actor, so simulate by triggering the wrapper through a fake failure
     // by calling loginWithOAuth and expecting success (current stub), then verify mapping helper separately.
     expect(

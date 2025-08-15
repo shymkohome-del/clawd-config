@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:dio/dio.dart';
+
 /// Simple Result type for success/error returns.
 class Result<T, E> {
   final T? _ok;
@@ -22,24 +25,34 @@ class Unit {
   const Unit();
 }
 
+/// Domain-specific exceptions used for error mapping.
+class AuthInvalidCredentialsException implements Exception {}
+
+class OAuthDeniedException implements Exception {}
+
 /// Maps low-level exceptions to domain-level [AuthError] values.
 AuthError mapAuthExceptionToAuthError(Object error) {
-  // Network-like exceptions
-  final lower = error.toString().toLowerCase();
-  if (lower.contains('socket') ||
-      lower.contains('network') ||
-      lower.contains('timeout')) {
+  // Strong type checks first
+  if (error is AuthInvalidCredentialsException) {
+    return AuthError.invalidCredentials;
+  }
+  if (error is OAuthDeniedException) {
+    return AuthError.oauthDenied;
+  }
+  if (error is DioException || error is SocketException || error is HttpException) {
     return AuthError.network;
   }
 
-  // Common auth failure patterns
+  // Fallback to string-based heuristics
+  final lower = error.toString().toLowerCase();
+  if (lower.contains('socket') || lower.contains('network') || lower.contains('timeout')) {
+    return AuthError.network;
+  }
   if (lower.contains('invalid') && lower.contains('credential')) {
     return AuthError.invalidCredentials;
   }
-  if (lower.contains('oauth') &&
-      (lower.contains('denied') || lower.contains('cancel'))) {
+  if (lower.contains('oauth') && (lower.contains('denied') || lower.contains('cancel'))) {
     return AuthError.oauthDenied;
   }
-
   return AuthError.unknown;
 }
