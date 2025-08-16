@@ -23,13 +23,7 @@ class ICPService {
     final userMgmt = {'canisterId': config.canisterIdUserManagement};
     final atomicSwap = {'canisterId': config.canisterIdAtomicSwap};
     final priceOracle = {'canisterId': config.canisterIdPriceOracle};
-    return ICPService._(
-      config,
-      market,
-      userMgmt,
-      atomicSwap,
-      priceOracle,
-    );
+    return ICPService._(config, market, userMgmt, atomicSwap, priceOracle);
   }
 
   Map<String, String> get marketActor => _marketActor;
