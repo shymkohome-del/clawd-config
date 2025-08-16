@@ -10,7 +10,15 @@ jobs:
       ${{ github.event_name == 'pull_request' &&
           contains(github.event.pull_request.labels.*.name, 'qa-approved') &&
           github.event.pull_request.base.ref == 'develop' &&
-          startsWith(github.event.pull_request.head.ref, 'story/') }}
+          (
+            startsWith(github.event.pull_request.head.ref, 'story/') ||
+            startsWith(github.event.pull_request.head.ref, 'chore/') ||
+            startsWith(github.event.pull_request.head.ref, 'fix/') ||
+            startsWith(github.event.pull_request.head.ref, 'patch/') ||
+            startsWith(github.event.pull_request.head.ref, 'feat/') ||
+            startsWith(github.event.pull_request.head.ref, 'feature/') ||
+            startsWith(github.event.pull_request.head.ref, 'hotfix/')
+          ) }}
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
