@@ -10,11 +10,6 @@ on:
 jobs:
   pr-lint:
     runs-on: ubuntu-latest
-    if: >-
-      ${% raw %}{{{% endraw %}
-        (github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'story/') && github.event.pull_request.base.ref == 'develop')
-        || (github.event_name == 'push' && startsWith(github.ref_name, 'story/'))
-      ${% raw %}}}{% endraw %}
     steps:
       - name: Check branch when not a PR (push)
         if: ${{ github.event_name == 'push' }}
@@ -28,7 +23,7 @@ jobs:
             exit 1
           fi
       - name: Validate PR has story reference and branch naming (story/* -> develop only)
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'story/') && github.event.pull_request.base.ref == 'develop' }}
         shell: bash
         env:
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
