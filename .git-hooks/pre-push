@@ -17,8 +17,16 @@ if [[ "$CURRENT_BRANCH" =~ ^story/ ]]; then
 fi
 
 # Local quality gates for Flutter project
-APP_DIR="crypto_market/crypto_market"
-if [[ -d "$APP_DIR" ]]; then
+# Locate Flutter app directory (look for pubspec.yaml with flutter)
+APP_DIR=""
+for cand in "crypto_market/crypto_market" "." "crypto_market"; do
+  if [[ -f "$cand/pubspec.yaml" ]] && grep -q "^environment:" "$cand/pubspec.yaml" >/dev/null 2>&1; then
+    APP_DIR="$cand"
+    break
+  fi
+done
+
+if [[ -n "$APP_DIR" ]]; then
   pushd "$APP_DIR" >/dev/null
   echo "[pre-push] Running dart format check..."
   dart format --output=none --set-exit-if-changed .
@@ -30,7 +38,7 @@ if [[ -d "$APP_DIR" ]]; then
   flutter test --no-pub
   popd >/dev/null
 else
-  echo "[pre-push] WARN: App directory $APP_DIR not found; skipping Flutter gates."
+  echo "[pre-push] WARN: Could not locate Flutter app directory; skipping Flutter gates."
 fi
 
 echo "[pre-push] OK"
