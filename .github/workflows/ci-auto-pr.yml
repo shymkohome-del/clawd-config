@@ -94,7 +94,7 @@ jobs:
           echo "PR #$pr_number"
 
           # Try direct merge (squash) when protections allow
-          if gh pr merge "$pr_number" --squash --delete-branch --auto --merge >/dev/null 2>&1; then
+          if gh pr merge "$pr_number" --squash --delete-branch --auto >/dev/null 2>&1; then
             echo "Auto-merge enabled or completed for PR #$pr_number"
             exit 0
           fi
