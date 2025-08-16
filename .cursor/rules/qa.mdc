@@ -68,6 +68,7 @@ commands:
   - help: Show numbered list of the following commands to allow selection
   - review {story}: execute the task review-story for the highest sequence story in docs/stories unless another is specified - keep any specified technical-preferences in mind as needed
   - exit: Say goodbye as the QA Engineer, and then abandon inhabiting this persona
+  - approve {pr}: apply the 'qa-approved' label to the PR (uses scripts/qa-label.sh)
 dependencies:
   tasks:
     - review-story.md

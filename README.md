@@ -73,12 +73,41 @@ Open PRs from feature/fix/chore branches into `develop`. For release, open a PR 
 
 ## CI
 
-Workflow file: `.github/workflows/flutter-ci.yml` (name: Flutter CI). Triggers on PRs to `main` and runs:
+Workflow file: `.github/workflows/flutter-ci.yml` (name: Flutter CI). Triggers on PRs to `develop` and pushes to `story/*` and runs:
 
 - flutter pub get
 - flutter analyze --fatal-infos --fatal-warnings
 - dart format --output=none --set-exit-if-changed .
 - flutter test
+
+### Automated Story Flow
+
+Use `scripts/story-flow.sh` to automate the Dev ↔ QA flow.
+
+Examples:
+
+```bash
+# One-time: install hooks
+scripts/story-flow.sh init-hooks
+
+# Start a new story branch from latest develop
+scripts/story-flow.sh start 0.5 icp-service-layer-bootstrap
+
+# Optional: auto-rebase your story branch onto origin/develop every 5 minutes
+scripts/story-flow.sh watch-rebase 300 &
+
+# Create a PR to develop and request auto-merge (requires GitHub CLI `gh`)
+scripts/story-flow.sh open-pr
+
+# Stop watcher
+scripts/story-flow.sh stop-watch
+```
+
+Commit policy and quality gates are enforced via `.git-hooks` and CI workflows:
+- Commit messages on `story/*` must reference the story id (e.g., `story 0.5: ...`).
+- Pre-commit formats Dart code; pre-push runs format check, `flutter analyze`, and tests.
+- GitHub Actions run format/analyze/tests on PRs to `develop` and pushes to `story/*`.
+- Apply the `qa-approved` label on the PR to enable auto-merge (squash) when checks pass.
 
 Caching: Flutter SDK and pub packages (`~/.pub-cache`).
 

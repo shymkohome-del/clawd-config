@@ -1,0 +1,61 @@
+name: Auto Rebase Story PRs
+
+on:
+  push:
+    branches: [ develop ]
+  schedule:
+    - cron: '*/30 * * * *'
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: List open PRs from story/* to develop
+        id: list
+        uses: actions/github-script@v7
+        with:
+          result-encoding: string
+          script: |
+            const prs = await github.paginate(github.rest.pulls.list, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              base: 'develop'
+            });
+            const story = prs.filter(pr => pr.head.ref.startsWith('story/'));
+            return JSON.stringify(story.map(p => ({number: p.number, ref: p.head.ref})));
+      - name: Rebase each PR branch on develop
+        uses: actions/github-script@v7
+        env:
+          PRS_JSON: ${{ steps.list.outputs.result }}
+        with:
+          script: |
+            const exec = require('@actions/exec');
+            const raw = process.env.PRS_JSON || '';
+            if (!raw || raw.trim() === '') {
+              core.info('No story PRs to rebase.');
+              return;
+            }
+            const items = JSON.parse(raw || '[]');
+            for (const item of items) {
+              core.startGroup(`Rebase ${item.ref}`);
+              await exec.exec('git', ['fetch', 'origin', 'develop', item.ref]);
+              await exec.exec('git', ['checkout', item.ref]);
+              try {
+                await exec.exec('git', ['rebase', 'origin/develop']);
+                await exec.exec('git', ['push', '--force-with-lease', 'origin', item.ref]);
+                core.info(`Rebased ${item.ref}`);
+              } catch (e) {
+                core.warning(`Conflict rebasing ${item.ref}, please resolve manually.`);
+              }
+              core.endGroup();
+            }
+
+
