@@ -10,6 +10,11 @@ on:
 jobs:
   pr-lint:
     runs-on: ubuntu-latest
+    if: >-
+      ${% raw %}{{{% endraw %}
+        (github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'story/') && github.event.pull_request.base.ref == 'develop')
+        || (github.event_name == 'push' && startsWith(github.ref_name, 'story/'))
+      ${% raw %}}}{% endraw %}
     steps:
       - name: Check branch when not a PR (push)
         if: ${{ github.event_name == 'push' }}
@@ -23,17 +28,18 @@ jobs:
             exit 1
           fi
       - name: Validate PR has story reference and branch naming (story/* -> develop only)
-        if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'story/') && github.event.pull_request.base.ref == 'develop' }}
+        if: ${{ github.event_name == 'pull_request' }}
         shell: bash
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          TITLE: ${{ github.event.pull_request.title }}
+          BODY: ${{ github.event.pull_request.body }}
         run: |
           set -euo pipefail
-          HEAD_REF="${{ github.event.pull_request.head.ref }}"
-          TITLE="${{ github.event.pull_request.title }}"
-          BODY="${{ github.event.pull_request.body }}"
 
           echo "Branch: $HEAD_REF"
           echo "Title: $TITLE"
-          echo "Body length: ${#BODY}"
+          echo "Body length: ${#BODY:-0}"
 
           fail=0
 
@@ -44,7 +50,7 @@ jobs:
           fi
 
           # Case-insensitive check allowing separators: space, hyphen, slash, or colon
-          TEXT=$(echo "$TITLE $BODY" | tr '[:upper:]' '[:lower:]')
+          TEXT=$(printf '%s' "$TITLE $BODY" | tr '[:upper:]' '[:lower:]')
           if [[ ! "$TEXT" =~ story[[:space:]/:-]*[0-9]+(\.[0-9]+)* ]]; then
             echo "::error::PR title or body must include a story id reference (e.g., story 1.1, story-1.1, story/1.1, or story: 1.1)"
             fail=1
