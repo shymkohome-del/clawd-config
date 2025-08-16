@@ -3,6 +3,9 @@ name: Flutter CI
 on:
   pull_request:
     branches: [ "main", "develop" ]
+  push:
+    branches:
+      - 'story/**'
   workflow_dispatch:
 
 concurrency:
@@ -12,33 +15,30 @@ concurrency:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: crypto_market
-        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Set up Flutter (with cache)
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
-
       - name: Flutter version
-        run: flutter --version
-
+        working-directory: crypto_market/crypto_market
+        run: |
+          dart --version
+          flutter --version
       - name: Install dependencies
+        working-directory: crypto_market/crypto_market
         run: flutter pub get
-
       - name: Analyze (fail on infos and warnings)
+        working-directory: crypto_market/crypto_market
         run: flutter analyze --fatal-infos --fatal-warnings
-
       - name: Format check
+        working-directory: crypto_market/crypto_market
         run: dart format --output=none --set-exit-if-changed .
-
       - name: Run tests
+        working-directory: crypto_market/crypto_market
         run: flutter test --no-pub
 
 

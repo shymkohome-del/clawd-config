@@ -1,0 +1,26 @@
+name: QA Auto Merge
+
+on:
+  pull_request:
+    types: [labeled, unlabeled, edited, synchronize]
+
+jobs:
+  merge-when-approved:
+    if: >-
+      ${{ github.event_name == 'pull_request' &&
+          contains(github.event.pull_request.labels.*.name, 'qa-approved') &&
+          github.event.pull_request.base.ref == 'develop' &&
+          startsWith(github.event.pull_request.head.ref, 'story/') }}
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - name: Enable auto-merge (squash)
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ github.event.pull_request.number }}
+          merge-method: squash
+
+
