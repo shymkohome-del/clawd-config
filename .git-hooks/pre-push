@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Ensure we're inside the repo root
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo "[pre-push] branch: $CURRENT_BRANCH"
+
+# Enforce story branch naming for story work
+if [[ "$CURRENT_BRANCH" =~ ^story/ ]]; then
+  if [[ ! "$CURRENT_BRANCH" =~ ^story/[0-9]+(\.[0-9]+)*-[a-z0-9-]+$ ]]; then
+    echo "[pre-push] ERROR: Branch name must match story/<id>-<slug> (e.g., story/1.1-register-with-email-or-social)" >&2
+    exit 1
+  fi
+fi
+
+# Local quality gates for Flutter project
+APP_DIR="crypto_market/crypto_market"
+if [[ -d "$APP_DIR" ]]; then
+  pushd "$APP_DIR" >/dev/null
+  echo "[pre-push] Running dart format check..."
+  dart format --output=none --set-exit-if-changed .
+
+  echo "[pre-push] Running flutter analyze..."
+  flutter analyze --fatal-infos --fatal-warnings
+
+  echo "[pre-push] Running flutter tests..."
+  flutter test --no-pub
+  popd >/dev/null
+else
+  echo "[pre-push] WARN: App directory $APP_DIR not found; skipping Flutter gates."
+fi
+
+echo "[pre-push] OK"
+
+
