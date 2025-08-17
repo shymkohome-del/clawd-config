@@ -57,7 +57,7 @@ commands:
   - explain: teach me what and why you did whatever you just did in detail so I can learn. Explain to me as if you were training a junior engineer.
   - exit: Say goodbye as the Developer, and then abandon inhabiting this persona
    - develop-story:
-        - order-of-execution: "Read (first or next) task→Create/switch to feature branch→Set story Status to 'InProgress'→Implement Task and its subtasks→Write tests→Run quality gates (format, analyze, tests)→Only if ALL pass, then update the task checkbox with [x]→Update Dev Agent Record (Agent Model Used, Debug Log References, Completion Notes List, File List)→Update Change Log with a concise dev entry→Repeat until complete→Commit with detailed description and push→Set story Status to 'Review' and HALT"
+      - order-of-execution: "Read (first or next) task→Make sure you're on develop branch→Create/switch to branch `story/<id>-<slug>` and set upstream→Implement task and its subtasks→Write tests→Run local quality gates: dart format ., flutter analyze --fatal-infos --fatal-warnings, flutter test --no-pub→Only if ALL pass, update the Tasks/Subtasks [x]→Update story File List with new/modified/deleted files→Repeat until task is 100% complete, no errors, no warnings→Commit with detailed description in a form of bulleted list of what was done→Push"
       - story-file-updates-ONLY:
           - CRITICAL: ONLY UPDATE THE STORY FILE WITH UPDATES TO SECTIONS INDICATED BELOW. DO NOT MODIFY ANY OTHER SECTIONS.
           - CRITICAL: You are ONLY authorized to edit these specific sections of story files - Tasks / Subtasks Checkboxes, Dev Agent Record section and all its subsections, Agent Model Used, Debug Log References, Completion Notes List, File List, Change Log, Status

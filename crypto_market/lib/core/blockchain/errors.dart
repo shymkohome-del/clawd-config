@@ -39,19 +39,24 @@ AuthError mapAuthExceptionToAuthError(Object error) {
   if (error is OAuthDeniedException) {
     return AuthError.oauthDenied;
   }
-  if (error is DioException || error is SocketException || error is HttpException) {
+  if (error is DioException ||
+      error is SocketException ||
+      error is HttpException) {
     return AuthError.network;
   }
 
   // Fallback to string-based heuristics
   final lower = error.toString().toLowerCase();
-  if (lower.contains('socket') || lower.contains('network') || lower.contains('timeout')) {
+  if (lower.contains('socket') ||
+      lower.contains('network') ||
+      lower.contains('timeout')) {
     return AuthError.network;
   }
   if (lower.contains('invalid') && lower.contains('credential')) {
     return AuthError.invalidCredentials;
   }
-  if (lower.contains('oauth') && (lower.contains('denied') || lower.contains('cancel'))) {
+  if (lower.contains('oauth') &&
+      (lower.contains('denied') || lower.contains('cancel'))) {
     return AuthError.oauthDenied;
   }
   return AuthError.unknown;

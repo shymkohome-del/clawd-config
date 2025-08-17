@@ -1,0 +1,98 @@
+name: Auto PR and Auto-merge on QA Done
+
+on:
+  push:
+    branches:
+      - 'story/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  open-pr-and-automerge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Show gh version
+        shell: bash
+        run: |
+          gh --version || true
+
+      - name: Derive story id and verify QA Done
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          BRANCH="${GITHUB_REF_NAME}"
+          if [[ ! "$BRANCH" =~ ^story/([0-9]+(\.[0-9]+)*)- ]]; then
+            echo "Not a story branch: $BRANCH"
+            echo "qa_done=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          STORY_ID="${BASH_REMATCH[1]}"
+          STORY_FILE=$(ls docs/stories/${STORY_ID}.*.md 2>/dev/null | head -n1 || true)
+          if [[ -z "${STORY_FILE:-}" ]]; then
+            echo "No story file for id $STORY_ID"
+            echo "qa_done=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          STATUS_LINE=$(grep -iE '^Status:' "$STORY_FILE" || true)
+          if echo "$STATUS_LINE" | grep -qi 'Done'; then
+            echo "qa_done=true" >> "$GITHUB_OUTPUT"
+            echo "story_id=$STORY_ID" >> "$GITHUB_OUTPUT"
+            echo "story_file=$STORY_FILE" >> "$GITHUB_OUTPUT"
+          else
+            echo "qa_done=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ensure PR exists from story branch to develop
+        if: steps.meta.outputs.qa_done == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          BRANCH="${GITHUB_REF_NAME}"
+          STORY_ID="${{ steps.meta.outputs.story_id }}"
+          STORY_FILE="${{ steps.meta.outputs.story_file }}"
+          if gh pr view --head "$BRANCH" --json number >/dev/null 2>&1; then
+            echo "PR already exists for $BRANCH"
+          else
+            TITLE="Story ${STORY_ID}: QA Done — auto PR to develop"
+            BODY=$(cat << 'EOF'
+This PR was auto-created after QA marked Status: Done in the story file.
+
+Merge strategy: squash; delete source branch on merge.
+EOF
+)
+            # Append explicit story reference to satisfy PR lint rules
+            BODY="$BODY\n\nstory ${STORY_ID}\n\nchanged: \`${STORY_FILE}\`"
+            gh pr create --base develop --head "$BRANCH" --title "$TITLE" --body "$BODY"
+          fi
+
+      - name: Enable auto-merge (squash) and delete branch on merge
+        if: steps.meta.outputs.qa_done == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          BRANCH="${GITHUB_REF_NAME}"
+          PR_NUMBER=$(gh pr view --head "$BRANCH" --json number -q .number)
+          # --auto schedules merge when required checks are green
+          gh pr merge "$PR_NUMBER" --auto --squash --delete-branch || {
+            echo "Auto-merge enable failed (possibly disabled on repo). Leaving PR open."
+            exit 0
+          }
+
+
