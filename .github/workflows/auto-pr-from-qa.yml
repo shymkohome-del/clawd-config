@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - 'story/**'
+      - 'feature/**'
+      - 'fix/**'
+      - 'chore/**'
+      - 'patch/**'
   workflow_dispatch:
 
 permissions:
@@ -28,31 +32,38 @@ jobs:
         run: |
           gh --version || true
 
-      - name: Derive story id and verify QA Done
+      - name: Derive branch meta and verify QA Done (if story branch)
         id: meta
         shell: bash
         run: |
           set -euo pipefail
           BRANCH="${GITHUB_REF_NAME}"
-          if [[ ! "$BRANCH" =~ ^story/([0-9]+(\.[0-9]+)*)- ]]; then
-            echo "Not a story branch: $BRANCH"
-            echo "qa_done=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          STORY_ID="${BASH_REMATCH[1]}"
-          STORY_FILE=$(ls docs/stories/${STORY_ID}.*.md 2>/dev/null | head -n1 || true)
-          if [[ -z "${STORY_FILE:-}" ]]; then
-            echo "No story file for id $STORY_ID"
-            echo "qa_done=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          STATUS_LINE=$(grep -iE '^Status:' "$STORY_FILE" || true)
-          if echo "$STATUS_LINE" | grep -qi 'Done'; then
+          echo "branch_name=$BRANCH" >> "$GITHUB_OUTPUT"
+          if [[ "$BRANCH" =~ ^story/([0-9]+(\.[0-9]+)*)- ]]; then
+            STORY_ID="${BASH_REMATCH[1]}"
+            STORY_FILE=$(ls docs/stories/${STORY_ID}.*.md 2>/dev/null | head -n1 || true)
+            if [[ -z "${STORY_FILE:-}" ]]; then
+              echo "qa_done=false" >> "$GITHUB_OUTPUT"
+              echo "reason=story-file-missing" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            STATUS_LINE=$(grep -iE '^Status:' "$STORY_FILE" || true)
+            if echo "$STATUS_LINE" | grep -qi 'Done'; then
+              echo "qa_done=true" >> "$GITHUB_OUTPUT"
+              echo "story_id=$STORY_ID" >> "$GITHUB_OUTPUT"
+              echo "story_file=$STORY_FILE" >> "$GITHUB_OUTPUT"
+            else
+              echo "qa_done=false" >> "$GITHUB_OUTPUT"
+              echo "reason=status-not-done" >> "$GITHUB_OUTPUT"
+            fi
+          elif [[ "$BRANCH" =~ ^(feature|fix|chore|patch)/ ]]; then
+            # Non-story branches: proceed unconditionally; CI gates will enforce quality
             echo "qa_done=true" >> "$GITHUB_OUTPUT"
-            echo "story_id=$STORY_ID" >> "$GITHUB_OUTPUT"
-            echo "story_file=$STORY_FILE" >> "$GITHUB_OUTPUT"
+            echo "story_id=" >> "$GITHUB_OUTPUT"
+            echo "story_file=" >> "$GITHUB_OUTPUT"
           else
             echo "qa_done=false" >> "$GITHUB_OUTPUT"
+            echo "reason=unsupported-branch" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Ensure PR exists from story branch to develop
@@ -68,15 +79,24 @@ jobs:
           if gh pr view --head "$BRANCH" --json number >/dev/null 2>&1; then
             echo "PR already exists for $BRANCH"
           else
-            TITLE="Story ${STORY_ID}: QA Done — auto PR to develop"
-            BODY=$(cat << 'EOF'
+            if [[ -n "$STORY_ID" ]]; then
+              TITLE="Story ${STORY_ID}: QA Done — auto PR to develop"
+              BODY=$(cat << 'EOF'
 This PR was auto-created after QA marked Status: Done in the story file.
 
 Merge strategy: squash; delete source branch on merge.
 EOF
 )
-            # Append explicit story reference to satisfy PR lint rules
-            BODY="$BODY\n\nstory ${STORY_ID}\n\nchanged: \`${STORY_FILE}\`"
+              BODY="$BODY\n\nstory ${STORY_ID}\n\nchanged: \`${STORY_FILE}\`"
+            else
+              TITLE="Auto PR to develop for $BRANCH"
+              BODY=$(cat << 'EOF'
+This PR was auto-created after changes were pushed to this branch.
+
+Merge strategy: squash; delete source branch on merge.
+EOF
+)
+            fi
             gh pr create --base develop --head "$BRANCH" --title "$TITLE" --body "$BODY"
           fi
 
