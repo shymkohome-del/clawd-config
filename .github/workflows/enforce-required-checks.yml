@@ -1,0 +1,125 @@
+name: Enforce Required Checks (Workflow Lint)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/workflow-lint.yml"
+      - ".github/workflows/enforce-required-checks.yml"
+      - ".github/workflows/auto-pr-from-qa.yml"
+  schedule:
+    - cron: "0 6 * * 1" # Weekly on Mondays 06:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  enforce:
+    runs-on: ubuntu-latest
+    env:
+      OWNER: ${{ github.repository_owner }}
+      REPO: ${{ github.event.repository.name || github.repository }}
+      CHECK_NAME: Workflow Lint
+    steps:
+      - name: Show context
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Repo: $GITHUB_REPOSITORY"
+          echo "Owner: $OWNER"
+          echo "Check name: $CHECK_NAME"
+
+      - name: Verify admin token presence
+        id: token
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${{ secrets.REPO_ADMIN_TOKEN || '' }}" ]]; then
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+            echo "No REPO_ADMIN_TOKEN secret present. Will skip enforcement and only emit guidance." 
+          else
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Emit guidance when token missing
+        if: steps.token.outputs.has_token == 'false'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat <<'EOF'
+Required check enforcement is automated but needs a repository admin token once per repo.
+
+Action (one-time by repo admin):
+- Create a fine-grained PAT with Repository administration: Read and write
+- Add it as repo secret: REPO_ADMIN_TOKEN
+- Re-run this workflow (workflow_dispatch)
+
+This will configure branch protection to require the "Workflow Lint" status check on main/develop.
+EOF
+
+      - name: Enforce required check for branches
+        if: steps.token.outputs.has_token == 'true'
+        env:
+          API: https://api.github.com
+          TOKEN: ${{ secrets.REPO_ADMIN_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Resolve repo name if github.event.repository.name is unavailable (e.g., for workflow_run)
+          if [[ "$REPO" == */* ]]; then
+            REPO_NAME="${REPO#*/}"
+          else
+            REPO_NAME="$REPO"
+          fi
+
+          enforce_for_branch() {
+            local BRANCH="$1"
+            echo "\n>>> Enforcing required checks on branch: $BRANCH"
+
+            # Fetch existing protection (if any)
+            PROTECTION=$(curl -sS -H "authorization: Bearer ${TOKEN}" -H "accept: application/vnd.github+json" \
+              "$API/repos/$OWNER/$REPO_NAME/branches/$BRANCH/protection" || true)
+
+            # Extract current contexts if present; default to empty array
+            CURRENT_CONTEXTS=$(printf '%s' "$PROTECTION" | jq -r '.required_status_checks.contexts // []')
+
+            # Merge contexts with required check name, unique
+            UPDATED_CONTEXTS=$(jq -nc --arg name "$CHECK_NAME" --argjson ctxs "$CURRENT_CONTEXTS" '
+              ($ctxs + [$name]) | unique')
+
+            # Build payload: preserve strict=true, set contexts; keep other settings permissive
+            PAYLOAD=$(jq -nc --argjson contexts "$UPDATED_CONTEXTS" '{
+              required_status_checks: { strict: true, contexts: $contexts },
+              enforce_admins: true,
+              required_pull_request_reviews: null,
+              restrictions: null
+            }')
+
+            # PUT protection
+            RESP=$(curl -sS -X PUT -H "authorization: Bearer ${TOKEN}" -H "accept: application/vnd.github+json" \
+              -H "content-type: application/json" -d "$PAYLOAD" \
+              "$API/repos/$OWNER/$REPO_NAME/branches/$BRANCH/protection")
+
+            echo "$RESP" | jq '.' || true
+
+            # Verify
+            VERIFIED=$(printf '%s' "$RESP" | jq --arg name "$CHECK_NAME" -e '.required_status_checks.contexts | index($name) != null' && echo ok || echo fail)
+            if [[ "$VERIFIED" != "ok" ]]; then
+              echo "Failed to verify required check configuration for $BRANCH" >&2
+              exit 1
+            fi
+            echo "✓ Required check '$CHECK_NAME' enforced on $BRANCH"
+          }
+
+          enforce_for_branch main || true
+          enforce_for_branch develop || true
+
+      - name: Summary
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Enforcement job finished. See logs above for branch results."
+
+
