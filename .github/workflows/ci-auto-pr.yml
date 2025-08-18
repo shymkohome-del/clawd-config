@@ -35,19 +35,19 @@ jobs:
           dart --version
 
       - name: Pub get
-        working-directory: crypto_market/crypto_market
+        working-directory: crypto_market
         run: flutter pub get
 
       - name: Format check
-        working-directory: crypto_market/crypto_market
+        working-directory: crypto_market
         run: dart format --output=none --set-exit-if-changed .
 
       - name: Analyze (fail on infos/warnings)
-        working-directory: crypto_market/crypto_market
+        working-directory: crypto_market
         run: flutter analyze --fatal-infos --fatal-warnings
 
       - name: Tests
-        working-directory: crypto_market/crypto_market
+        working-directory: crypto_market
         run: flutter test --no-pub
 
       - name: Create/Update PR to develop on success
