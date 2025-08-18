@@ -28,7 +28,12 @@ jobs:
         with:
           fetch-depth: 0
       - name: actionlint
-        uses: rhysd/actionlint@v1
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash \
+            | bash -s -- -b ~/.local/bin v1.7.1
+          ~/.local/bin/actionlint -color never
       - name: Install yamllint (pinned)
         run: |
           set -euo pipefail
@@ -37,6 +42,29 @@ jobs:
         run: |
           set -euo pipefail
           ~/.local/bin/yamllint --strict .github/workflows
+
+  flags-note:
+    needs: [workflow-lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Note: AUTO_PR_ENABLED=false"
+        if: ${{ vars.AUTO_PR_ENABLED == 'false' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "AUTO_PR_ENABLED=false: Auto PR creation and follow-up merge steps are disabled by repo variable."
+      - name: "Note: AUTO_MERGE_ENABLED=false"
+        if: ${{ vars.AUTO_MERGE_ENABLED == 'false' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "AUTO_MERGE_ENABLED=false: Auto-merge enable step is disabled by repo variable."
+      - name: "Note: AUTO_APPROVE_ENABLED=false"
+        if: ${{ vars.AUTO_APPROVE_ENABLED == 'false' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "AUTO_APPROVE_ENABLED=false: Bot auto-approval step is disabled by repo variable."
 
   open-pr-and-automerge:
     needs: [workflow-lint]
@@ -51,6 +79,7 @@ jobs:
       - name: Show environment
         shell: bash
         run: |
+          set -euo pipefail
           echo "Repo: $GITHUB_REPOSITORY"
           echo "Branch: $GITHUB_REF_NAME"
 
@@ -224,7 +253,9 @@ jobs:
 
       - name: "Flags note: AUTO_MERGE_ENABLED=false"
         if: ${{ vars.AUTO_MERGE_ENABLED == 'false' }}
+        shell: bash
         run: |
+          set -euo pipefail
           echo "AUTO_MERGE_ENABLED=false: Auto-merge steps are currently disabled by repo variable."
 
       - name: Auto-approve PR (bot review)
