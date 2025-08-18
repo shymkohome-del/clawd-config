@@ -43,4 +43,15 @@ fi
 
 echo "[pre-push] OK"
 
+# Optional: workflow YAML lint (local) to catch issues before push
+if command -v actionlint >/dev/null 2>&1; then
+  echo "[pre-push] Running actionlint (YAML only) ..."
+  actionlint -shellcheck= || {
+    echo "[pre-push] actionlint failed" >&2
+    exit 1
+  }
+else
+  echo "[pre-push] Hint: install actionlint locally to lint workflows before push"
+fi
+
 

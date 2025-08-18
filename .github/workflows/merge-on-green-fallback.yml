@@ -29,17 +29,22 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
+          # Pass potentially untrusted expressions via env vars per actionlint guidance
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref || '' }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || '' }}
+          WR_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch || '' }}
+          WR_HEAD_SHA: ${{ github.event.workflow_run.head_sha || '' }}
         run: |
           set -euo pipefail
           echo "event_name=${EVENT_NAME}" >> "$GITHUB_OUTPUT"
           case "${EVENT_NAME}" in
             workflow_run)
-              BRANCH="${{ github.event.workflow_run.head_branch }}"
-              SHA="${{ github.event.workflow_run.head_sha }}"
+              BRANCH="${WR_HEAD_BRANCH}"
+              SHA="${WR_HEAD_SHA}"
               ;;
             pull_request)
-              BRANCH="${{ github.event.pull_request.head.ref }}"
-              SHA="${{ github.event.pull_request.head.sha }}"
+              BRANCH="${PR_HEAD_REF}"
+              SHA="${PR_HEAD_SHA}"
               ;;
             *)
               BRANCH="${GITHUB_REF_NAME:-}"
