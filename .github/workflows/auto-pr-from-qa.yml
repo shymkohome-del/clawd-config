@@ -81,26 +81,16 @@ jobs:
           else
             if [[ -n "$STORY_ID" ]]; then
               TITLE="Story ${STORY_ID}: QA Done — auto PR to develop"
-              BODY=$(cat << 'EOF'
-This PR was auto-created after QA marked Status: Done in the story file.
-
-Merge strategy: squash; delete source branch on merge.
-EOF
-)
+              BODY=$'This PR was auto-created after QA marked Status: Done in the story file.\n\nMerge strategy: squash; delete source branch on merge.'
               BODY="$BODY\n\nstory ${STORY_ID}\n\nchanged: \`${STORY_FILE}\`"
             else
               TITLE="Auto PR to develop for $BRANCH"
-              BODY=$(cat << 'EOF'
-This PR was auto-created after changes were pushed to this branch.
-
-Merge strategy: squash; delete source branch on merge.
-EOF
-)
+              BODY=$'This PR was auto-created after changes were pushed to this branch.\n\nMerge strategy: squash; delete source branch on merge.'
             fi
             gh pr create --base develop --head "$BRANCH" --title "$TITLE" --body "$BODY"
           fi
 
-      - name: Enable auto-merge (squash) and delete branch on merge
+      - name: "Enable auto-merge (squash) and delete branch on merge"
         if: steps.meta.outputs.qa_done == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
