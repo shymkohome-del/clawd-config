@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo "[pre-commit] branch: $CURRENT_BRANCH"
+
+# If on story branch, run formatter (write mode) to minimize CI churn
+if [[ "$CURRENT_BRANCH" =~ ^story/ ]]; then
+  APP_DIR="crypto_market/crypto_market"
+  if [[ -d "$APP_DIR" ]]; then
+    pushd "$APP_DIR" >/dev/null
+    echo "[pre-commit] Formatting Dart files..."
+    dart format -o write .
+    popd >/dev/null
+    # Re-stage all files to include formatter changes
+    git add -A
+  fi
+fi
+
+echo "[pre-commit] OK"
+
+

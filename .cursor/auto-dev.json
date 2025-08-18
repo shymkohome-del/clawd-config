@@ -1,0 +1,10 @@
+{
+  "enforceHooks": true,
+  "rebaseWatcher": true,
+  "rebaseIntervalSeconds": 1800,
+  "autoOpenPrOnReview": true,
+  "qaAutoLabelOnDone": true,
+  "qaApprovalLabel": "qa-approved"
+}
+
+

@@ -28,18 +28,19 @@ jobs:
               exit 1
             fi
           fi
-      - name: Validate PR has story reference and branch naming
-        if: ${{ github.event_name == 'pull_request' }}
+      - name: Validate PR has story reference and branch naming (story/* -> develop only)
+        if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'story/') && github.event.pull_request.base.ref == 'develop' }}
         shell: bash
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          TITLE: ${{ github.event.pull_request.title }}
+          BODY: ${{ github.event.pull_request.body }}
         run: |
           set -euo pipefail
-          HEAD_REF="${{ github.event.pull_request.head.ref }}"
-          TITLE="${{ github.event.pull_request.title }}"
-          BODY="${{ github.event.pull_request.body }}"
 
           echo "Branch: $HEAD_REF"
           echo "Title: $TITLE"
-          echo "Body length: ${#BODY}"
+          echo "Body length: ${#BODY:-0}"
 
           fail=0
 
@@ -51,18 +52,15 @@ jobs:
             fi
 
             # Case-insensitive check allowing separators: space, hyphen, slash, or colon
-            TEXT=$(echo "$TITLE $BODY" | tr '[:upper:]' '[:lower:]')
+            TEXT=$(printf '%s' "$TITLE $BODY" | tr '[:upper:]' '[:lower:]')
             if [[ ! "$TEXT" =~ story[[:space:]/:-]*[0-9]+(\.[0-9]+)* ]]; then
               echo "::error::PR title or body must include a story id reference (e.g., story 1.1, story-1.1, story/1.1, or story: 1.1)"
               fail=1
             fi
           fi
 
-          # Optional status nudge: if a single story file is touched, warn if status isn't set to an expected state
-          CHANGED_STORIES=$(jq -r '.pull_request | .number' <(echo "${{ toJson(github.event) }}") >/dev/null 2>&1; echo "")
-          # GitHub doesn't expose changed files in this context directly without additional API calls.
           # Keep lint simple; print reminder unconditionally.
-          echo "::notice::Reminder: Ensure the story's Status is updated: Dev → InProgress/Ready for Review; QA → Done after acceptance."
+          echo "::notice::Reminder: Ensure the story's Status is updated appropriately."
           exit $fail
 
 
