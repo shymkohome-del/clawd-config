@@ -1,0 +1,5 @@
+# Protect workflows and automation scripts
+.github/workflows/*  @Vatalion
+scripts/*            @Vatalion
+docs/stories/*       @Vatalion
+

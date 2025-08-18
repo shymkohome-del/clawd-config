@@ -179,4 +179,18 @@ jobs:
           curl -sS -X DELETE -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
             "${API}/repos/${OWNER}/${REPO}/git/refs/heads/${HEAD_REF}" || true
 
+      - name: Emit metrics summary
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PR_NUMBER="${{ steps.find_pr.outputs.pr_number || '' }}"
+          MERGED_NOTE="${{ steps.wait_checks.outputs.checks_ok == 'true' && 'merge-attempted' || 'merge-skipped' }}"
+          echo "### Merge-on-Green summary" >> $GITHUB_STEP_SUMMARY
+          echo "- PR: #${PR_NUMBER}" >> $GITHUB_STEP_SUMMARY
+          echo "- Checks green: ${{ steps.wait_checks.outputs.checks_ok }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Action: ${MERGED_NOTE}" >> $GITHUB_STEP_SUMMARY
+
 

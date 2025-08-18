@@ -15,6 +15,10 @@ jobs:
   pr-lint:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout (for optional local checks)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Check branch when not a PR (push)
         if: ${{ github.event_name == 'push' }}
         shell: bash
@@ -35,6 +39,7 @@ jobs:
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
           TITLE: ${{ github.event.pull_request.title }}
           BODY: ${{ github.event.pull_request.body }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
 
@@ -55,6 +60,22 @@ jobs:
             TEXT=$(printf '%s' "$TITLE $BODY" | tr '[:upper:]' '[:lower:]')
             if [[ ! "$TEXT" =~ story[[:space:]/:-]*[0-9]+(\.[0-9]+)* ]]; then
               echo "::error::PR title or body must include a story id reference (e.g., story 1.1, story-1.1, story/1.1, or story: 1.1)"
+              fail=1
+            fi
+          fi
+
+          # Verify corresponding story file exists for story/* branches
+          if [[ "$HEAD_REF" =~ ^story/([0-9]+(\.[0-9]+)*)- ]]; then
+            STORY_ID="${BASH_REMATCH[1]}"
+            OWNER="${GITHUB_REPOSITORY%%/*}"
+            REPO="${GITHUB_REPOSITORY#*/}"
+            API="https://api.github.com"
+            # List stories directory at the PR HEAD commit
+            CONTENTS=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+              "${API}/repos/${OWNER}/${REPO}/contents/docs/stories?ref=${{ github.event.pull_request.head.sha }}")
+            MATCH=$(echo "$CONTENTS" | jq -r --arg id "$STORY_ID" '.[] | select(.type=="file") | .name | select(startswith($id + "."))' | head -n1 || true)
+            if [[ -z "${MATCH:-}" ]]; then
+              echo "::error::Missing docs/stories/${STORY_ID}.*.md for branch ${HEAD_REF}"
               fail=1
             fi
           fi
