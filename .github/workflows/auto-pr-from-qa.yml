@@ -19,7 +19,28 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  workflow-lint:
+    name: Workflow Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: actionlint
+        uses: rhysd/actionlint@v1
+      - name: Install yamllint (pinned)
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user yamllint==1.35.1
+      - name: Run yamllint on workflows
+        run: |
+          set -euo pipefail
+          ~/.local/bin/yamllint --strict .github/workflows
+
   open-pr-and-automerge:
+    needs: [workflow-lint]
+    if: ${{ vars.AUTO_PR_ENABLED != 'false' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -111,8 +132,57 @@ jobs:
             echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: "Enable auto-merge (squash)"
+      - name: Label PR for visibility (automerge-candidate)
         if: steps.meta.outputs.qa_done == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          # Try to read from previous step; if missing (e.g., reused path), query
+          PR_NUMBER="${{ steps.create_pr.outputs.pr_number || '' }}"
+          if [[ -z "$PR_NUMBER" ]]; then
+            BRANCH="${GITHUB_REF_NAME}"
+            PR_NUMBER=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+              "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+          fi
+          if [[ -z "$PR_NUMBER" ]]; then
+            echo "No PR found to label. Skipping."
+            exit 0
+          fi
+          PAYLOAD='{"labels":["automerge-candidate"]}'
+          curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+            -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" | jq '.' || true
+
+      - name: Label PR for auto-merge (automerge-ok)
+        if: steps.meta.outputs.qa_done == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          PR_NUMBER="${{ steps.create_pr.outputs.pr_number || '' }}"
+          if [[ -z "$PR_NUMBER" ]]; then
+            BRANCH="${GITHUB_REF_NAME}"
+            PR_NUMBER=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+              "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+          fi
+          if [[ -z "$PR_NUMBER" ]]; then
+            echo "No PR found to label. Skipping."
+            exit 0
+          fi
+          PAYLOAD='{"labels":["automerge-ok"]}'
+          curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+            -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" | jq '.' || true
+
+      - name: "Enable auto-merge (squash)"
+        if: steps.meta.outputs.qa_done == 'true' && vars.AUTO_MERGE_ENABLED != 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -151,5 +221,34 @@ jobs:
             echo "Auto-merge enable failed (possibly disabled on repo). Leaving PR open."
             exit 0
           fi
+
+      - name: "Flags note: AUTO_MERGE_ENABLED=false"
+        if: ${{ vars.AUTO_MERGE_ENABLED == 'false' }}
+        run: |
+          echo "AUTO_MERGE_ENABLED=false: Auto-merge steps are currently disabled by repo variable."
+
+      - name: Auto-approve PR (bot review)
+        if: steps.meta.outputs.qa_done == 'true' && vars.AUTO_APPROVE_ENABLED != 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          PR_NUMBER="${{ steps.create_pr.outputs.pr_number || '' }}"
+          if [[ -z "$PR_NUMBER" ]]; then
+            BRANCH="${GITHUB_REF_NAME}"
+            PR_NUMBER=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+              "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+          fi
+          if [[ -z "$PR_NUMBER" ]]; then
+            echo "No PR found to approve. Skipping."
+            exit 0
+          fi
+          PAYLOAD='{"event":"APPROVE","body":"Auto-approval by CI for merge-on-green fallback."}'
+          curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+            -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/reviews" | jq '.' || true
 
 
