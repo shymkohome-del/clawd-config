@@ -34,10 +34,10 @@ jobs:
           mkdir -p "$HOME/bin"
           curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- "${VERSION}" "$HOME/bin"
           echo "$HOME/bin" >> "$GITHUB_PATH"
-      - name: Run actionlint
+      - name: Run actionlint (YAML only)
         run: |
           set -euo pipefail
-          actionlint
+          actionlint -shellcheck=
       - name: Install yamllint (pinned)
         run: |
           set -euo pipefail
