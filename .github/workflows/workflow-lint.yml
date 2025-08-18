@@ -23,7 +23,8 @@ jobs:
         run: |
           set -euo pipefail
           VERSION="1.7.1"
-          curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- -b "$HOME/bin" "v${VERSION}"
+          mkdir -p "$HOME/bin"
+          curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- "v${VERSION}" "$HOME/bin"
           echo "$HOME/bin" >> "$GITHUB_PATH"
       - name: Run actionlint
         run: |
