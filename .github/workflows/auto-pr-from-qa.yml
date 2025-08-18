@@ -213,9 +213,20 @@ jobs:
             exit 0
           fi
 
+          # Load PR details to apply gating by label/branch
+          PR_JSON=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}")
+          HEAD_BRANCH=$(echo "$PR_JSON" | jq -r '.head.ref')
+          LABELS_CSV=$(echo "$PR_JSON" | jq -r '[.labels[].name] | join(",")')
+          if [[ "$HEAD_BRANCH" =~ ^story/ ]]; then
+            if [[ ",${LABELS_CSV}," != *",automerge-ok,"* ]]; then
+              echo "Note: Skipping auto-merge enable for story branch due to missing 'automerge-ok' label."
+              exit 0
+            fi
+          fi
+
           # Get node_id for GraphQL auto-merge
-          NODE_ID=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
-            "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}" | jq -r '.node_id')
+          NODE_ID=$(echo "$PR_JSON" | jq -r '.node_id')
           if [[ -z "$NODE_ID" || "$NODE_ID" == "null" ]]; then
             echo "Failed to get PR node_id"
             exit 0
