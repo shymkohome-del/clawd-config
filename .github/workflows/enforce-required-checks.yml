@@ -73,9 +73,8 @@ jobs:
             REPO_NAME="$REPO"
           fi
 
-          # Parse required contexts JSON array
+          # Required contexts JSON array (as string env)
           REQUIRED_CONTEXTS_JSON='${REQUIRED_CONTEXTS}'
-          REQUIRED_CONTEXTS_ARRAY=$(printf '%s' "$REQUIRED_CONTEXTS_JSON" | jq -c '.[ ]')
 
           enforce_for_branch() {
             local BRANCH="$1"
@@ -109,7 +108,7 @@ jobs:
 
             # Verify all required contexts are present
             MISSING=$(printf '%s' "$RESP" | jq --argjson req "$REQUIRED_CONTEXTS_JSON" -e '
-              [ .required_status_checks.contexts[] ] as $have | [ $req[] | select( . as $r | ( $have | index($r) ) == null ) ]') || true
+              (.required_status_checks.contexts // []) as $have | [ $req[] | select( . as $r | ( $have | index($r) ) == null ) ]') || true
             if [[ "$MISSING" != "[]" ]]; then
               echo "Failed to verify required check configuration for $BRANCH. Missing contexts: $MISSING" >&2
               exit 1
