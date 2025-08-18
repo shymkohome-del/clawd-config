@@ -37,7 +37,7 @@ jobs:
       - name: Run actionlint
         run: |
           set -euo pipefail
-          actionlint -no-network -shellcheck=
+          actionlint
       - name: Install yamllint (pinned)
         run: |
           set -euo pipefail
