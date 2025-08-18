@@ -21,6 +21,8 @@ jobs:
   merge-on-green:
     if: ${{ vars.AUTO_MERGE_ENABLED != 'false' }}
     runs-on: ubuntu-latest
+    env:
+      CI_LOCAL: ${{ env.CI_LOCAL || '' }}
     steps:
       - name: Prepare context
         id: ctx
@@ -156,8 +158,8 @@ jobs:
           echo "Timeout waiting for checks to pass. Skipping merge."
           exit 0
 
-      - name: Merge PR (squash) and delete branch
-        if: steps.wait_checks.outputs.checks_ok == 'true'
+      - name: Merge PR (squash) and delete branch (skipped locally)
+        if: steps.wait_checks.outputs.checks_ok == 'true' && env.CI_LOCAL != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash

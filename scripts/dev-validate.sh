@@ -67,4 +67,19 @@ fi
 
 echo "[dev-validate] All local checks passed."
 
+# Optional: run workflows locally via act if installed
+if command -v act >/dev/null 2>&1; then
+  echo "[dev-validate] Running selected workflows locally with act (CI_LOCAL=true)"
+  export CI_LOCAL=true
+  # Minimal matrix: run lint and CI flows; skip network PR operations
+  act push -W .github/workflows/workflow-lint.yml -s GITHUB_TOKEN=dummy || exit 1
+  act push -W .github/workflows/flutter-ci.yml || exit 1
+  # Trigger open-pr job for branch detection, but API steps are gated by CI_LOCAL
+  act push -W .github/workflows/auto-pr-from-qa.yml || exit 1
+  act workflow_run -W .github/workflows/merge-on-green-fallback.yml || true
+  unset CI_LOCAL
+else
+  echo "[dev-validate] Hint: install 'act' (https://github.com/nektos/act) to run workflows locally."
+fi
+
 

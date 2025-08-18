@@ -51,6 +51,8 @@ jobs:
     needs: [workflow-lint]
     if: ${{ vars.AUTO_PR_ENABLED != 'false' }}
     runs-on: ubuntu-latest
+    env:
+      CI_LOCAL: ${{ env.CI_LOCAL || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -100,7 +102,7 @@ jobs:
 
       - name: Ensure PR exists from story branch to develop (REST API)
         id: create_pr
-        if: steps.meta.outputs.qa_done == 'true'
+        if: steps.meta.outputs.qa_done == 'true' && env.CI_LOCAL != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -143,7 +145,7 @@ jobs:
           fi
 
       - name: Label PR for visibility (automerge-candidate)
-        if: steps.meta.outputs.qa_done == 'true'
+        if: steps.meta.outputs.qa_done == 'true' && env.CI_LOCAL != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -168,7 +170,7 @@ jobs:
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" | jq '.' || true
 
       - name: Label PR for auto-merge (automerge-ok)
-        if: steps.meta.outputs.qa_done == 'true'
+        if: steps.meta.outputs.qa_done == 'true' && env.CI_LOCAL != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -192,7 +194,7 @@ jobs:
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" | jq '.' || true
 
       - name: "Enable auto-merge (squash)"
-        if: steps.meta.outputs.qa_done == 'true' && vars.AUTO_MERGE_ENABLED != 'false'
+        if: steps.meta.outputs.qa_done == 'true' && vars.AUTO_MERGE_ENABLED != 'false' && env.CI_LOCAL != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -251,7 +253,7 @@ jobs:
           echo "AUTO_MERGE_ENABLED=false: Auto-merge steps are currently disabled by repo variable."
 
       - name: Auto-approve PR (bot review)
-        if: steps.meta.outputs.qa_done == 'true' && vars.AUTO_APPROVE_ENABLED != 'false'
+        if: steps.meta.outputs.qa_done == 'true' && vars.AUTO_APPROVE_ENABLED != 'false' && env.CI_LOCAL != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
