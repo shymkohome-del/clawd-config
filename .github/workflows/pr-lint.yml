@@ -13,6 +13,9 @@ on:
 
 jobs:
   pr-lint:
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (for optional local checks)
