@@ -27,10 +27,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Show gh version
+      - name: Show environment
         shell: bash
         run: |
-          gh --version || true
+          echo "Repo: $GITHUB_REPOSITORY"
+          echo "Branch: $GITHUB_REF_NAME"
 
       - name: Derive branch meta and verify QA Done (if story branch)
         id: meta
@@ -66,7 +67,8 @@ jobs:
             echo "reason=unsupported-branch" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Ensure PR exists from story branch to develop
+      - name: Ensure PR exists from story branch to develop (REST API)
+        id: create_pr
         if: steps.meta.outputs.qa_done == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -76,8 +78,17 @@ jobs:
           BRANCH="${GITHUB_REF_NAME}"
           STORY_ID="${{ steps.meta.outputs.story_id }}"
           STORY_FILE="${{ steps.meta.outputs.story_file }}"
-          if gh pr view --head "$BRANCH" --json number >/dev/null 2>&1; then
-            echo "PR already exists for $BRANCH"
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+
+          # Check for existing open PR from this branch
+          EXISTING=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+
+          if [[ -n "${EXISTING}" ]]; then
+            echo "PR already exists: #${EXISTING}"
+            echo "pr_number=${EXISTING}" >> "$GITHUB_OUTPUT"
           else
             if [[ -n "$STORY_ID" ]]; then
               TITLE="Story ${STORY_ID}: QA Done — auto PR to develop"
@@ -87,22 +98,58 @@ jobs:
               TITLE="Auto PR to develop for $BRANCH"
               BODY=$'This PR was auto-created after changes were pushed to this branch.\n\nMerge strategy: squash; delete source branch on merge.'
             fi
-            gh pr create --base develop --head "$BRANCH" --title "$TITLE" --body "$BODY"
+
+            PAYLOAD=$(jq -cn --arg title "$TITLE" --arg head "$BRANCH" --arg base "develop" --arg body "$BODY" '{title:$title, head:$head, base:$base, body:$body}')
+            RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -d "$PAYLOAD" \
+              "${API}/repos/${OWNER}/${REPO}/pulls")
+            PR_NUMBER=$(printf '%s' "$RESP" | jq '.number')
+            if [[ -z "${PR_NUMBER}" || "${PR_NUMBER}" == "null" ]]; then
+              echo "Failed to create PR: $RESP" >&2
+              exit 1
+            fi
+            echo "Created PR: #${PR_NUMBER}"
+            echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: "Enable auto-merge (squash) and delete branch on merge"
+      - name: "Enable auto-merge (squash)"
         if: steps.meta.outputs.qa_done == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
-          BRANCH="${GITHUB_REF_NAME}"
-          PR_NUMBER=$(gh pr view --head "$BRANCH" --json number -q .number)
-          # --auto schedules merge when required checks are green
-          gh pr merge "$PR_NUMBER" --auto --squash --delete-branch || {
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          # Figure out PR number from previous step or by querying
+          PR_NUMBER="${{ steps.create_pr.outputs.pr_number || '' }}"
+          if [[ -z "$PR_NUMBER" ]]; then
+            BRANCH="${GITHUB_REF_NAME}"
+            PR_NUMBER=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+              "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+          fi
+          if [[ -z "$PR_NUMBER" ]]; then
+            echo "No PR found to enable auto-merge on. Exiting gracefully."
+            exit 0
+          fi
+
+          # Get node_id for GraphQL auto-merge
+          NODE_ID=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}" | jq -r '.node_id')
+          if [[ -z "$NODE_ID" || "$NODE_ID" == "null" ]]; then
+            echo "Failed to get PR node_id"
+            exit 0
+          fi
+
+          GQL=$'mutation EnableAutoMerge($pr: ID!) {\n  enablePullRequestAutoMerge(input: { pullRequestId: $pr, mergeMethod: SQUASH }) {\n    clientMutationId\n  }\n}'
+          VARIABLES=$(jq -cn --arg pr "$NODE_ID" '{pr:$pr}')
+          RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "content-type: application/json" \
+            -d "$(jq -cn --arg query "$GQL" --argjson variables "$VARIABLES" '{query:$query, variables:$variables}')" \
+            https://api.github.com/graphql)
+          echo "$RESP" | jq '.' || true
+          if echo "$RESP" | grep -q 'errors'; then
             echo "Auto-merge enable failed (possibly disabled on repo). Leaving PR open."
             exit 0
-          }
+          fi
 
 
