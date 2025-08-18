@@ -28,12 +28,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: actionlint
-        shell: bash
-        run: |
-          set -euo pipefail
-          curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash \
-            | bash -s -- -b ~/.local/bin v1.7.1
-          ~/.local/bin/actionlint -color never
+        uses: rhysd/actionlint@v1
       - name: Install yamllint (pinned)
         run: |
           set -euo pipefail
@@ -42,29 +37,6 @@ jobs:
         run: |
           set -euo pipefail
           ~/.local/bin/yamllint --strict .github/workflows
-
-  flags-note:
-    needs: [workflow-lint]
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Note: AUTO_PR_ENABLED=false"
-        if: ${{ vars.AUTO_PR_ENABLED == 'false' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "AUTO_PR_ENABLED=false: Auto PR creation and follow-up merge steps are disabled by repo variable."
-      - name: "Note: AUTO_MERGE_ENABLED=false"
-        if: ${{ vars.AUTO_MERGE_ENABLED == 'false' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "AUTO_MERGE_ENABLED=false: Auto-merge enable step is disabled by repo variable."
-      - name: "Note: AUTO_APPROVE_ENABLED=false"
-        if: ${{ vars.AUTO_APPROVE_ENABLED == 'false' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "AUTO_APPROVE_ENABLED=false: Bot auto-approval step is disabled by repo variable."
 
   open-pr-and-automerge:
     needs: [workflow-lint]
@@ -281,5 +253,17 @@ jobs:
           PAYLOAD='{"event":"APPROVE","body":"Auto-approval by CI for merge-on-green fallback."}'
           curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/reviews" | jq '.' || true
+
+
+  note-auto-pr-disabled:
+    needs: [workflow-lint]
+    if: ${{ vars.AUTO_PR_ENABLED == 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Flag note: AUTO_PR_ENABLED=false
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "AUTO_PR_ENABLED=false: Open PR and auto-merge steps are disabled by repo variable. No PR will be created or modified by this workflow."
 
 
