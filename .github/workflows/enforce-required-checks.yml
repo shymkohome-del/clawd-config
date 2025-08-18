@@ -19,7 +19,7 @@ jobs:
     env:
       OWNER: ${{ github.repository_owner }}
       REPO: ${{ github.event.repository.name || github.repository }}
-      CHECK_NAME: Workflow Lint
+      REQUIRED_CONTEXTS: '["Workflow Lint / lint","Auto PR and Auto-merge on QA Done / Workflow Lint"]'
     steps:
       - name: Show context
         shell: bash
@@ -27,7 +27,7 @@ jobs:
           set -euo pipefail
           echo "Repo: $GITHUB_REPOSITORY"
           echo "Owner: $OWNER"
-          echo "Check name: $CHECK_NAME"
+          echo "Required contexts: $REQUIRED_CONTEXTS"
 
       - name: Verify admin token presence
         id: token
@@ -53,9 +53,11 @@ jobs:
           echo "- Add it as repo secret: REPO_ADMIN_TOKEN"
           echo "- Re-run this workflow (workflow_dispatch)"
           echo
-          echo "This will configure branch protection to require the \"Workflow Lint\" status check on main/develop."
+          echo "This will configure branch protection to require these status checks on main/develop:"
+          echo "- Workflow Lint / lint"
+          echo "- Auto PR and Auto-merge on QA Done / Workflow Lint"
 
-      - name: Enforce required check for branches
+      - name: Enforce required checks for branches
         if: steps.token.outputs.has_token == 'true'
         env:
           API: https://api.github.com
@@ -71,6 +73,10 @@ jobs:
             REPO_NAME="$REPO"
           fi
 
+          # Parse required contexts JSON array
+          REQUIRED_CONTEXTS_JSON='${REQUIRED_CONTEXTS}'
+          REQUIRED_CONTEXTS_ARRAY=$(printf '%s' "$REQUIRED_CONTEXTS_JSON" | jq -c '.[ ]')
+
           enforce_for_branch() {
             local BRANCH="$1"
             echo "\n>>> Enforcing required checks on branch: $BRANCH"
@@ -82,9 +88,9 @@ jobs:
             # Extract current contexts if present; default to empty array
             CURRENT_CONTEXTS=$(printf '%s' "$PROTECTION" | jq -r '.required_status_checks.contexts // []')
 
-            # Merge contexts with required check name, unique
-            UPDATED_CONTEXTS=$(jq -nc --arg name "$CHECK_NAME" --argjson ctxs "$CURRENT_CONTEXTS" '
-              ($ctxs + [$name]) | unique')
+            # Merge contexts with all required contexts, unique
+            UPDATED_CONTEXTS=$(jq -nc --argjson ctxs "$CURRENT_CONTEXTS" --argjson req "$REQUIRED_CONTEXTS_JSON" '
+              ($ctxs + $req) | unique')
 
             # Build payload: preserve strict=true, set contexts; keep other settings permissive
             PAYLOAD=$(jq -nc --argjson contexts "$UPDATED_CONTEXTS" '{
@@ -101,13 +107,14 @@ jobs:
 
             echo "$RESP" | jq '.' || true
 
-            # Verify
-            VERIFIED=$(printf '%s' "$RESP" | jq --arg name "$CHECK_NAME" -e '.required_status_checks.contexts | index($name) != null' && echo ok || echo fail)
-            if [[ "$VERIFIED" != "ok" ]]; then
-              echo "Failed to verify required check configuration for $BRANCH" >&2
+            # Verify all required contexts are present
+            MISSING=$(printf '%s' "$RESP" | jq --argjson req "$REQUIRED_CONTEXTS_JSON" -e '
+              [ .required_status_checks.contexts[] ] as $have | [ $req[] | select( . as $r | ( $have | index($r) ) == null ) ]') || true
+            if [[ "$MISSING" != "[]" ]]; then
+              echo "Failed to verify required check configuration for $BRANCH. Missing contexts: $MISSING" >&2
               exit 1
             fi
-            echo "✓ Required check '$CHECK_NAME' enforced on $BRANCH"
+            echo "✓ Required contexts enforced on $BRANCH"
           }
 
           enforce_for_branch main || true
