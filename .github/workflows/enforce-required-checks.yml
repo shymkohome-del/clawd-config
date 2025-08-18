@@ -73,8 +73,8 @@ jobs:
             REPO_NAME="$REPO"
           fi
 
-          # Required contexts JSON array (as string env)
-          REQUIRED_CONTEXTS_JSON='${REQUIRED_CONTEXTS}'
+          # Required contexts JSON array from env (must be valid JSON)
+          REQUIRED_CONTEXTS_JSON="${REQUIRED_CONTEXTS}"
 
           enforce_for_branch() {
             local BRANCH="$1"
@@ -85,7 +85,7 @@ jobs:
               "$API/repos/$OWNER/$REPO_NAME/branches/$BRANCH/protection" || true)
 
             # Extract current contexts if present; default to empty array
-            CURRENT_CONTEXTS=$(printf '%s' "$PROTECTION" | jq -r '.required_status_checks.contexts // []')
+            CURRENT_CONTEXTS=$(printf '%s' "$PROTECTION" | jq -c '.required_status_checks.contexts // []')
 
             # Merge contexts with all required contexts, unique
             UPDATED_CONTEXTS=$(jq -nc --argjson ctxs "$CURRENT_CONTEXTS" --argjson req "$REQUIRED_CONTEXTS_JSON" '
