@@ -43,7 +43,7 @@ QA checklist (each cycle)
 
 - Execute tests against ACs and PR/branch
 - If pass:
-  - Append QA Results; set Status: Done
+  - Append QA Results; set Status: Done; Commit and Push the change on the same `story/<id>-<slug>` branch
 - If fail/partial:
   - Append QA Results; note brief reason(s) in Change Log; set Status: InProgress
 
@@ -51,7 +51,7 @@ PR / CI notes
 
 - Dev may create PR at Ready for Review per repo policy
 - CI should pass before QA approval/merge
-- After QA sets Done, proceed with merge as per standard process
+- After QA sets Done and pushes the story file update, the system will auto-create a PR from `story/<id>-<slug>` to `develop` and enable auto-merge (squash) once CI checks pass. If auto-merge is disabled on the repo, the PR remains open with checks passing for manual merge.
 
 Related checklists
 
