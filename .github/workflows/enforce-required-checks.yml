@@ -46,16 +46,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat <<'EOF'
-Required check enforcement is automated but needs a repository admin token once per repo.
-
-Action (one-time by repo admin):
-- Create a fine-grained PAT with Repository administration: Read and write
-- Add it as repo secret: REPO_ADMIN_TOKEN
-- Re-run this workflow (workflow_dispatch)
-
-This will configure branch protection to require the "Workflow Lint" status check on main/develop.
-EOF
+          echo "Required check enforcement is automated but needs a repository admin token once per repo."
+          echo
+          echo "Action (one-time by repo admin):"
+          echo "- Create a fine-grained PAT with Repository administration: Read and write"
+          echo "- Add it as repo secret: REPO_ADMIN_TOKEN"
+          echo "- Re-run this workflow (workflow_dispatch)"
+          echo
+          echo "This will configure branch protection to require the \"Workflow Lint\" status check on main/develop."
 
       - name: Enforce required check for branches
         if: steps.token.outputs.has_token == 'true'
