@@ -280,7 +280,7 @@ jobs:
     if: ${{ vars.AUTO_PR_ENABLED == 'false' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Flag note: AUTO_PR_ENABLED=false
+      - name: "Flag note: AUTO_PR_ENABLED=false"
         shell: bash
         run: |
           set -euo pipefail
