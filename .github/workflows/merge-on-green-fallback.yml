@@ -22,6 +22,10 @@ jobs:
     if: ${{ vars.AUTO_MERGE_ENABLED != 'false' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Prepare context
         id: ctx
         shell: bash
@@ -65,8 +69,11 @@ jobs:
           REPO="${GITHUB_REPOSITORY#*/}"
           BRANCH="${{ steps.ctx.outputs.branch }}"
           API="https://api.github.com"
-          PR_NUMBER=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
-            "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+          RAW=$(bash scripts/retry.sh 6 2 -- bash -lc \
+            'curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+             -w " HTTPSTATUS:%{http_code}" "'"${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open"'"')
+          BODY="${RAW% HTTPSTATUS:*}"
+          PR_NUMBER=$(printf '%s' "$BODY" | jq '.[0].number // empty')
           if [[ -z "${PR_NUMBER}" ]]; then
             echo "No open PR found for ${BRANCH}. Skipping."
             exit 0
@@ -84,8 +91,9 @@ jobs:
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
           PR_NUMBER="${{ steps.find_pr.outputs.pr_number }}"
-          PR=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
-               "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}")
+          PR=$(bash scripts/retry.sh 6 2 -- bash -lc \
+               'curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+                "'"${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}"'"')
           HEAD_BRANCH=$(echo "$PR" | jq -r '.head.ref')
           LABELS=$(echo "$PR" | jq -r '[.labels[].name] | join(",")')
           MERGEABLE_STATE=$(echo "$PR" | jq -r '.mergeable_state')
@@ -95,7 +103,6 @@ jobs:
           if [[ "$HEAD_BRANCH" =~ ^story/ ]]; then
             if [[ ",${LABELS}," != *",automerge-ok,"* ]]; then
               echo "Story branch without 'automerge-ok' label. Skipping."
-              echo "reason=automerge.label_missing" >> "$GITHUB_OUTPUT"
               exit 0
             fi
           fi
@@ -122,8 +129,10 @@ jobs:
           attempt=0; max_attempts=30
           while (( attempt < max_attempts )); do
             attempt=$((attempt+1))
-            RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
-              "${API}/repos/${OWNER}/${REPO}/commits/${SHA}/check-runs")
+            RAW=$(bash scripts/retry.sh 6 2 -- bash -lc \
+              'curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+               -w " HTTPSTATUS:%{http_code}" "'"${API}/repos/${OWNER}/${REPO}/commits/${SHA}/check-runs"'"')
+            RESP="${RAW% HTTPSTATUS:*}"
             # Build required checks set based on which candidate checks exist on this commit
             REQ_CHECKS=()
             for NAME in "${CANDIDATE_CHECKS[@]}"; do
@@ -134,7 +143,6 @@ jobs:
             if (( ${#REQ_CHECKS[@]} == 0 )); then
               echo "No matching check-runs found for this commit; proceeding as green by default."
               echo "checks_ok=true" >> "$GITHUB_OUTPUT"
-              echo "reason=checks.none_detected" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             ALL_OK=1
@@ -155,7 +163,6 @@ jobs:
             sleep ${sleep_secs}
           done
           echo "checks_ok=false" >> "$GITHUB_OUTPUT"
-          echo "reason=checks.timeout" >> "$GITHUB_OUTPUT"
           echo "Timeout waiting for checks to pass. Skipping merge."
           exit 0
 
@@ -175,22 +182,24 @@ jobs:
           API="https://api.github.com"
           PR_NUMBER="${{ steps.find_pr.outputs.pr_number }}"
           # Try merge
-          MERGE_RESP=$(curl -sS -X PUT -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
-            -d '{"merge_method":"squash"}' \
-            "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/merge")
+          MERGE_RESP=$(bash scripts/retry.sh 6 2 -- bash -lc \
+            'curl -sS -X PUT -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+             -d '{"merge_method":"squash"}' \
+             "'"${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/merge"'"')
           echo "$MERGE_RESP" | jq '.' || true
           if echo "$MERGE_RESP" | jq -e '.merged == true' >/dev/null; then
             echo "Merged PR #${PR_NUMBER} successfully."
           else
             echo "Merge did not occur (possibly already merged or not mergeable). Exiting gracefully."
-            echo "reason=merge.not_performed" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           # Attempt branch deletion (safe if protected)
-          HEAD_REF=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
-            "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}" | jq -r '.head.ref')
-          curl -sS -X DELETE -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
-            "${API}/repos/${OWNER}/${REPO}/git/refs/heads/${HEAD_REF}" || true
+          HEAD_REF=$(bash scripts/retry.sh 6 2 -- bash -lc \
+            'curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+             "'"${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}"'"' | jq -r '.head.ref')
+          bash scripts/retry.sh 6 2 -- bash -lc \
+            'curl -sS -X DELETE -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+             "'"${API}/repos/${OWNER}/${REPO}/git/refs/heads/${HEAD_REF}"'" || true'
 
       - name: Emit metrics summary
         if: always()
@@ -202,7 +211,6 @@ jobs:
           PR_NUMBER="${{ steps.find_pr.outputs.pr_number || '' }}"
           MERGED_NOTE="${{ steps.wait_checks.outputs.checks_ok == 'true' && 'merge-attempted' || 'merge-skipped' }}"
           echo "### Merge-on-Green summary" >> $GITHUB_STEP_SUMMARY
-          echo "- pr.number: #${PR_NUMBER}" >> $GITHUB_STEP_SUMMARY
-          echo "- checks.green: ${{ steps.wait_checks.outputs.checks_ok }}" >> $GITHUB_STEP_SUMMARY
-          echo "- action: ${MERGED_NOTE}" >> $GITHUB_STEP_SUMMARY
-          echo "- reason: ${{ steps.gate.outputs.reason || steps.wait_checks.outputs.reason || '' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- PR: #${PR_NUMBER}" >> $GITHUB_STEP_SUMMARY
+          echo "- Checks green: ${{ steps.wait_checks.outputs.checks_ok }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Action: ${MERGED_NOTE}" >> $GITHUB_STEP_SUMMARY
