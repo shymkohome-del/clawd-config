@@ -15,6 +15,7 @@ Roles and ownership
   - May set Status: InProgress, Ready for Review, Blocked, Decision Needed
   - Updates: Tasks/Subtasks checkboxes, Dev Agent Record (and subsections), File List, Change Log, Status (per above)
   - Never sets Status: Done
+  - For stories already marked Done: Dev must not implement or modify code. Dev may only append a verification note in the Change Log confirming tests/analysis pass, without changing Status or other sections.
 - QA
   - May set Status: Done (if all ACs pass) or InProgress (if any AC fails/partial)
   - Updates: QA Results, Change Log (brief reasons for fail/partial), Status (Done/InProgress)

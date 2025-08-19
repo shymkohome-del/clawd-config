@@ -51,8 +51,6 @@ jobs:
     needs: [workflow-lint]
     if: ${{ vars.AUTO_PR_ENABLED != 'false' }}
     runs-on: ubuntu-latest
-    env:
-      CI_LOCAL: ${{ env.CI_LOCAL || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -102,12 +100,16 @@ jobs:
 
       - name: Ensure PR exists from story branch to develop (REST API)
         id: create_pr
-        if: steps.meta.outputs.qa_done == 'true' && env.CI_LOCAL != 'true'
+        if: steps.meta.outputs.qa_done == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
+          if [[ "${CI_LOCAL:-}" == "true" ]]; then
+            echo "CI_LOCAL=true: Skipping PR query/create."
+            exit 0
+          fi
           BRANCH="${GITHUB_REF_NAME}"
           STORY_ID="${{ steps.meta.outputs.story_id }}"
           STORY_FILE="${{ steps.meta.outputs.story_file }}"
@@ -145,12 +147,16 @@ jobs:
           fi
 
       - name: Label PR for visibility (automerge-candidate)
-        if: steps.meta.outputs.qa_done == 'true' && env.CI_LOCAL != 'true'
+        if: steps.meta.outputs.qa_done == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
+          if [[ "${CI_LOCAL:-}" == "true" ]]; then
+            echo "CI_LOCAL=true: Skipping label application (automerge-candidate)."
+            exit 0
+          fi
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
@@ -170,12 +176,16 @@ jobs:
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" | jq '.' || true
 
       - name: Label PR for auto-merge (automerge-ok)
-        if: steps.meta.outputs.qa_done == 'true' && env.CI_LOCAL != 'true'
+        if: steps.meta.outputs.qa_done == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
+          if [[ "${CI_LOCAL:-}" == "true" ]]; then
+            echo "CI_LOCAL=true: Skipping label application (automerge-ok)."
+            exit 0
+          fi
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
@@ -194,12 +204,16 @@ jobs:
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" | jq '.' || true
 
       - name: "Enable auto-merge (squash)"
-        if: steps.meta.outputs.qa_done == 'true' && vars.AUTO_MERGE_ENABLED != 'false' && env.CI_LOCAL != 'true'
+        if: steps.meta.outputs.qa_done == 'true' && vars.AUTO_MERGE_ENABLED != 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
+          if [[ "${CI_LOCAL:-}" == "true" ]]; then
+            echo "CI_LOCAL=true: Skipping GraphQL auto-merge enable."
+            exit 0
+          fi
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
@@ -253,12 +267,16 @@ jobs:
           echo "AUTO_MERGE_ENABLED=false: Auto-merge steps are currently disabled by repo variable."
 
       - name: Auto-approve PR (bot review)
-        if: steps.meta.outputs.qa_done == 'true' && vars.AUTO_APPROVE_ENABLED != 'false' && env.CI_LOCAL != 'true'
+        if: steps.meta.outputs.qa_done == 'true' && vars.AUTO_APPROVE_ENABLED != 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
+          if [[ "${CI_LOCAL:-}" == "true" ]]; then
+            echo "CI_LOCAL=true: Skipping auto-approval."
+            exit 0
+          fi
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
@@ -275,8 +293,6 @@ jobs:
           PAYLOAD='{"event":"APPROVE","body":"Auto-approval by CI for merge-on-green fallback."}'
           curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/reviews" | jq '.' || true
-
-
   note-auto-pr-disabled:
     needs: [workflow-lint]
     if: ${{ vars.AUTO_PR_ENABLED == 'false' }}
@@ -287,5 +303,3 @@ jobs:
         run: |
           set -euo pipefail
           echo "AUTO_PR_ENABLED=false: Open PR and auto-merge steps are disabled by repo variable. No PR will be created or modified by this workflow."
-
-

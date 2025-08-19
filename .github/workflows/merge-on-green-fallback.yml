@@ -21,8 +21,6 @@ jobs:
   merge-on-green:
     if: ${{ vars.AUTO_MERGE_ENABLED != 'false' }}
     runs-on: ubuntu-latest
-    env:
-      CI_LOCAL: ${{ env.CI_LOCAL || '' }}
     steps:
       - name: Prepare context
         id: ctx
@@ -96,7 +94,7 @@ jobs:
           echo "mergeable_state=${MERGEABLE_STATE}" >> "$GITHUB_OUTPUT"
           if [[ "$HEAD_BRANCH" =~ ^story/ ]]; then
             if [[ ",${LABELS}," != *",automerge-ok,"* ]]; then
-              echo "Story branch without 'automerge-ok' label. Skipping." 
+              echo "Story branch without 'automerge-ok' label. Skipping."
               exit 0
             fi
           fi
@@ -159,12 +157,16 @@ jobs:
           exit 0
 
       - name: Merge PR (squash) and delete branch (skipped locally)
-        if: steps.wait_checks.outputs.checks_ok == 'true' && env.CI_LOCAL != 'true'
+        if: steps.wait_checks.outputs.checks_ok == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
+          if [[ "${CI_LOCAL:-}" == "true" ]]; then
+            echo "CI_LOCAL=true: Skipping REST merge."
+            exit 0
+          fi
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
@@ -199,5 +201,3 @@ jobs:
           echo "- PR: #${PR_NUMBER}" >> $GITHUB_STEP_SUMMARY
           echo "- Checks green: ${{ steps.wait_checks.outputs.checks_ok }}" >> $GITHUB_STEP_SUMMARY
           echo "- Action: ${MERGED_NOTE}" >> $GITHUB_STEP_SUMMARY
-
-

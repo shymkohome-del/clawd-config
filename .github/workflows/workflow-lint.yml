@@ -38,5 +38,3 @@ jobs:
         run: |
           set -euo pipefail
           ~/.local/bin/yamllint --strict .github/workflows
-
-

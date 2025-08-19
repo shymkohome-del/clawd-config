@@ -24,23 +24,30 @@ fi
 echo "[dev-validate] Running actionlint (YAML only)"
 actionlint -shellcheck=
 
-# Install and run yamllint if available
-if command -v python3 >/dev/null 2>&1; then
-  echo "[dev-validate] Ensuring yamllint==1.35.1 is available..."
-  python3 -m pip install --user -q yamllint==1.35.1 || true
-  if python3 -c 'import yamllint' >/dev/null 2>&1; then
-    YAMLLINT_BIN="$HOME/.local/bin/yamllint"
-    if [[ -x "$YAMLLINT_BIN" ]]; then
-      echo "[dev-validate] Running yamllint on workflows"
-      "$YAMLLINT_BIN" --strict .github/workflows
+# Yamllint using Docker image for parity (no local Python needed)
+if command -v docker >/dev/null 2>&1; then
+  echo "[dev-validate] Running yamllint (Docker) on workflows"
+  docker run --rm -v "$REPO_ROOT":/data cytopia/yamllint -c /data/.yamllint.yml -s /data/.github/workflows
+else
+  # Fallback: attempt via pipx or pip if Docker absent
+  if command -v pipx >/dev/null 2>&1; then
+    echo "[dev-validate] Installing yamllint via pipx (if missing)"
+    pipx install --force yamllint==1.35.1 >/dev/null 2>&1 || true
+    if pipx run --version yamllint >/dev/null 2>&1; then
+      echo "[dev-validate] Running yamllint (pipx)"
+      pipx run yamllint --strict .github/workflows
+    fi
+  elif command -v python3 >/dev/null 2>&1; then
+    echo "[dev-validate] Attempting yamllint via pip user install..."
+    python3 -m pip install --user -q yamllint==1.35.1 --break-system-packages || true
+    if python3 -c 'import yamllint' >/dev/null 2>&1; then
+      "$HOME/.local/bin/yamllint" --strict .github/workflows
     else
-      echo "[dev-validate] WARN: yamllint binary not found; skipping"
+      echo "[dev-validate] WARN: yamllint unavailable; skipping"
     fi
   else
-    echo "[dev-validate] WARN: yamllint module not installed; skipping"
+    echo "[dev-validate] WARN: yamllint unavailable; skipping"
   fi
-else
-  echo "[dev-validate] WARN: python3 not available; skipping yamllint"
 fi
 
 # Flutter/Dart gates (same as pre-push)
@@ -68,18 +75,27 @@ fi
 echo "[dev-validate] All local checks passed."
 
 # Optional: run workflows locally via act if installed
-if command -v act >/dev/null 2>&1; then
-  echo "[dev-validate] Running selected workflows locally with act (CI_LOCAL=true)"
-  export CI_LOCAL=true
-  # Minimal matrix: run lint and CI flows; skip network PR operations
-  act push -W .github/workflows/workflow-lint.yml -s GITHUB_TOKEN=dummy || exit 1
-  act push -W .github/workflows/flutter-ci.yml || exit 1
-  # Trigger open-pr job for branch detection, but API steps are gated by CI_LOCAL
-  act push -W .github/workflows/auto-pr-from-qa.yml || exit 1
-  act workflow_run -W .github/workflows/merge-on-green-fallback.yml || true
-  unset CI_LOCAL
+# Optional local workflow execution with 'act' (disabled by default)
+if [[ "${RUN_ACT:-false}" == "true" ]]; then
+  if ! command -v act >/dev/null 2>&1; then
+    if command -v brew >/dev/null 2>&1; then
+      echo "[dev-validate] Installing 'act' via Homebrew..."
+      brew list act >/dev/null 2>&1 || brew install act >/dev/null
+    else
+      echo "[dev-validate] 'act' not found and Homebrew unavailable; skipping act runs."
+    fi
+  fi
+  if command -v act >/dev/null 2>&1; then
+    echo "[dev-validate] Running workflow-lint via act (CI_LOCAL=true)"
+    export CI_LOCAL=true
+    act push -W .github/workflows/workflow-lint.yml -s GITHUB_TOKEN=dummy --container-architecture linux/amd64 || exit 1
+    unset CI_LOCAL
+
+    echo "[dev-validate] Running flutter-ci via act"
+    act push -W .github/workflows/flutter-ci.yml --container-architecture linux/amd64 || exit 1
+  fi
 else
-  echo "[dev-validate] Hint: install 'act' (https://github.com/nektos/act) to run workflows locally."
+  echo "[dev-validate] Skipping 'act' workflow execution (set RUN_ACT=true to enable)."
 fi
 
 

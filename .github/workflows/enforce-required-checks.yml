@@ -8,7 +8,7 @@ on:
       - ".github/workflows/enforce-required-checks.yml"
       - ".github/workflows/auto-pr-from-qa.yml"
   schedule:
-    - cron: "0 6 * * 1" # Weekly on Mondays 06:00 UTC
+    - cron: "0 6 * * 1"  # Weekly on Mondays 06:00 UTC
 
 permissions:
   contents: read
@@ -36,7 +36,7 @@ jobs:
           set -euo pipefail
           if [[ -z "${{ secrets.REPO_ADMIN_TOKEN || '' }}" ]]; then
             echo "has_token=false" >> "$GITHUB_OUTPUT"
-            echo "No REPO_ADMIN_TOKEN secret present. Will skip enforcement and only emit guidance." 
+            echo "No REPO_ADMIN_TOKEN secret present. Will skip enforcement and only emit guidance."
           else
             echo "has_token=true" >> "$GITHUB_OUTPUT"
           fi
@@ -125,5 +125,3 @@ jobs:
         run: |
           set -euo pipefail
           echo "Enforcement job finished. See logs above for branch results."
-
-
