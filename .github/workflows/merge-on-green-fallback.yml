@@ -95,6 +95,7 @@ jobs:
           if [[ "$HEAD_BRANCH" =~ ^story/ ]]; then
             if [[ ",${LABELS}," != *",automerge-ok,"* ]]; then
               echo "Story branch without 'automerge-ok' label. Skipping."
+              echo "reason=automerge.label_missing" >> "$GITHUB_OUTPUT"
               exit 0
             fi
           fi
@@ -133,6 +134,7 @@ jobs:
             if (( ${#REQ_CHECKS[@]} == 0 )); then
               echo "No matching check-runs found for this commit; proceeding as green by default."
               echo "checks_ok=true" >> "$GITHUB_OUTPUT"
+              echo "reason=checks.none_detected" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             ALL_OK=1
@@ -153,6 +155,7 @@ jobs:
             sleep ${sleep_secs}
           done
           echo "checks_ok=false" >> "$GITHUB_OUTPUT"
+          echo "reason=checks.timeout" >> "$GITHUB_OUTPUT"
           echo "Timeout waiting for checks to pass. Skipping merge."
           exit 0
 
@@ -180,6 +183,7 @@ jobs:
             echo "Merged PR #${PR_NUMBER} successfully."
           else
             echo "Merge did not occur (possibly already merged or not mergeable). Exiting gracefully."
+            echo "reason=merge.not_performed" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           # Attempt branch deletion (safe if protected)
@@ -198,6 +202,7 @@ jobs:
           PR_NUMBER="${{ steps.find_pr.outputs.pr_number || '' }}"
           MERGED_NOTE="${{ steps.wait_checks.outputs.checks_ok == 'true' && 'merge-attempted' || 'merge-skipped' }}"
           echo "### Merge-on-Green summary" >> $GITHUB_STEP_SUMMARY
-          echo "- PR: #${PR_NUMBER}" >> $GITHUB_STEP_SUMMARY
-          echo "- Checks green: ${{ steps.wait_checks.outputs.checks_ok }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Action: ${MERGED_NOTE}" >> $GITHUB_STEP_SUMMARY
+          echo "- pr.number: #${PR_NUMBER}" >> $GITHUB_STEP_SUMMARY
+          echo "- checks.green: ${{ steps.wait_checks.outputs.checks_ok }}" >> $GITHUB_STEP_SUMMARY
+          echo "- action: ${MERGED_NOTE}" >> $GITHUB_STEP_SUMMARY
+          echo "- reason: ${{ steps.gate.outputs.reason || steps.wait_checks.outputs.reason || '' }}" >> $GITHUB_STEP_SUMMARY
