@@ -135,11 +135,20 @@ jobs:
             fi
 
             PAYLOAD=$(jq -cn --arg title "$TITLE" --arg head "$BRANCH" --arg base "develop" --arg body "$BODY" '{title:$title, head:$head, base:$base, body:$body}')
-            RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -d "$PAYLOAD" \
+            # Capture response body and HTTP status for better diagnostics and non-fatal permission handling
+            RESP=$(curl -sS -w "\n%{http_code}" -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -d "$PAYLOAD" \
               "${API}/repos/${OWNER}/${REPO}/pulls")
-            PR_NUMBER=$(printf '%s' "$RESP" | jq '.number')
+            HTTP_CODE=$(echo "$RESP" | tail -n1)
+            RESP_BODY=$(echo "$RESP" | sed '$d')
+            if [[ "$HTTP_CODE" == "403" ]]; then
+              MSG=$(printf '%s' "$RESP_BODY" | jq -r '.message // empty')
+              echo "Permission denied (HTTP 403) creating PR: ${MSG}. Skipping create; downstream steps will no-op."
+              echo "reason=insufficient-permissions" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            PR_NUMBER=$(printf '%s' "$RESP_BODY" | jq '.number')
             if [[ -z "${PR_NUMBER}" || "${PR_NUMBER}" == "null" ]]; then
-              echo "Failed to create PR: $RESP" >&2
+              echo "Failed to create PR (HTTP ${HTTP_CODE}): $RESP_BODY" >&2
               exit 1
             fi
             echo "Created PR: #${PR_NUMBER}"
