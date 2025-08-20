@@ -100,16 +100,12 @@ jobs:
           fi
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
-          GQL=$(cat <<'GQL'
-query RepoSettings($owner:String!,$name:String!){
-  repository(owner:$owner,name:$name){
-    autoMergeAllowed
-    squashMergeAllowed
-    branchProtectionRules(first:50){ nodes{ pattern requiredStatusCheckContexts } }
-  }
-}
-GQL
-          )
+          GQL='query RepoSettings($owner:String!,$name:String!){'
+          GQL+=$'\n  repository(owner:$owner,name:$name){\n'
+          GQL+=$'    autoMergeAllowed\n'
+          GQL+=$'    squashMergeAllowed\n'
+          GQL+=$'    branchProtectionRules(first:50){ nodes{ pattern requiredStatusCheckContexts } }\n'
+          GQL+=$'  }\n}'
           VARIABLES=$(jq -cn --arg owner "$OWNER" --arg name "$REPO" '{owner:$owner,name:$name}')
           RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "content-type: application/json" \
             -d "$(jq -cn --arg query "$GQL" --argjson variables "$VARIABLES" '{query:$query,variables:$variables}')" \
@@ -283,14 +279,8 @@ GQL
             echo "Failed to get PR node_id"
             exit 0
           fi
-          GQL=$(cat <<'GQL'
-mutation EnableAutoMerge($pr: ID!) {
-  enablePullRequestAutoMerge(input: { pullRequestId: $pr, mergeMethod: SQUASH }) {
-    clientMutationId
-  }
-}
-GQL
-          )
+          GQL='mutation EnableAutoMerge($pr: ID!) {'
+          GQL+=$'\n  enablePullRequestAutoMerge(input: { pullRequestId: $pr, mergeMethod: SQUASH }) {\n    clientMutationId\n  }\n}'
           VARIABLES=$(jq -cn --arg pr "$NODE_ID" '{pr:$pr}')
           RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "content-type: application/json" \
             -d "$(jq -cn --arg query "$GQL" --argjson variables "$VARIABLES" '{query:$query, variables:$variables}')" \
@@ -349,4 +339,3 @@ GQL
           PAYLOAD='{"event":"APPROVE","body":"Auto-approval by reusable workflow."}'
           curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/reviews" | jq '.' || true
-
