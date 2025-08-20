@@ -47,29 +47,8 @@ jobs:
           set -euo pipefail
           ~/.local/bin/yamllint --strict .github/workflows
 
-  preflight-parse:
-    name: Preflight Parse (local, no network)
-    needs: [workflow-lint]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Preflight branch/story parse
-        id: pre
-        shell: bash
-        run: |
-          set -euo pipefail
-          BRANCH="${GITHUB_REF_NAME}"
-          chmod +x scripts/preflight-parse.sh || true
-          OUT=$(scripts/preflight-parse.sh "$BRANCH" || true)
-          echo "$OUT"
-          echo "qa_done=$(echo "$OUT" | sed -n 's/^qa_done=\(.*\)$/\1/p')" >> "$GITHUB_OUTPUT"
-          echo "reason=$(echo "$OUT" | sed -n 's/^reason=\(.*\)$/\1/p')" >> "$GITHUB_OUTPUT"
-
   open-pr-and-automerge-reusable:
-    needs: [workflow-lint, preflight-parse]
+    needs: [workflow-lint]
     if: ${{ vars.AUTO_PR_ENABLED != 'false' }}
     uses: ./.github/workflows/reusable-auto-pr.yml
     with:

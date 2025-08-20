@@ -24,72 +24,47 @@ fi
 echo "[dev-validate] Running actionlint (YAML only)"
 actionlint -shellcheck=
 
-# Yamllint using Docker image when daemon is available; otherwise local fallback
+# Yamllint using Docker image for parity (no local Python needed) with graceful fallback
+YAMLLINT_OK=false
 if command -v docker >/dev/null 2>&1; then
-  if docker info >/dev/null 2>&1; then
-    echo "[dev-validate] Running yamllint (Docker) on workflows"
-    docker run --rm -v "$REPO_ROOT":/data cytopia/yamllint -c /data/.yamllint.yml -s /data/.github/workflows
+  echo "[dev-validate] Running yamllint (Docker) on workflows"
+  if docker run --rm -v "$REPO_ROOT":/data cytopia/yamllint -c /data/.yamllint.yml -s /data/.github/workflows; then
+    YAMLLINT_OK=true
   else
-    echo "[dev-validate] WARN: Docker daemon unavailable; falling back to local yamllint"
-    if command -v pipx >/dev/null 2>&1; then
-      echo "[dev-validate] Installing yamllint via pipx (if missing)"
-      pipx install --force yamllint==1.35.1 >/dev/null 2>&1 || true
-      if pipx run --version yamllint >/dev/null 2>&1; then
-        echo "[dev-validate] Running yamllint (pipx)"
-        pipx run yamllint --strict .github/workflows
-      fi
-    elif command -v python3 >/dev/null 2>&1; then
-      echo "[dev-validate] Attempting yamllint via pip user install..."
-      python3 -m pip install --user -q yamllint==1.35.1 --break-system-packages || true
-      PYVER=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
-      if command -v yamllint >/dev/null 2>&1; then
-        echo "[dev-validate] Running yamllint (binary on PATH)"
-        yamllint --strict .github/workflows
-      elif [[ -x "$HOME/.local/bin/yamllint" ]]; then
-        echo "[dev-validate] Running yamllint (~/.local/bin)"
-        "$HOME/.local/bin/yamllint" --strict .github/workflows
-      elif [[ -x "$HOME/Library/Python/${PYVER}/bin/yamllint" ]]; then
-        echo "[dev-validate] Running yamllint (macOS user bin)"
-        "$HOME/Library/Python/${PYVER}/bin/yamllint" --strict .github/workflows
-      elif python3 -c 'import yamllint' >/dev/null 2>&1; then
-        echo "[dev-validate] Running yamllint via python -m"
-        python3 -m yamllint --strict .github/workflows
-      else
-        echo "[dev-validate] WARN: yamllint unavailable; skipping"
-      fi
-    else
-      echo "[dev-validate] WARN: yamllint unavailable; skipping"
-    fi
+    echo "[dev-validate] WARN: Docker daemon not available; falling back to local/pip yamllint"
   fi
-else
-  # Fallback: attempt via pipx or pip if Docker absent
+fi
+if [[ "$YAMLLINT_OK" != "true" ]]; then
+  # Fallback: attempt via pipx or pip
   if command -v pipx >/dev/null 2>&1; then
     echo "[dev-validate] Installing yamllint via pipx (if missing)"
     pipx install --force yamllint==1.35.1 >/dev/null 2>&1 || true
     if pipx run --version yamllint >/dev/null 2>&1; then
       echo "[dev-validate] Running yamllint (pipx)"
       pipx run yamllint --strict .github/workflows
+      YAMLLINT_OK=true
     fi
-  elif command -v python3 >/dev/null 2>&1; then
+  fi
+  if [[ "$YAMLLINT_OK" != "true" ]] && command -v python3 >/dev/null 2>&1; then
     echo "[dev-validate] Attempting yamllint via pip user install..."
     python3 -m pip install --user -q yamllint==1.35.1 --break-system-packages || true
-    PYVER=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
     if command -v yamllint >/dev/null 2>&1; then
-      echo "[dev-validate] Running yamllint (binary on PATH)"
+      echo "[dev-validate] Running yamllint (installed on PATH)"
       yamllint --strict .github/workflows
+      YAMLLINT_OK=true
     elif [[ -x "$HOME/.local/bin/yamllint" ]]; then
       echo "[dev-validate] Running yamllint (~/.local/bin)"
       "$HOME/.local/bin/yamllint" --strict .github/workflows
-    elif [[ -x "$HOME/Library/Python/${PYVER}/bin/yamllint" ]]; then
-      echo "[dev-validate] Running yamllint (macOS user bin)"
-      "$HOME/Library/Python/${PYVER}/bin/yamllint" --strict .github/workflows
+      YAMLLINT_OK=true
     elif python3 -c 'import yamllint' >/dev/null 2>&1; then
-      echo "[dev-validate] Running yamllint via python -m"
+      echo "[dev-validate] Running yamllint via python module"
       python3 -m yamllint --strict .github/workflows
+      YAMLLINT_OK=true
     else
-      echo "[dev-validate] WARN: yamllint unavailable; skipping"
+      echo "[dev-validate] WARN: yamllint unavailable via pip; skipping"
     fi
-  else
+  fi
+  if [[ "$YAMLLINT_OK" != "true" ]]; then
     echo "[dev-validate] WARN: yamllint unavailable; skipping"
   fi
 fi
