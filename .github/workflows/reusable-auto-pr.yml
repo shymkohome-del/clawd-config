@@ -240,7 +240,7 @@ jobs:
           PR_JSON=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
             "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}")
           HEAD_BRANCH=$(echo "$PR_JSON" | jq -r '.head.ref')
-          LABELS_CSV=$(echo "$PR_JSON" | jq -r '[.labels[].name] | join(",")')
+          LABELS_CSV=$(echo "$PR_JSON" | jq -r '(.labels // []) | map(.name) | join(",")')
           if [[ "$HEAD_BRANCH" =~ ^story/ ]]; then
             if [[ ",${LABELS_CSV}," != *",automerge-ok,"* ]]; then
               echo "attempted=false" >> "$GITHUB_OUTPUT"

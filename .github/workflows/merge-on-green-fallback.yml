@@ -87,7 +87,7 @@ jobs:
           PR=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
                "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}")
           HEAD_BRANCH=$(echo "$PR" | jq -r '.head.ref')
-          LABELS=$(echo "$PR" | jq -r '[.labels[].name] | join(",")')
+          LABELS=$(echo "$PR" | jq -r '(.labels // []) | map(.name) | join(",")')
           MERGEABLE_STATE=$(echo "$PR" | jq -r '.mergeable_state')
           AUTO_MERGE_ENABLED=$(echo "$PR" | jq -r '(.auto_merge != null)')
           echo "head_branch=${HEAD_BRANCH}" >> "$GITHUB_OUTPUT"
