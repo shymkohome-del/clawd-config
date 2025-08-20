@@ -24,47 +24,28 @@ fi
 echo "[dev-validate] Running actionlint (YAML only)"
 actionlint -shellcheck=
 
-# Yamllint using Docker image for parity (no local Python needed) with graceful fallback
-YAMLLINT_OK=false
+# Yamllint using Docker image for parity (no local Python needed)
 if command -v docker >/dev/null 2>&1; then
   echo "[dev-validate] Running yamllint (Docker) on workflows"
-  if docker run --rm -v "$REPO_ROOT":/data cytopia/yamllint -c /data/.yamllint.yml -s /data/.github/workflows; then
-    YAMLLINT_OK=true
-  else
-    echo "[dev-validate] WARN: Docker daemon not available; falling back to local/pip yamllint"
-  fi
-fi
-if [[ "$YAMLLINT_OK" != "true" ]]; then
-  # Fallback: attempt via pipx or pip
+  docker run --rm -v "$REPO_ROOT":/data cytopia/yamllint -c /data/.yamllint.yml -s /data/.github/workflows
+else
+  # Fallback: attempt via pipx or pip if Docker absent
   if command -v pipx >/dev/null 2>&1; then
     echo "[dev-validate] Installing yamllint via pipx (if missing)"
     pipx install --force yamllint==1.35.1 >/dev/null 2>&1 || true
     if pipx run --version yamllint >/dev/null 2>&1; then
       echo "[dev-validate] Running yamllint (pipx)"
       pipx run yamllint --strict .github/workflows
-      YAMLLINT_OK=true
     fi
-  fi
-  if [[ "$YAMLLINT_OK" != "true" ]] && command -v python3 >/dev/null 2>&1; then
+  elif command -v python3 >/dev/null 2>&1; then
     echo "[dev-validate] Attempting yamllint via pip user install..."
     python3 -m pip install --user -q yamllint==1.35.1 --break-system-packages || true
-    if command -v yamllint >/dev/null 2>&1; then
-      echo "[dev-validate] Running yamllint (installed on PATH)"
-      yamllint --strict .github/workflows
-      YAMLLINT_OK=true
-    elif [[ -x "$HOME/.local/bin/yamllint" ]]; then
-      echo "[dev-validate] Running yamllint (~/.local/bin)"
+    if python3 -c 'import yamllint' >/dev/null 2>&1; then
       "$HOME/.local/bin/yamllint" --strict .github/workflows
-      YAMLLINT_OK=true
-    elif python3 -c 'import yamllint' >/dev/null 2>&1; then
-      echo "[dev-validate] Running yamllint via python module"
-      python3 -m yamllint --strict .github/workflows
-      YAMLLINT_OK=true
     else
-      echo "[dev-validate] WARN: yamllint unavailable via pip; skipping"
+      echo "[dev-validate] WARN: yamllint unavailable; skipping"
     fi
-  fi
-  if [[ "$YAMLLINT_OK" != "true" ]]; then
+  else
     echo "[dev-validate] WARN: yamllint unavailable; skipping"
   fi
 fi
