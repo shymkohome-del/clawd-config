@@ -48,6 +48,7 @@ jobs:
           ~/.local/bin/yamllint --strict .github/workflows
 
   preflight-parse:
+    name: Preflight Parse (local, no network)
     needs: [workflow-lint]
     runs-on: ubuntu-latest
     steps:
@@ -55,23 +56,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Preflight parser (no network)
-        id: preflight
+      - name: Preflight branch/story parse
+        id: pre
         shell: bash
         run: |
           set -euo pipefail
           BRANCH="${GITHUB_REF_NAME}"
-          OUT=$(bash scripts/preflight-parse.sh "$BRANCH") || true
+          chmod +x scripts/preflight-parse.sh || true
+          OUT=$(scripts/preflight-parse.sh "$BRANCH" || true)
           echo "$OUT"
-          echo "$OUT" | sed -n 's/^qa_done=//p' | head -n1 | xargs -I{} echo "qa_done={}" >> "$GITHUB_OUTPUT"
-          echo "$OUT" | sed -n 's/^reason=//p' | head -n1 | xargs -I{} echo "reason={}" >> "$GITHUB_OUTPUT"
-      - name: Emit preflight summary
-        if: always()
-        run: |
-          echo "### Preflight parse" >> $GITHUB_STEP_SUMMARY
-          echo "- Branch: ${GITHUB_REF_NAME}" >> $GITHUB_STEP_SUMMARY
-          echo "- QA done: ${{ steps.preflight.outputs.qa_done || 'false' }}" >> $GITHUB_STEP_SUMMARY
-          echo "- Reason: ${{ steps.preflight.outputs.reason || 'n/a' }}" >> $GITHUB_STEP_SUMMARY
+          echo "qa_done=$(echo "$OUT" | sed -n 's/^qa_done=\(.*\)$/\1/p')" >> "$GITHUB_OUTPUT"
+          echo "reason=$(echo "$OUT" | sed -n 's/^reason=\(.*\)$/\1/p')" >> "$GITHUB_OUTPUT"
 
   open-pr-and-automerge-reusable:
     needs: [workflow-lint, preflight-parse]
