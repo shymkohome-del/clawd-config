@@ -166,10 +166,10 @@ jobs:
           SHA="${{ steps.ctx.outputs.sha }}"
           # Candidate checks we care about; build required set dynamically based on presence
           CANDIDATE_CHECKS=(
-            "Flutter CI / build-and-test"
-            "PR Lint / pr-lint"
-            "Auto PR and Auto-merge on QA Done / workflow-lint"
-            "Auto PR and Auto-merge on QA Done / open-pr-and-automerge"
+            "build-and-test"
+            "pr-lint"
+            "lint"
+            "open-pr-and-automerge-reusable / run"
           )
           attempt=0; max_attempts=30
           while (( attempt < max_attempts )); do
