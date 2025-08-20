@@ -145,13 +145,13 @@ jobs:
           echo "state=$STATE" >> "$GITHUB_OUTPUT"
           if [[ "$STATE" == "behind" ]]; then
             echo "PR is behind base; attempting to update branch via API..."
-            RESP=$(bash scripts/retry.sh 5 2 -- curl -sS -w "\n%{http_code}" -X PUT \
+            RESP=$(bash scripts/retry.sh 5 2 -- curl -i -sS -w "HTTPSTATUS:%{http_code}" -X PUT \
               -H "authorization: Bearer ${GH_TOKEN}" \
               -H "accept: application/vnd.github+json" \
               -d "{\"expected_head_sha\":\"${HEAD_SHA}\"}" \
               "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/update-branch")
-            HTTP=$(echo "$RESP" | tail -n1)
-            BODY=$(echo "$RESP" | sed '$d')
+            HTTP=$(printf '%s' "$RESP" | sed -n 's/^.*HTTPSTATUS:\([0-9][0-9][0-9]\).*$/\1/p' | tail -n1)
+            BODY=$(printf '%s' "$RESP" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//')
             if [[ "$HTTP" == "202" ]]; then
               echo "updated=true" >> "$GITHUB_OUTPUT"
               echo "need_rebase=false" >> "$GITHUB_OUTPUT"

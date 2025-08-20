@@ -375,13 +375,24 @@ jobs:
           PR_NUMBER="${{ steps.create_pr.outputs.pr_number || '' }}"
           if [[ -z "$PR_NUMBER" ]]; then
             BRANCH="${{ steps.ctx.outputs.branch }}"
-            PR_NUMBER=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
-              "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+            RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS \
+              -H "authorization: Bearer ${GH_TOKEN}" \
+              -H "accept: application/vnd.github+json" \
+              -w "HTTPSTATUS:%{http_code}" \
+              "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open")
+            BODY=$(printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//')
+            PR_NUMBER=$(printf '%s' "$BODY" | jq '.[0].number // empty')
           fi
           if [[ -z "$PR_NUMBER" ]]; then
             echo "No PR found to approve. Skipping."
             exit 0
           fi
           PAYLOAD='{"event":"APPROVE","body":"Auto-approval by reusable workflow."}'
-          curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
-            -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/reviews" | jq '.' || true
+          RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS -X POST \
+            -H "authorization: Bearer ${GH_TOKEN}" \
+            -H "accept: application/vnd.github+json" \
+            -H "content-type: application/json" \
+            -d "$PAYLOAD" \
+            -w "HTTPSTATUS:%{http_code}" \
+            "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/reviews")
+          printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//' | jq '.' || true
