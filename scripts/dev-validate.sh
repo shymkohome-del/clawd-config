@@ -24,24 +24,33 @@ fi
 echo "[dev-validate] Running actionlint (YAML only)"
 actionlint -shellcheck=
 
-# Yamllint using Docker image for parity (no local Python needed)
-if command -v docker >/dev/null 2>&1; then
+# Yamllint: prefer Docker if daemon is running; else try local/pipx/pip
+if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
   echo "[dev-validate] Running yamllint (Docker) on workflows"
   docker run --rm -v "$REPO_ROOT":/data cytopia/yamllint -c /data/.yamllint.yml -s /data/.github/workflows
 else
-  # Fallback: attempt via pipx or pip if Docker absent
-  if command -v pipx >/dev/null 2>&1; then
+  if command -v yamllint >/dev/null 2>&1; then
+    echo "[dev-validate] Running yamllint (system)"
+    yamllint --strict .github/workflows
+  elif command -v pipx >/dev/null 2>&1; then
     echo "[dev-validate] Installing yamllint via pipx (if missing)"
     pipx install --force yamllint==1.35.1 >/dev/null 2>&1 || true
-    if pipx run --version yamllint >/dev/null 2>&1; then
-      echo "[dev-validate] Running yamllint (pipx)"
-      pipx run yamllint --strict .github/workflows
-    fi
+    echo "[dev-validate] Running yamllint (pipx)"
+    pipx run yamllint --strict .github/workflows || true
   elif command -v python3 >/dev/null 2>&1; then
     echo "[dev-validate] Attempting yamllint via pip user install..."
     python3 -m pip install --user -q yamllint==1.35.1 --break-system-packages || true
-    if python3 -c 'import yamllint' >/dev/null 2>&1; then
-      "$HOME/.local/bin/yamllint" --strict .github/workflows
+    if python3 - <<'PY'
+import sys
+try:
+    import yamllint
+    sys.exit(0)
+except Exception:
+    sys.exit(1)
+PY
+    then
+      echo "[dev-validate] Running yamllint (python -m)"
+      python3 -m yamllint --strict .github/workflows || true
     else
       echo "[dev-validate] WARN: yamllint unavailable; skipping"
     fi
