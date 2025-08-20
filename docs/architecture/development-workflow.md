@@ -56,6 +56,8 @@
 
 - Work on `story/<id>-<slug>` or `feature/<slug>`.
 - Before push: `dart format .`, `flutter analyze --fatal-infos --fatal-warnings`, `flutter test --no-pub` or `scripts/dev-validate.sh`.
+- Pre-push guard: pushes are blocked if your branch is behind `origin/develop`; rebase with:
+  - `git fetch origin && git rebase --autostash origin/develop`
 - Push to remote; automation will open a PR to `develop`. For `story/*`, QA must set `Status: Done` in the story file to be eligible.
 - Auto-merge gates: required checks must be green; for `story/*`, label `automerge-ok` is required (non‑story branches are allowed by default).
 

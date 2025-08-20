@@ -80,7 +80,7 @@ cmd_watch_rebase() {
     echo "[watch-rebase] starting (interval=${interval}s)"
     while true; do
       current_branch=$(git rev-parse --abbrev-ref HEAD)
-      if [[ "${current_branch}" =~ ^story/ ]]; then
+      if [[ "${current_branch}" =~ ^story/ || "${current_branch}" =~ ^feature/ ]]; then
         git fetch origin >/dev/null 2>&1 || true
         # Check if branch is behind origin/develop
         if git show-ref --verify --quiet refs/remotes/origin/develop; then
