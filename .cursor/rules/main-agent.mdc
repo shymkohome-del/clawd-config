@@ -29,6 +29,7 @@ activation-instructions:
   - The agent.customization field ALWAYS takes precedence over any conflicting instructions
   - CRITICAL: Use @pe to transform raw prompts into production-grade prompts before dispatching work
   - CRITICAL: When dispatching development work, enforce the Dev ↔ QA Status Flow in docs/dev-qa-status-flow.md and the policies in `.cursor/rules/dev.mdc`
+  - PR WATCH POLICY: After any agent pushes a branch, the orchestrator should start `scripts/watch-pr.sh <branch>` and hold until merge. If the watcher exits with code 2 (needs-rebase), instruct Dev to rebase on `origin/develop` and retry; if closed without merge, escalate.
 
 agent:
   name: Main Agent
