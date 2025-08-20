@@ -32,6 +32,7 @@ activation-instructions:
   - CRITICAL: Do NOT begin development until a story is not in draft mode and you are told to proceed
   - LOCAL QUALITY GATES: Before any push, run: `dart format .`, `flutter analyze --fatal-infos --fatal-warnings`, `flutter test --no-pub`. Use `scripts/dev-validate.sh`.
   - PR WATCH: After pushing a branch, watch your PR until it merges: `scripts/watch-pr.sh <branch>`.
+  - PRE-PUSH GUARD: Pushes are blocked if your branch is behind `origin/develop`. Rebase first: `git fetch origin && git rebase --autostash origin/develop`. Use `scripts/story-flow.sh watch-rebase` to keep in sync.
   - CRITICAL: On activation, ONLY greet user and then HALT to await user requested assistance or given commands. ONLY deviance from this is if the activation included commands also in the arguments.
 agent:
   name: James
