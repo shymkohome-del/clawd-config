@@ -106,7 +106,7 @@ jobs:
           RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "content-type: application/json" \
             -d "$(jq -cn --arg query "$GQL" --argjson variables "$VARIABLES" '{query:$query,variables:$variables}')" \
             https://api.github.com/graphql)
-          # yamllint enable
+          # yamllint enable rule:line-length
           AUTO=$(echo "$RESP" | jq -r '.data.repository.autoMergeAllowed // empty')
           SQUASH=$(echo "$RESP" | jq -r '.data.repository.squashMergeAllowed // empty')
           REQ=$(echo "$RESP" | jq -r '.data.repository.branchProtectionRules.nodes[] | select(.pattern=="develop") | .requiredStatusCheckContexts | join(",")')
@@ -282,7 +282,7 @@ jobs:
           RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "content-type: application/json" \
             -d "$(jq -cn --arg query "$GQL" --argjson variables "$VARIABLES" '{query:$query, variables:$variables}')" \
             https://api.github.com/graphql)
-          # yamllint enable
+          # yamllint enable rule:line-length
           echo "$RESP" | jq '.' || true
           if echo "$RESP" | grep -q 'errors'; then
             REASON=$(echo "$RESP" | jq -r '.errors[0].message // "graphql-error"')
