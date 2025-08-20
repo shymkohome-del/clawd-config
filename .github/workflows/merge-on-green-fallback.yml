@@ -133,7 +133,7 @@ jobs:
             else
               echo "updated=false" >> "$GITHUB_OUTPUT"
               echo "need_rebase=true" >> "$GITHUB_OUTPUT"
-              echo "Auto-update failed (HTTP ${HTTP}). Marking as needs rebase." 
+              echo "Auto-update failed (HTTP ${HTTP}). Marking as needs rebase."
               # Ensure label exists
               curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
                 -d '{"name":"needs-rebase","color":"d93f0b","description":"Rebase onto develop required"}' \
@@ -141,7 +141,7 @@ jobs:
               # Apply label and comment
               curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
                 -d '{"labels":["needs-rebase"]}' "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" >/dev/null || true
-              MSG=$'Auto-merge skipped: branch is behind and could not be auto-updated.\n\nPlease rebase onto develop:\n```bash\n git fetch origin && git rebase --autostash origin/develop\n```'
+              MSG=$'Auto-merge skipped: branch is behind and could not be auto-updated.\n\nPlease rebase onto develop (git fetch origin && git rebase --autostash origin/develop).'
               curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
                 -d "$(jq -cn --arg body "$MSG" '{body:$body}')" \
                 "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/comments" >/dev/null || true
