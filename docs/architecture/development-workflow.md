@@ -49,3 +49,9 @@
 
 - Run `scripts/dev-validate.sh` before pushing
 - Preflight parser validates branch and story file presence without network calls
+
+## **Repo Settings**
+
+- Allow auto‑merge: Enabled (confirmed)
+- Merge method: Squash (preferred and used by workflows)
+- Branch protection for `develop`: ensure required checks are defined to gate merges
