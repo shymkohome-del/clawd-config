@@ -47,18 +47,19 @@ note "Watching PR #$PR_NUM (interval=${INTERVAL}s, timeout=${TIMEOUT}s)"
 
 ELAPSED=0
 while (( ELAPSED <= TIMEOUT )); do
-  STATE=$(gh pr view "$PR_NUM" --json state,isDraft,merged,mergeStateStatus,mergeable,labels,url --jq '.state')
-  MERGED=$(gh pr view "$PR_NUM" --json merged --jq '.merged')
-  LABELS=$(gh pr view "$PR_NUM" --json labels --jq '(.labels // []) | map(.name) | join(",")')
-  MSTATE=$(gh pr view "$PR_NUM" --json mergeStateStatus --jq '.mergeStateStatus')
-  URL=$(gh pr view "$PR_NUM" --json url --jq '.url')
-  note "PR #$PR_NUM status: state=${STATE} merged=${MERGED} mergeState=${MSTATE} labels=${LABELS} url=${URL}"
+  JSON=$(gh pr view "$PR_NUM" --json state,mergedAt,mergeStateStatus,mergeable,labels,url 2>/dev/null || true)
+  STATE=$(printf '%s' "$JSON" | jq -r '.state // ""')
+  MERGED_AT=$(printf '%s' "$JSON" | jq -r '.mergedAt // empty')
+  LABELS=$(printf '%s' "$JSON" | jq -r '(.labels // []) | map(.name) | join(",")')
+  MSTATE=$(printf '%s' "$JSON" | jq -r '.mergeStateStatus // ""')
+  URL=$(printf '%s' "$JSON" | jq -r '.url // ""')
+  note "PR #$PR_NUM status: state=${STATE} mergedAt=${MERGED_AT:-""} mergeState=${MSTATE} labels=${LABELS} url=${URL}"
 
   if [[ "$LABELS" == *needs-rebase* ]]; then
     note "PR requires rebase (needs-rebase). Exiting with code 2."
     exit 2
   fi
-  if [[ "$MERGED" == "true" || "$STATE" == "MERGED" ]]; then
+  if [[ -n "$MERGED_AT" || "$STATE" == "MERGED" ]]; then
     note "PR merged."
     exit 0
   fi
