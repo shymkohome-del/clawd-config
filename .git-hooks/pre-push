@@ -8,6 +8,22 @@ cd "$REPO_ROOT"
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "[pre-push] branch: $CURRENT_BRANCH"
 
+# Ensure we are up-to-date with origin/develop to avoid merge conflicts later
+git fetch origin --prune >/dev/null 2>&1 || true
+if [[ -z "${ALLOW_PUSH_BEHIND:-}" ]] && git show-ref --verify --quiet refs/remotes/origin/develop; then
+  behind_ahead=$(git rev-list --left-right --count "HEAD...origin/develop" 2>/dev/null || echo "0 0")
+  ahead=$(echo "$behind_ahead" | awk '{print $1}')
+  behind=$(echo "$behind_ahead" | awk '{print $2}')
+  if [[ "$behind" -gt 0 ]]; then
+    echo "[pre-push] ERROR: Your branch is behind origin/develop by $behind commit(s) (ahead: $ahead)." >&2
+    echo "[pre-push] To prevent painful auto-merge conflicts, rebase first:" >&2
+    echo "[pre-push]   git fetch origin && git rebase --autostash origin/develop" >&2
+    echo "[pre-push] Or run the background watcher: scripts/story-flow.sh watch-rebase" >&2
+    echo "[pre-push] Set ALLOW_PUSH_BEHIND=true to bypass (not recommended)." >&2
+    exit 1
+  fi
+fi
+
 # Enforce story branch naming for story work
 if [[ "$CURRENT_BRANCH" =~ ^story/ ]]; then
   if [[ ! "$CURRENT_BRANCH" =~ ^story/[0-9]+(\.[0-9]+)*-[a-z0-9-]+$ ]]; then
