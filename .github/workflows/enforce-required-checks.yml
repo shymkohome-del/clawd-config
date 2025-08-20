@@ -19,7 +19,7 @@ jobs:
     env:
       OWNER: ${{ github.repository_owner }}
       REPO: ${{ github.event.repository.name || github.repository }}
-      REQUIRED_CONTEXTS: '["Workflow Lint / lint","Flutter CI / build-and-test","PR Lint / pr-lint","Auto PR and Auto-merge on QA Done / Workflow Lint"]'
+      REQUIRED_CONTEXTS: '["Flutter CI / build-and-test","PR Lint / pr-lint","Auto PR and Auto-merge on QA Done / workflow-lint"]'
     steps:
       - name: Show context
         shell: bash
