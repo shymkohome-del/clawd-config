@@ -101,8 +101,56 @@ jobs:
             fi
           fi
 
+      - name: Auto-update PR branch if behind
+        id: update_branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          PR_NUMBER="${{ steps.find_pr.outputs.pr_number }}"
+          # Read current mergeable_state
+          PR=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+               "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}")
+          STATE=$(echo "$PR" | jq -r '.mergeable_state')
+          HEAD_SHA=$(echo "$PR" | jq -r '.head.sha')
+          echo "state=$STATE" >> "$GITHUB_OUTPUT"
+          if [[ "$STATE" == "behind" ]]; then
+            echo "PR is behind base; attempting to update branch via API..."
+            RESP=$(curl -sS -w "\n%{http_code}" -X PUT -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+              -d "{\"expected_head_sha\":\"${HEAD_SHA}\"}" \
+              "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/update-branch")
+            HTTP=$(echo "$RESP" | tail -n1)
+            BODY=$(echo "$RESP" | sed '$d')
+            if [[ "$HTTP" == "202" ]]; then
+              echo "updated=true" >> "$GITHUB_OUTPUT"
+              echo "need_rebase=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "updated=false" >> "$GITHUB_OUTPUT"
+              echo "need_rebase=true" >> "$GITHUB_OUTPUT"
+              echo "Auto-update failed (HTTP ${HTTP}). Marking as needs rebase." 
+              # Ensure label exists
+              curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+                -d '{"name":"needs-rebase","color":"d93f0b","description":"Rebase onto develop required"}' \
+                "${API}/repos/${OWNER}/${REPO}/labels" >/dev/null || true
+              # Apply label and comment
+              curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+                -d '{"labels":["needs-rebase"]}' "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" >/dev/null || true
+              curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+                -d '{"body":"Auto-merge skipped: branch is behind and could not be auto-updated. Please rebase onto develop (git fetch origin && git rebase --autostash origin/develop)."}' \
+                "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/comments" >/dev/null || true
+            fi
+          else
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+            echo "need_rebase=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Wait for required checks to be green (retry)
         id: wait_checks
+        if: steps.update_branch.outputs.need_rebase != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -159,7 +207,7 @@ jobs:
           exit 0
 
       - name: Merge PR (squash) and delete branch (skipped locally)
-        if: steps.wait_checks.outputs.checks_ok == 'true' && steps.gate.outputs.auto_merge_enabled != 'true'
+        if: steps.wait_checks.outputs.checks_ok == 'true' && steps.gate.outputs.auto_merge_enabled != 'true' && steps.update_branch.outputs.need_rebase != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -196,6 +244,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AUTO_MERGE_ENABLED: ${{ steps.gate.outputs.auto_merge_enabled || '' }}
           CHECKS_OK: ${{ steps.wait_checks.outputs.checks_ok || '' }}
+          UPDATED: ${{ steps.update_branch.outputs.updated || '' }}
+          NEED_REBASE: ${{ steps.update_branch.outputs.need_rebase || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -211,4 +261,6 @@ jobs:
           echo "- PR: #${PR_NUMBER}" >> $GITHUB_STEP_SUMMARY
           echo "- Checks green: ${CHECKS_OK}" >> $GITHUB_STEP_SUMMARY
           echo "- Auto-merge pre-enabled: ${AUTO_MERGE_ENABLED}" >> $GITHUB_STEP_SUMMARY
+          echo "- Auto-update attempted: ${UPDATED}" >> $GITHUB_STEP_SUMMARY
+          echo "- Needs rebase: ${NEED_REBASE}" >> $GITHUB_STEP_SUMMARY
           echo "- Action: ${MERGED_NOTE}" >> $GITHUB_STEP_SUMMARY
