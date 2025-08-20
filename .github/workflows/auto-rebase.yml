@@ -57,5 +57,3 @@ jobs:
               }
               core.endGroup();
             }
-
-

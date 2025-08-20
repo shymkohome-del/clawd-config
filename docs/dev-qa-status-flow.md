@@ -15,6 +15,7 @@ Roles and ownership
   - May set Status: InProgress, Ready for Review, Blocked, Decision Needed
   - Updates: Tasks/Subtasks checkboxes, Dev Agent Record (and subsections), File List, Change Log, Status (per above)
   - Never sets Status: Done
+  - For stories already marked Done: Dev must not implement or modify code. Dev may only append a verification note in the Change Log confirming tests/analysis pass, without changing Status or other sections.
 - QA
   - May set Status: Done (if all ACs pass) or InProgress (if any AC fails/partial)
   - Updates: QA Results, Change Log (brief reasons for fail/partial), Status (Done/InProgress)
@@ -51,7 +52,14 @@ PR / CI notes
 
 - Dev may create PR at Ready for Review per repo policy
 - CI should pass before QA approval/merge
-- After QA sets Done and pushes the story file update, the system will auto-create a PR from `story/<id>-<slug>` to `develop` and enable auto-merge (squash) once CI checks pass. If auto-merge is disabled on the repo, the PR remains open with checks passing for manual merge.
+- Automation behavior (effective now):
+  - For `story/<id>-<slug>` branches: After QA sets `Status: Done` and pushes, the system auto-creates (or reuses) a PR to `develop`, auto-labels `automerge-candidate` and `automerge-ok`, may auto-approve if `AUTO_APPROVE_ENABLED=true`, and merges on green via fallback if repo auto-merge is unavailable. Source branch is deleted if allowed by repo settings.
+  - For `feature|fix|chore|patch/*` branches: A PR to `develop` is auto-created on push with the same labels and merge-on-green behavior.
+  - Feature flags (repo variables):
+    - `AUTO_PR_ENABLED` (default true): gates PR creation/labeling logic.
+    - `AUTO_MERGE_ENABLED` (default true): gates auto-merge fallback behavior.
+    - `AUTO_APPROVE_ENABLED` (default true): gates bot auto-approval.
+  - Normal case: Neither Dev nor QA need to create PRs or press Merge. Removing the `automerge-ok` label (or turning flags off) will pause auto-merge if needed.
 
 Related checklists
 

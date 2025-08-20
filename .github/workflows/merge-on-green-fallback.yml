@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   merge-on-green:
@@ -29,17 +29,22 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
+          # Pass potentially untrusted expressions via env vars per actionlint guidance
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref || '' }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || '' }}
+          WR_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch || '' }}
+          WR_HEAD_SHA: ${{ github.event.workflow_run.head_sha || '' }}
         run: |
           set -euo pipefail
           echo "event_name=${EVENT_NAME}" >> "$GITHUB_OUTPUT"
           case "${EVENT_NAME}" in
             workflow_run)
-              BRANCH="${{ github.event.workflow_run.head_branch }}"
-              SHA="${{ github.event.workflow_run.head_sha }}"
+              BRANCH="${WR_HEAD_BRANCH}"
+              SHA="${WR_HEAD_SHA}"
               ;;
             pull_request)
-              BRANCH="${{ github.event.pull_request.head.ref }}"
-              SHA="${{ github.event.pull_request.head.sha }}"
+              BRANCH="${PR_HEAD_REF}"
+              SHA="${PR_HEAD_SHA}"
               ;;
             *)
               BRANCH="${GITHUB_REF_NAME:-}"
@@ -82,14 +87,16 @@ jobs:
           PR=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
                "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}")
           HEAD_BRANCH=$(echo "$PR" | jq -r '.head.ref')
-          LABELS=$(echo "$PR" | jq -r '[.labels[].name] | join(",")')
+          LABELS=$(echo "$PR" | jq -r '(.labels // []) | map(.name) | join(",")')
           MERGEABLE_STATE=$(echo "$PR" | jq -r '.mergeable_state')
+          AUTO_MERGE_ENABLED=$(echo "$PR" | jq -r '(.auto_merge != null)')
           echo "head_branch=${HEAD_BRANCH}" >> "$GITHUB_OUTPUT"
           echo "labels=${LABELS}" >> "$GITHUB_OUTPUT"
           echo "mergeable_state=${MERGEABLE_STATE}" >> "$GITHUB_OUTPUT"
+           echo "auto_merge_enabled=${AUTO_MERGE_ENABLED}" >> "$GITHUB_OUTPUT"
           if [[ "$HEAD_BRANCH" =~ ^story/ ]]; then
             if [[ ",${LABELS}," != *",automerge-ok,"* ]]; then
-              echo "Story branch without 'automerge-ok' label. Skipping." 
+              echo "Story branch without 'automerge-ok' label. Skipping."
               exit 0
             fi
           fi
@@ -151,13 +158,17 @@ jobs:
           echo "Timeout waiting for checks to pass. Skipping merge."
           exit 0
 
-      - name: Merge PR (squash) and delete branch
-        if: steps.wait_checks.outputs.checks_ok == 'true'
+      - name: Merge PR (squash) and delete branch (skipped locally)
+        if: steps.wait_checks.outputs.checks_ok == 'true' && steps.gate.outputs.auto_merge_enabled != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
+          if [[ "${CI_LOCAL:-}" == "true" ]]; then
+            echo "CI_LOCAL=true: Skipping REST merge."
+            exit 0
+          fi
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
@@ -179,4 +190,25 @@ jobs:
           curl -sS -X DELETE -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
             "${API}/repos/${OWNER}/${REPO}/git/refs/heads/${HEAD_REF}" || true
 
-
+      - name: Emit metrics summary
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUTO_MERGE_ENABLED: ${{ steps.gate.outputs.auto_merge_enabled || '' }}
+          CHECKS_OK: ${{ steps.wait_checks.outputs.checks_ok || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PR_NUMBER="${{ steps.find_pr.outputs.pr_number || '' }}"
+          if [[ "${AUTO_MERGE_ENABLED}" == "true" ]]; then
+            MERGED_NOTE="auto-merge-pre-enabled"
+          elif [[ "${CHECKS_OK}" == "true" ]]; then
+            MERGED_NOTE="merge-attempted"
+          else
+            MERGED_NOTE="merge-skipped"
+          fi
+          echo "### Merge-on-Green summary" >> $GITHUB_STEP_SUMMARY
+          echo "- PR: #${PR_NUMBER}" >> $GITHUB_STEP_SUMMARY
+          echo "- Checks green: ${CHECKS_OK}" >> $GITHUB_STEP_SUMMARY
+          echo "- Auto-merge pre-enabled: ${AUTO_MERGE_ENABLED}" >> $GITHUB_STEP_SUMMARY
+          echo "- Action: ${MERGED_NOTE}" >> $GITHUB_STEP_SUMMARY

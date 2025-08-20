@@ -1,110 +1,12 @@
-name: CI and Auto PR
-
+name: Legacy CI and Auto PR (disabled)
 on:
-  push:
-    branches:
-      - 'story/**'
+  workflow_dispatch:
 
 jobs:
-  ci:
+  legacy_disabled:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    defaults:
-      run:
-        shell: bash
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install GitHub CLI
+      - name: Deprecated workflow
         run: |
-          sudo apt-get update
-          sudo apt-get install -y gh
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.35.1'
-          channel: 'stable'
-
-      - name: Flutter & Dart versions
-        run: |
-          flutter --version
-          dart --version
-
-      - name: Pub get
-        working-directory: crypto_market/crypto_market
-        run: flutter pub get
-
-      - name: Format check
-        working-directory: crypto_market/crypto_market
-        run: dart format --output=none --set-exit-if-changed .
-
-      - name: Analyze (fail on infos/warnings)
-        working-directory: crypto_market/crypto_market
-        run: flutter analyze --fatal-infos --fatal-warnings
-
-      - name: Tests
-        working-directory: crypto_market/crypto_market
-        run: flutter test --no-pub
-
-      - name: Create/Update PR to develop on success
-        if: ${{ success() }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          head_branch="${GITHUB_REF_NAME}"
-          echo "Head branch: $head_branch"
-
-          # Skip if PR already exists
-          if gh pr view --base develop --head "$head_branch" >/dev/null 2>&1; then
-            echo "PR already exists for $head_branch -> develop; skipping."
-            exit 0
-          fi
-
-          # Derive PR title/body from branch name when possible
-          title="Feature: ${head_branch}"
-          body="Auto-created PR from ${head_branch} to develop."
-          if [[ "$head_branch" =~ ^story/([0-9]+(\.[0-9]+)*)-([a-z0-9-]+)$ ]]; then
-            id="${BASH_REMATCH[1]}"
-            slug="${BASH_REMATCH[3]}"
-            human_slug="${slug//-/ }"
-            title="story ${id}: ${human_slug}"
-            body="Implements ${human_slug}. Related to story ${id}."
-          fi
-
-          gh pr create \
-            --title "$title" \
-            --body "$body" \
-            --base develop \
-            --head "$head_branch"
-
-      - name: Auto-merge PR (direct or enable auto-merge)
-        if: ${{ success() }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          head_branch="${GITHUB_REF_NAME}"
-          # Get PR number
-          pr_number=$(gh pr view --base develop --head "$head_branch" --json number -q .number)
-          echo "PR #$pr_number"
-
-          # Try direct merge (squash) when protections allow
-          if gh pr merge "$pr_number" --squash --delete-branch --auto >/dev/null 2>&1; then
-            echo "Auto-merge enabled or completed for PR #$pr_number"
-            exit 0
-          fi
-
-          # Fallback: enable auto-merge (will merge once approvals/checks satisfied)
-          if gh pr merge "$pr_number" --squash --delete-branch --auto >/dev/null 2>&1; then
-            echo "Auto-merge set for PR #$pr_number (will merge when requirements are met)."
-            exit 0
-          fi
-
-          echo "Notice: Unable to set auto-merge; likely due to repository branch protections or missing permissions."
-
-
+          echo "This workflow has been deprecated and disabled."
+          echo "PR creation is now handled via REST/GraphQL in 'Auto PR and Auto-merge on QA Done'."

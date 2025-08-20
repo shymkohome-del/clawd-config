@@ -34,8 +34,10 @@ jobs:
       - name: Set up Flutter (with cache)
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.35.1'
           channel: stable
           cache: true
+          architecture: x64
       - name: Flutter version
         working-directory: ${{ steps.detect.outputs.app_dir }}
         run: |
@@ -53,5 +55,3 @@ jobs:
       - name: Run tests
         working-directory: ${{ steps.detect.outputs.app_dir }}
         run: flutter test --no-pub
-
-

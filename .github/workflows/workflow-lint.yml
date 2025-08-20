@@ -1,0 +1,40 @@
+name: Workflow Lint
+
+on:
+  pull_request:
+    branches: [ "main", "develop" ]
+  push:
+    branches:
+      - '**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install actionlint (pinned)
+        run: |
+          set -euo pipefail
+          VERSION="1.7.1"
+          mkdir -p "$HOME/bin"
+          curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- "${VERSION}" "$HOME/bin"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+      - name: Run actionlint (YAML only)
+        run: |
+          set -euo pipefail
+          actionlint -shellcheck=
+      - name: Install yamllint (pinned)
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user yamllint==1.35.1
+      - name: Run yamllint on workflows
+        run: |
+          set -euo pipefail
+          ~/.local/bin/yamllint --strict .github/workflows

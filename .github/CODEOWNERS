@@ -1,0 +1,9 @@
+# Protect workflows and scripts — require DevOps/Maintainers review
+.github/workflows/*    @maintainers @devops
+scripts/*              @maintainers @devops
+
+# Protect workflows and automation scripts
+.github/workflows/*  @Vatalion
+scripts/*            @Vatalion
+docs/stories/*       @Vatalion
+

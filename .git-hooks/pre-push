@@ -43,4 +43,11 @@ fi
 
 echo "[pre-push] OK"
 
+# Full local validation (CI parity)
+if [[ -x scripts/dev-validate.sh ]]; then
+  scripts/dev-validate.sh
+else
+  echo "[pre-push] WARN: scripts/dev-validate.sh not found; consider running it manually."
+fi
+
 

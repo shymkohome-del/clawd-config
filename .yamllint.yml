@@ -1,0 +1,28 @@
+extends: default
+
+rules:
+  # GitHub Actions YAML does not require '---' document start
+  document-start: disable
+
+  # Allow common non-boolean words and do not check keys like 'on'
+  truthy: disable
+
+  # GitHub workflow lines often exceed 80 due to long URLs and commands
+  line-length:
+    max: 180
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+
+  # Reduce noise for bracket spacing peculiarities in Actions syntax
+  brackets: disable
+
+  # Keep at most one consecutive blank line
+  empty-lines:
+    max: 1
+    max-start: 0
+    max-end: 0
+
+  trailing-spaces:
+    level: warning
+
+
