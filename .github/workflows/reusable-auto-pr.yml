@@ -50,15 +50,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo '::group::Resolve branch and mode'
           BRANCH="${{ inputs.branch || github.ref_name }}"
           echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
           echo "dry_run=${{ inputs.dry_run }}" >> "$GITHUB_OUTPUT"
+          echo '::endgroup::'
 
       - name: Derive branch meta and QA Done (if story branch)
         id: meta
         shell: bash
         run: |
           set -euo pipefail
+          echo '::group::Derive branch meta and QA Done'
           BRANCH="${{ steps.ctx.outputs.branch }}"
           echo "branch_name=$BRANCH" >> "$GITHUB_OUTPUT"
           if [[ "$BRANCH" =~ ^story/([0-9]+(\.[0-9]+)*)- ]]; then
@@ -67,6 +70,7 @@ jobs:
             if [[ -z "${STORY_FILE:-}" ]]; then
               echo "qa_done=false" >> "$GITHUB_OUTPUT"
               echo "reason=story-file-missing" >> "$GITHUB_OUTPUT"
+              echo "::warning title=Story file missing::Expected docs/stories/${STORY_ID}.*.md for story branch ${BRANCH}"
               exit 0
             fi
             STATUS_LINE=$(grep -iE '^Status:' "$STORY_FILE" || true)
@@ -77,6 +81,7 @@ jobs:
             else
               echo "qa_done=false" >> "$GITHUB_OUTPUT"
               echo "reason=status-not-done" >> "$GITHUB_OUTPUT"
+              echo "::notice title=Status not Done::Story ${STORY_ID} status is not Done; skipping PR create"
             fi
           elif [[ "$BRANCH" =~ ^(feature|fix|chore|patch)/ ]]; then
             echo "qa_done=true" >> "$GITHUB_OUTPUT"
@@ -85,7 +90,9 @@ jobs:
           else
             echo "qa_done=false" >> "$GITHUB_OUTPUT"
             echo "reason=unsupported-branch" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Unsupported branch::${BRANCH} does not match expected patterns (story/*, feature/*, fix/*, chore/*, patch/*)"
           fi
+          echo '::endgroup::'
 
       - name: Ensure PR exists (REST API)
         id: create_pr
@@ -95,6 +102,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo '::group::Ensure PR exists'
           if [[ "${{ steps.ctx.outputs.dry_run }}" == "true" ]]; then
             echo "dry-run: Skipping PR query/create."
             exit 0
@@ -106,8 +114,13 @@ jobs:
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
 
-          EXISTING=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
-            "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+          RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS \
+            -H "authorization: Bearer ${GH_TOKEN}" \
+            -H "accept: application/vnd.github+json" \
+            -w "HTTPSTATUS:%{http_code}" \
+            "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open")
+          BODY=$(printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//')
+          EXISTING=$(printf '%s' "$BODY" | jq '.[0].number // empty')
           if [[ -n "${EXISTING}" ]]; then
             echo "PR already exists: #${EXISTING}"
             echo "pr_number=${EXISTING}" >> "$GITHUB_OUTPUT"
@@ -120,26 +133,32 @@ jobs:
               TITLE="Auto PR to develop for $BRANCH"
               BODY=$'This PR was auto-created after changes were pushed to this branch.\n\nMerge strategy: squash; delete source branch on merge.'
             fi
-
             PAYLOAD=$(jq -cn --arg title "$TITLE" --arg head "$BRANCH" --arg base "develop" --arg body "$BODY" '{title:$title, head:$head, base:$base, body:$body}')
-            RESP=$(curl -sS -w "\n%{http_code}" -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -d "$PAYLOAD" \
+            RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS \
+              -H "authorization: Bearer ${GH_TOKEN}" \
+              -H "accept: application/vnd.github+json" \
+              -H "content-type: application/json" \
+              -d "$PAYLOAD" \
+              -w "HTTPSTATUS:%{http_code}" \
               "${API}/repos/${OWNER}/${REPO}/pulls")
-            HTTP_CODE=$(echo "$RESP" | tail -n1)
-            RESP_BODY=$(echo "$RESP" | sed '$d')
-            if [[ "$HTTP_CODE" == "403" ]]; then
-              MSG=$(printf '%s' "$RESP_BODY" | jq -r '.message // empty')
-              echo "Permission denied (HTTP 403) creating PR: ${MSG}. Skipping create; downstream steps will no-op."
-              echo "reason=insufficient-permissions" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-            PR_NUMBER=$(printf '%s' "$RESP_BODY" | jq '.number')
+            RESP_BODY=$(printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//')
+            PR_NUMBER=$(printf '%s' "$RESP_BODY" | jq '.number // empty')
             if [[ -z "${PR_NUMBER}" || "${PR_NUMBER}" == "null" ]]; then
-              echo "Failed to create PR (HTTP ${HTTP_CODE}): $RESP_BODY" >&2
+              # Attempt to classify error
+              MSG=$(printf '%s' "$RESP_BODY" | jq -r '.message // empty')
+              if echo "$MSG" | grep -qiE 'forbidden|must have|not accessible|Resource not accessible'; then
+                echo "reason=insufficient-permissions" >> "$GITHUB_OUTPUT"
+                echo "Insufficient permissions creating PR: $MSG"
+                echo '::error title=Insufficient permissions::Token lacks required scopes to create PR'
+                exit 0
+              fi
+              echo "Failed to create PR: $RESP_BODY" >&2
               exit 1
             fi
             echo "Created PR: #${PR_NUMBER}"
             echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
           fi
+          echo '::endgroup::'
 
       - name: Label PR (automerge-candidate)
         if: steps.meta.outputs.qa_done == 'true'
@@ -148,6 +167,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo '::group::Label PR (automerge-candidate)'
           if [[ "${{ steps.ctx.outputs.dry_run }}" == "true" ]]; then
             echo "dry-run: Skipping label application (automerge-candidate)."
             exit 0
@@ -158,16 +178,28 @@ jobs:
           PR_NUMBER="${{ steps.create_pr.outputs.pr_number || '' }}"
           if [[ -z "$PR_NUMBER" ]]; then
             BRANCH="${{ steps.ctx.outputs.branch }}"
-            PR_NUMBER=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
-              "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+            RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS \
+              -H "authorization: Bearer ${GH_TOKEN}" \
+              -H "accept: application/vnd.github+json" \
+              -w "HTTPSTATUS:%{http_code}" \
+              "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open")
+            BODY=$(printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//')
+            PR_NUMBER=$(printf '%s' "$BODY" | jq '.[0].number // empty')
           fi
           if [[ -z "$PR_NUMBER" ]]; then
             echo "No PR found to label. Skipping."
             exit 0
           fi
           PAYLOAD='{"labels":["automerge-candidate"]}'
-          curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
-            -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" | jq '.' || true
+          RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS -X POST \
+            -H "authorization: Bearer ${GH_TOKEN}" \
+            -H "accept: application/vnd.github+json" \
+            -H "content-type: application/json" \
+            -w "HTTPSTATUS:%{http_code}" \
+            -d "$PAYLOAD" \
+            "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels")
+          printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//' | jq '.' || true
+          echo '::endgroup::'
 
       - name: Label PR (automerge-ok)
         if: steps.meta.outputs.qa_done == 'true'
@@ -176,6 +208,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo '::group::Label PR (automerge-ok)'
           if [[ "${{ steps.ctx.outputs.dry_run }}" == "true" ]]; then
             echo "dry-run: Skipping label application (automerge-ok)."
             exit 0
@@ -186,16 +219,28 @@ jobs:
           PR_NUMBER="${{ steps.create_pr.outputs.pr_number || '' }}"
           if [[ -z "$PR_NUMBER" ]]; then
             BRANCH="${{ steps.ctx.outputs.branch }}"
-            PR_NUMBER=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
-              "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+            RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS \
+              -H "authorization: Bearer ${GH_TOKEN}" \
+              -H "accept: application/vnd.github+json" \
+              -w "HTTPSTATUS:%{http_code}" \
+              "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open")
+            BODY=$(printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//')
+            PR_NUMBER=$(printf '%s' "$BODY" | jq '.[0].number // empty')
           fi
           if [[ -z "$PR_NUMBER" ]]; then
             echo "No PR found to label. Skipping."
             exit 0
           fi
           PAYLOAD='{"labels":["automerge-ok"]}'
-          curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
-            -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" | jq '.' || true
+          RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS -X POST \
+            -H "authorization: Bearer ${GH_TOKEN}" \
+            -H "accept: application/vnd.github+json" \
+            -H "content-type: application/json" \
+            -w "HTTPSTATUS:%{http_code}" \
+            -d "$PAYLOAD" \
+            "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels")
+          printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//' | jq '.' || true
+          echo '::endgroup::'
 
       - name: Enable auto-merge (squash)
         id: enable_am
@@ -205,6 +250,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo '::group::Enable auto-merge (GraphQL)'
           echo "attempted=true" >> "$GITHUB_OUTPUT"
           echo "enabled=false" >> "$GITHUB_OUTPUT"
           echo "reason=unknown" >> "$GITHUB_OUTPUT"
@@ -217,8 +263,12 @@ jobs:
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
           # Check repo setting allow_auto_merge
-          REPO_JSON=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+          RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS \
+            -H "authorization: Bearer ${GH_TOKEN}" \
+            -H "accept: application/vnd.github+json" \
+            -w "HTTPSTATUS:%{http_code}" \
             "${API}/repos/${OWNER}/${REPO}")
+          REPO_JSON=$(printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//')
           ALLOW=$(echo "$REPO_JSON" | jq -r '.allow_auto_merge // false')
           echo "Repo allow_auto_merge=$ALLOW"
           if [[ "$ALLOW" != "true" ]]; then
@@ -229,16 +279,25 @@ jobs:
           PR_NUMBER="${{ steps.create_pr.outputs.pr_number || '' }}"
           if [[ -z "$PR_NUMBER" ]]; then
             BRANCH="${{ steps.ctx.outputs.branch }}"
-            PR_NUMBER=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
-              "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+            RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS \
+              -H "authorization: Bearer ${GH_TOKEN}" \
+              -H "accept: application/vnd.github+json" \
+              -w "HTTPSTATUS:%{http_code}" \
+              "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open")
+            BODY=$(printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//')
+            PR_NUMBER=$(printf '%s' "$BODY" | jq '.[0].number // empty')
           fi
           if [[ -z "$PR_NUMBER" ]]; then
             echo "reason=no-open-pr" >> "$GITHUB_OUTPUT"
             echo "No PR found to enable auto-merge on. Exiting gracefully."
             exit 0
           fi
-          PR_JSON=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+          RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS \
+            -H "authorization: Bearer ${GH_TOKEN}" \
+            -H "accept: application/vnd.github+json" \
+            -w "HTTPSTATUS:%{http_code}" \
             "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}")
+          PR_JSON=$(printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//')
           HEAD_BRANCH=$(echo "$PR_JSON" | jq -r '.head.ref')
           LABELS_CSV=$(echo "$PR_JSON" | jq -r '(.labels // []) | map(.name) | join(",")')
           if [[ "$HEAD_BRANCH" =~ ^story/ ]]; then
@@ -257,9 +316,13 @@ jobs:
           fi
           GQL=$'mutation EnableAutoMerge($pr: ID!) {\n  enablePullRequestAutoMerge(input: { pullRequestId: $pr, mergeMethod: SQUASH }) {\n    clientMutationId\n  }\n}'
           VARIABLES=$(jq -cn --arg pr "$NODE_ID" '{pr:$pr}')
-          RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "content-type: application/json" \
+          RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS \
+            -H "authorization: Bearer ${GH_TOKEN}" \
+            -H "content-type: application/json" \
+            -w "HTTPSTATUS:%{http_code}" \
             -d "$(jq -cn --arg query "$GQL" --argjson variables "$VARIABLES" '{query:$query, variables:$variables}')" \
             https://api.github.com/graphql)
+          RESP=$(printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//')
           echo "$RESP" | jq '.' || true
           if echo "$RESP" | grep -q 'errors'; then
             echo "reason=graphql-error" >> "$GITHUB_OUTPUT"
@@ -268,6 +331,7 @@ jobs:
           fi
           echo "enabled=true" >> "$GITHUB_OUTPUT"
           echo "reason=enabled" >> "$GITHUB_OUTPUT"
+          echo '::endgroup::'
 
       - name: Emit auto-merge summary
         if: always()
@@ -277,6 +341,22 @@ jobs:
           echo "- Attempted: ${{ steps.enable_am.outputs.attempted }}" >> $GITHUB_STEP_SUMMARY
           echo "- Enabled: ${{ steps.enable_am.outputs.enabled }}" >> $GITHUB_STEP_SUMMARY
           echo "- Reason: ${{ steps.enable_am.outputs.reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: ${{ steps.ctx.outputs.branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "- QA Done: ${{ steps.meta.outputs.qa_done || '' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Story ID: ${{ steps.meta.outputs.story_id || '' }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Emit overall summary
+        if: always()
+        run: |
+          set -euo pipefail
+          echo "### Reusable Auto PR summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Branch: ${{ steps.ctx.outputs.branch }}" >> $GITHUB_STEP_SUMMARY
+          echo "- QA Done: ${{ steps.meta.outputs.qa_done || '' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Reason (meta): ${{ steps.meta.outputs.reason || '' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- PR Number: ${{ steps.create_pr.outputs.pr_number || '' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Auto-merge attempted: ${{ steps.enable_am.outputs.attempted || '' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Auto-merge enabled: ${{ steps.enable_am.outputs.enabled || '' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Auto-merge reason: ${{ steps.enable_am.outputs.reason || '' }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Auto-approve PR (bot review)
         if: steps.meta.outputs.qa_done == 'true' && inputs.auto_approve
