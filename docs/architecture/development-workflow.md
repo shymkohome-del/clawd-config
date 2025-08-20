@@ -49,3 +49,22 @@
 
 - Run `scripts/dev-validate.sh` before pushing
 - Preflight parser validates branch and story file presence without network calls
+
+## **Agent quick-start**
+
+### Dev agent (`@dev`)
+
+- Work on `story/<id>-<slug>` or `feature/<slug>`.
+- Before push: `dart format .`, `flutter analyze --fatal-infos --fatal-warnings`, `flutter test --no-pub` or `scripts/dev-validate.sh`.
+- Push to remote; automation will open a PR to `develop`. For `story/*`, QA must set `Status: Done` in the story file to be eligible.
+- Auto-merge gates: required checks must be green; for `story/*`, label `automerge-ok` is required (non‑story branches are allowed by default).
+
+### QA agent (`@qa`)
+
+- Review story ACs; update `QA Results` and set `Status: Done` only when all ACs pass.
+- A push with `Status: Done` on `story/*` triggers auto‑PR. Labels `automerge-candidate` and `automerge-ok` allow enablement; required checks must pass.
+- If any AC fails/partial: set `Status: InProgress` and add a brief reason in the story `Change Log` (returns ownership to Dev).
+
+### Feature flags (repo variables)
+
+- `AUTO_PR_ENABLED`, `AUTO_MERGE_ENABLED`, `AUTO_APPROVE_ENABLED` — set to `'false'` to disable respective behavior without code changes.
