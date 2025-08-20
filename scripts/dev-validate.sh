@@ -41,8 +41,19 @@ if command -v docker >/dev/null 2>&1; then
     elif command -v python3 >/dev/null 2>&1; then
       echo "[dev-validate] Attempting yamllint via pip user install..."
       python3 -m pip install --user -q yamllint==1.35.1 --break-system-packages || true
-      if python3 -c 'import yamllint' >/dev/null 2>&1; then
+      PYVER=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+      if command -v yamllint >/dev/null 2>&1; then
+        echo "[dev-validate] Running yamllint (binary on PATH)"
+        yamllint --strict .github/workflows
+      elif [[ -x "$HOME/.local/bin/yamllint" ]]; then
+        echo "[dev-validate] Running yamllint (~/.local/bin)"
         "$HOME/.local/bin/yamllint" --strict .github/workflows
+      elif [[ -x "$HOME/Library/Python/${PYVER}/bin/yamllint" ]]; then
+        echo "[dev-validate] Running yamllint (macOS user bin)"
+        "$HOME/Library/Python/${PYVER}/bin/yamllint" --strict .github/workflows
+      elif python3 -c 'import yamllint' >/dev/null 2>&1; then
+        echo "[dev-validate] Running yamllint via python -m"
+        python3 -m yamllint --strict .github/workflows
       else
         echo "[dev-validate] WARN: yamllint unavailable; skipping"
       fi
@@ -62,8 +73,19 @@ else
   elif command -v python3 >/dev/null 2>&1; then
     echo "[dev-validate] Attempting yamllint via pip user install..."
     python3 -m pip install --user -q yamllint==1.35.1 --break-system-packages || true
-    if python3 -c 'import yamllint' >/dev/null 2>&1; then
+    PYVER=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+    if command -v yamllint >/dev/null 2>&1; then
+      echo "[dev-validate] Running yamllint (binary on PATH)"
+      yamllint --strict .github/workflows
+    elif [[ -x "$HOME/.local/bin/yamllint" ]]; then
+      echo "[dev-validate] Running yamllint (~/.local/bin)"
       "$HOME/.local/bin/yamllint" --strict .github/workflows
+    elif [[ -x "$HOME/Library/Python/${PYVER}/bin/yamllint" ]]; then
+      echo "[dev-validate] Running yamllint (macOS user bin)"
+      "$HOME/Library/Python/${PYVER}/bin/yamllint" --strict .github/workflows
+    elif python3 -c 'import yamllint' >/dev/null 2>&1; then
+      echo "[dev-validate] Running yamllint via python -m"
+      python3 -m yamllint --strict .github/workflows
     else
       echo "[dev-validate] WARN: yamllint unavailable; skipping"
     fi
