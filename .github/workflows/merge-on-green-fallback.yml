@@ -208,7 +208,7 @@ jobs:
           CANDIDATE_CHECKS=(
             "Flutter CI / build-and-test"
             "PR Lint / pr-lint"
-            "Workflow Lint / lint"
+            "Auto PR and Auto-merge on QA Done / workflow-lint"
             "Auto PR and Auto-merge on QA Done / open-pr-and-automerge"
           )
           attempt=0; max_attempts=30

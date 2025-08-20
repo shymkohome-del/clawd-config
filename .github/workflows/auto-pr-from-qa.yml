@@ -9,6 +9,11 @@ on:
       - 'chore/**'
       - 'patch/**'
   workflow_dispatch:
+    inputs:
+      branch:
+        description: "Target branch to operate on (defaults to ref name)"
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -50,9 +55,12 @@ jobs:
   open-pr-and-automerge-reusable:
     needs: [workflow-lint]
     if: ${{ vars.AUTO_PR_ENABLED != 'false' }}
+    permissions:
+      contents: write
+      pull-requests: write
     uses: ./.github/workflows/reusable-auto-pr.yml
     with:
-      branch: ${{ github.ref_name }}
+      branch: ${{ inputs.branch || github.ref_name }}
       enable_auto_merge: ${{ vars.AUTO_MERGE_ENABLED != 'false' }}
       auto_approve: ${{ vars.AUTO_APPROVE_ENABLED != 'false' }}
       dry_run: false
