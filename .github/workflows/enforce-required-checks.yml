@@ -87,9 +87,8 @@ jobs:
             # Extract current contexts if present; default to empty array
             CURRENT_CONTEXTS=$(printf '%s' "$PROTECTION" | jq -c '.required_status_checks.contexts // []')
 
-            # Merge contexts with all required contexts, unique
-            UPDATED_CONTEXTS=$(jq -nc --argjson ctxs "$CURRENT_CONTEXTS" --argjson req "$REQUIRED_CONTEXTS_JSON" '
-              ($ctxs + $req) | unique')
+            # Replace existing contexts with the required set (prune legacy names)
+            UPDATED_CONTEXTS=$(jq -nc --argjson req "$REQUIRED_CONTEXTS_JSON" '$req')
 
             # Build payload: preserve strict=true, set contexts; keep other settings permissive
             PAYLOAD=$(jq -nc --argjson contexts "$UPDATED_CONTEXTS" '{
