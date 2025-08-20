@@ -36,6 +36,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       pr_number: ${{ steps.create_pr.outputs.pr_number }}
+      auto_merge_attempted: ${{ steps.enable_am.outputs.attempted }}
+      auto_merge_enabled: ${{ steps.enable_am.outputs.enabled }}
+      auto_merge_reason: ${{ steps.enable_am.outputs.reason }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -195,19 +198,34 @@ jobs:
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" | jq '.' || true
 
       - name: Enable auto-merge (squash)
+        id: enable_am
         if: steps.meta.outputs.qa_done == 'true' && inputs.enable_auto_merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
+          echo "attempted=true" >> "$GITHUB_OUTPUT"
+          echo "enabled=false" >> "$GITHUB_OUTPUT"
+          echo "reason=unknown" >> "$GITHUB_OUTPUT"
           if [[ "${{ steps.ctx.outputs.dry_run }}" == "true" ]]; then
+            echo "reason=dry-run" >> "$GITHUB_OUTPUT"
             echo "dry-run: Skipping GraphQL auto-merge enable."
             exit 0
           fi
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
+          # Check repo setting allow_auto_merge
+          REPO_JSON=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            "${API}/repos/${OWNER}/${REPO}")
+          ALLOW=$(echo "$REPO_JSON" | jq -r '.allow_auto_merge // false')
+          echo "Repo allow_auto_merge=$ALLOW"
+          if [[ "$ALLOW" != "true" ]]; then
+            echo "reason=repo-allow-auto-merge-disabled" >> "$GITHUB_OUTPUT"
+            echo "Auto-merge not enabled at repo level. Exiting gracefully."
+            exit 0
+          fi
           PR_NUMBER="${{ steps.create_pr.outputs.pr_number || '' }}"
           if [[ -z "$PR_NUMBER" ]]; then
             BRANCH="${{ steps.ctx.outputs.branch }}"
@@ -215,6 +233,7 @@ jobs:
               "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
           fi
           if [[ -z "$PR_NUMBER" ]]; then
+            echo "reason=no-open-pr" >> "$GITHUB_OUTPUT"
             echo "No PR found to enable auto-merge on. Exiting gracefully."
             exit 0
           fi
@@ -224,12 +243,15 @@ jobs:
           LABELS_CSV=$(echo "$PR_JSON" | jq -r '[.labels[].name] | join(",")')
           if [[ "$HEAD_BRANCH" =~ ^story/ ]]; then
             if [[ ",${LABELS_CSV}," != *",automerge-ok,"* ]]; then
+              echo "attempted=false" >> "$GITHUB_OUTPUT"
+              echo "reason=label-gate-missing" >> "$GITHUB_OUTPUT"
               echo "Note: Skipping auto-merge enable for story branch due to missing 'automerge-ok' label."
               exit 0
             fi
           fi
           NODE_ID=$(echo "$PR_JSON" | jq -r '.node_id')
           if [[ -z "$NODE_ID" || "$NODE_ID" == "null" ]]; then
+            echo "reason=no-node-id" >> "$GITHUB_OUTPUT"
             echo "Failed to get PR node_id"
             exit 0
           fi
@@ -240,9 +262,21 @@ jobs:
             https://api.github.com/graphql)
           echo "$RESP" | jq '.' || true
           if echo "$RESP" | grep -q 'errors'; then
-            echo "Auto-merge enable failed (possibly disabled on repo). Leaving PR open."
+            echo "reason=graphql-error" >> "$GITHUB_OUTPUT"
+            echo "Auto-merge enable failed. Leaving PR open."
             exit 0
           fi
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+          echo "reason=enabled" >> "$GITHUB_OUTPUT"
+
+      - name: Emit auto-merge summary
+        if: always()
+        run: |
+          set -euo pipefail
+          echo "### Auto-merge enable summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Attempted: ${{ steps.enable_am.outputs.attempted }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Enabled: ${{ steps.enable_am.outputs.enabled }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Reason: ${{ steps.enable_am.outputs.reason }}" >> $GITHUB_STEP_SUMMARY
 
       - name: Auto-approve PR (bot review)
         if: steps.meta.outputs.qa_done == 'true' && inputs.auto_approve

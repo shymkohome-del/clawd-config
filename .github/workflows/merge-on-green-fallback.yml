@@ -89,9 +89,11 @@ jobs:
           HEAD_BRANCH=$(echo "$PR" | jq -r '.head.ref')
           LABELS=$(echo "$PR" | jq -r '[.labels[].name] | join(",")')
           MERGEABLE_STATE=$(echo "$PR" | jq -r '.mergeable_state')
+          AUTO_MERGE_ENABLED=$(echo "$PR" | jq -r '(.auto_merge != null)')
           echo "head_branch=${HEAD_BRANCH}" >> "$GITHUB_OUTPUT"
           echo "labels=${LABELS}" >> "$GITHUB_OUTPUT"
           echo "mergeable_state=${MERGEABLE_STATE}" >> "$GITHUB_OUTPUT"
+           echo "auto_merge_enabled=${AUTO_MERGE_ENABLED}" >> "$GITHUB_OUTPUT"
           if [[ "$HEAD_BRANCH" =~ ^story/ ]]; then
             if [[ ",${LABELS}," != *",automerge-ok,"* ]]; then
               echo "Story branch without 'automerge-ok' label. Skipping."
@@ -116,7 +118,7 @@ jobs:
             "Flutter CI / build-and-test"
             "PR Lint / pr-lint"
             "Workflow Lint / lint"
-            "Auto PR and Auto-merge on QA Done / open-pr-and-automerge-reusable"
+            "Auto PR and Auto-merge on QA Done / open-pr-and-automerge"
           )
           attempt=0; max_attempts=30
           while (( attempt < max_attempts )); do
@@ -157,7 +159,7 @@ jobs:
           exit 0
 
       - name: Merge PR (squash) and delete branch (skipped locally)
-        if: steps.wait_checks.outputs.checks_ok == 'true'
+        if: steps.wait_checks.outputs.checks_ok == 'true' && steps.gate.outputs.auto_merge_enabled != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -192,12 +194,21 @@ jobs:
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUTO_MERGE_ENABLED: ${{ steps.gate.outputs.auto_merge_enabled || '' }}
+          CHECKS_OK: ${{ steps.wait_checks.outputs.checks_ok || '' }}
         shell: bash
         run: |
           set -euo pipefail
           PR_NUMBER="${{ steps.find_pr.outputs.pr_number || '' }}"
-          MERGED_NOTE="${{ steps.wait_checks.outputs.checks_ok == 'true' && 'merge-attempted' || 'merge-skipped' }}"
+          if [[ "${AUTO_MERGE_ENABLED}" == "true" ]]; then
+            MERGED_NOTE="auto-merge-pre-enabled"
+          elif [[ "${CHECKS_OK}" == "true" ]]; then
+            MERGED_NOTE="merge-attempted"
+          else
+            MERGED_NOTE="merge-skipped"
+          fi
           echo "### Merge-on-Green summary" >> $GITHUB_STEP_SUMMARY
           echo "- PR: #${PR_NUMBER}" >> $GITHUB_STEP_SUMMARY
-          echo "- Checks green: ${{ steps.wait_checks.outputs.checks_ok }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Checks green: ${CHECKS_OK}" >> $GITHUB_STEP_SUMMARY
+          echo "- Auto-merge pre-enabled: ${AUTO_MERGE_ENABLED}" >> $GITHUB_STEP_SUMMARY
           echo "- Action: ${MERGED_NOTE}" >> $GITHUB_STEP_SUMMARY
