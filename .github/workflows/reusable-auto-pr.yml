@@ -100,11 +100,13 @@ jobs:
           fi
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
+          # yamllint disable rule:line-length
           GQL=$'query RepoSettings($owner:String!,$name:String!){\n  repository(owner:$owner,name:$name){\n    autoMergeAllowed\n    squashMergeAllowed\n    branchProtectionRules(first:50){ nodes{ pattern requiredStatusCheckContexts } }\n  }\n}'
           VARIABLES=$(jq -cn --arg owner "$OWNER" --arg name "$REPO" '{owner:$owner,name:$name}')
           RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "content-type: application/json" \
             -d "$(jq -cn --arg query "$GQL" --argjson variables "$VARIABLES" '{query:$query,variables:$variables}')" \
             https://api.github.com/graphql)
+          # yamllint enable
           AUTO=$(echo "$RESP" | jq -r '.data.repository.autoMergeAllowed // empty')
           SQUASH=$(echo "$RESP" | jq -r '.data.repository.squashMergeAllowed // empty')
           REQ=$(echo "$RESP" | jq -r '.data.repository.branchProtectionRules.nodes[] | select(.pattern=="develop") | .requiredStatusCheckContexts | join(",")')
@@ -274,11 +276,13 @@ jobs:
             echo "Failed to get PR node_id"
             exit 0
           fi
+          # yamllint disable rule:line-length
           GQL=$'mutation EnableAutoMerge($pr: ID!) {\n  enablePullRequestAutoMerge(input: { pullRequestId: $pr, mergeMethod: SQUASH }) {\n    clientMutationId\n  }\n}'
           VARIABLES=$(jq -cn --arg pr "$NODE_ID" '{pr:$pr}')
           RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "content-type: application/json" \
             -d "$(jq -cn --arg query "$GQL" --argjson variables "$VARIABLES" '{query:$query, variables:$variables}')" \
             https://api.github.com/graphql)
+          # yamllint enable
           echo "$RESP" | jq '.' || true
           if echo "$RESP" | grep -q 'errors'; then
             REASON=$(echo "$RESP" | jq -r '.errors[0].message // "graphql-error"')
@@ -333,5 +337,4 @@ jobs:
           PAYLOAD='{"event":"APPROVE","body":"Auto-approval by reusable workflow."}'
           curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/reviews" | jq '.' || true
-
 
