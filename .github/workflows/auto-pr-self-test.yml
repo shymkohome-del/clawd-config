@@ -9,45 +9,19 @@ on:
 
 jobs:
   matrix-tests:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         case:
           - name: feature branch
             branch: feature/selftest
-            status_done: ''
-          - name: story done
+          - name: story branch (no file)
             branch: story/1.2-selftest-done
-            status_done: 'Done'
-          - name: story not done
+          - name: story branch (no file)
             branch: story/1.3-selftest-not-done
-            status_done: 'InProgress'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Prepare synthetic story files
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p docs/stories
-          for id in 1.2 1.3; do
-            FILE="docs/stories/${id}.selftest.md"
-            echo "Title: Story ${id} — Self-test" > "$FILE"
-            if [[ "$id" == "1.2" ]]; then
-              echo "Status: Done" >> "$FILE"
-            else
-              echo "Status: InProgress" >> "$FILE"
-            fi
-          done
-
-      - name: Call reusable in dry-run
-        uses: ./.github/workflows/reusable-auto-pr.yml
-        with:
-          branch: ${{ matrix.case.branch }}
-          enable_auto_merge: false
-          auto_approve: false
-          dry_run: true
+    uses: ./.github/workflows/reusable-auto-pr.yml
+    with:
+      branch: ${{ matrix.case.branch }}
+      enable_auto_merge: false
+      auto_approve: false
+      dry_run: true
