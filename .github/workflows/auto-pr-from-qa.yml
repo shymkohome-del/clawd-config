@@ -52,8 +52,23 @@ jobs:
           set -euo pipefail
           ~/.local/bin/yamllint --strict .github/workflows
 
-  open-pr-and-automerge-reusable:
+  preflight-parse:
+    name: Preflight Parser
     needs: [workflow-lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run preflight parser
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/preflight-parse.sh "${{ inputs.branch || github.ref_name }}"
+
+  open-pr-and-automerge-reusable:
+    needs: [workflow-lint, preflight-parse]
     if: ${{ vars.AUTO_PR_ENABLED != 'false' }}
     permissions:
       contents: write
@@ -66,7 +81,7 @@ jobs:
       dry_run: false
     secrets: inherit
   note-auto-pr-disabled:
-    needs: [workflow-lint]
+    needs: [workflow-lint, preflight-parse]
     if: ${{ vars.AUTO_PR_ENABLED == 'false' }}
     runs-on: ubuntu-latest
     steps:
