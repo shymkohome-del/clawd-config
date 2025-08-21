@@ -57,7 +57,7 @@ jobs:
       - name: Find PR for branch
         id: find_pr
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -76,7 +76,7 @@ jobs:
       - name: Load PR details and gate by label/branch
         id: gate
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -104,7 +104,7 @@ jobs:
       - name: Auto-update PR branch if behind
         id: update_branch
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -155,7 +155,7 @@ jobs:
         id: wait_checks
         if: steps.update_branch.outputs.need_rebase != 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -212,7 +212,7 @@ jobs:
       - name: Merge PR (squash) and delete branch (skipped locally)
         if: steps.wait_checks.outputs.checks_ok == 'true' && steps.gate.outputs.auto_merge_enabled != 'true' && steps.update_branch.outputs.need_rebase != 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
