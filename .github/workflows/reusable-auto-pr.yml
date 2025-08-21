@@ -92,10 +92,12 @@ jobs:
         if: steps.meta.outputs.qa_done == 'true'
         env:
           # Prefer fine-grained PAT if present; fall back to default token
-          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_TOKEN_SOURCE: ${{ (secrets.AUTO_PR_TOKEN && 'AUTO_PR_TOKEN') || (secrets.BOT_PAT && 'BOT_PAT') || (secrets.REPO_SCOPED_TOKEN && 'REPO_SCOPED_TOKEN') || (secrets.REPO_ADMIN_TOKEN && 'REPO_ADMIN_TOKEN') || 'GITHUB_TOKEN' }}
         shell: bash
         run: |
           set -euo pipefail
+          echo "Using token source: ${GH_TOKEN_SOURCE}" >&2
           if [[ "${{ steps.ctx.outputs.dry_run }}" == "true" ]]; then
             echo "dry-run: Skipping PR query/create."
             exit 0
@@ -129,7 +131,7 @@ jobs:
             RESP_BODY=$(echo "$RESP" | sed '$d')
             if [[ "$HTTP_CODE" == "403" ]]; then
               MSG=$(printf '%s' "$RESP_BODY" | jq -r '.message // empty')
-              echo "Permission denied (HTTP 403) creating PR: ${MSG}." >&2
+              echo "Permission denied (HTTP 403) creating PR: ${MSG}. (token source=${GH_TOKEN_SOURCE})" >&2
               echo "reason=insufficient-permissions" >> "$GITHUB_OUTPUT"
               echo "Hint: Provide a repo-scoped token via secret AUTO_PR_TOKEN or BOT_PAT." >&2
               exit 1
