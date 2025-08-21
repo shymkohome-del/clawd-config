@@ -88,8 +88,22 @@ if [[ "$RUN_ACT_MODE" == "true" || ( "$RUN_ACT_MODE" == "auto" && $(command -v a
   fi
   if command -v act >/dev/null 2>&1; then
     echo "[dev-validate] Running auto-rebase via act (catches github-script runtime errors)"
-    # Use a dummy token to satisfy github-script client
-    act workflow_dispatch -W .github/workflows/auto-rebase.yml -j rebase -s GITHUB_TOKEN=dummy --container-architecture linux/amd64 || exit 1
+    # Prefer ACT_TOKEN, then GITHUB_TOKEN, else dummy
+    TOKEN="${ACT_TOKEN:-${GITHUB_TOKEN:-dummy}}"
+    set +e
+    LOG_FILE="$BIN_DIR/act-auto-rebase.log"
+    act workflow_dispatch -W .github/workflows/auto-rebase.yml -j rebase -s GITHUB_TOKEN="$TOKEN" --container-architecture linux/amd64 >"$LOG_FILE" 2>&1
+    ACT_STATUS=$?
+    set -e
+    if [[ $ACT_STATUS -ne 0 ]]; then
+      if grep -qiE 'authentication required|permission denied|could not read Username' "$LOG_FILE"; then
+        echo "[dev-validate] WARN: act failed due to auth (private repo). Treating as non-fatal."
+      else
+        echo "[dev-validate] act run failed. See $LOG_FILE"
+        cat "$LOG_FILE" | tail -n 100 || true
+        exit 1
+      fi
+    fi
   else
     echo "[dev-validate] act still unavailable; skipping act runs."
   fi
