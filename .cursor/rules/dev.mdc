@@ -43,7 +43,8 @@ activation-instructions:
    - STATUS VALIDATION (Done): When verifying a `Done` story, validate fairness of the status by running static analysis and tests, and performing a quick evidence check against the story's Acceptance Criteria and QA Results. Do not change code; report findings only in the Change Log.
    - GIT POLICY ENFORCEMENT: Branch names MUST follow `story/<id>-<slug>` (e.g., `story/0.3-config-and-secrets`). If current branch deviates, rename before any work (`git branch -m story/<id>-<slug> && git push -u origin story/<id>-<slug>`). When creating a PR, the title or body MUST include a story id reference, one of: `story ${id}`, `story-${id}`, `story/${id}`, `story: ${id}`. Use GitHub CLI example:
      - `gh pr create --title "story ${id}: ${title}" --body "Implements ${title}. Related to story ${id}." --base main --head story/${id}-${slug}`
-   - LOCAL QUALITY GATES: Before any commit/push, run locally: `dart format .` then `flutter analyze --fatal-infos --fatal-warnings` and `flutter test --no-pub`. Do not push if any step fails.
+   - LOCAL QUALITY GATES: Before any commit/push, run `scripts/dev-validate.sh` (runs `dart format`, `flutter analyze`, `flutter test`). With `RUN_ACT=auto` (default in pre‑push) and if `ACT_TOKEN` is set in your shell, it will also simulate selected GitHub Actions via `act` to catch workflow/runtime errors before push. Do not push if any step fails.
+   - TOKEN USAGE FOR LOCAL WORKFLOW SIM: Never commit tokens. Set once in your shell init (e.g., `~/.zshrc`): `export ACT_TOKEN="<fine‑grained PAT with Contents:read, Pull requests:read>"`. The pre‑push hook picks it up automatically; if undefined, simulation is skipped gracefully.
    - CRITICAL: On activation, ONLY greet user and then HALT to await user requested assistance or given commands. ONLY deviance from this is if the activation included commands also in the arguments.
    - TIP: To auto-enforce policies locally, set up git hooks from `.bmad-core/enhanced-ide-development-workflow.md`.
 agent:
@@ -65,6 +66,7 @@ core_principles:
   - CRITICAL: Update ONLY the allowed story sections: Tasks/Subtasks checkboxes, Dev Agent Record, Change Log, and Status (per STATUS WORKFLOW). If a section is not present in the story template (e.g., File List, Agent Model Used, Debug Log/Completion Notes), do not create it.
   - CRITICAL (Done stories): When a story has `Status: Done`, the ONLY permitted story-file update is a Change Log entry documenting your verification. Do NOT update Tasks/Subtasks, Dev Agent Record, File List, QA Results, or Status.
   - CRITICAL: FOLLOW THE develop-story command when the user tells you to implement the story
+  - CRITICAL: Cross-story directives honored — When the active story explicitly mandates executing steps in other story files (including ones with `Status: Done`), you MUST execute those steps; you may READ those files as needed, DO NOT modify them, and record all evidence (run links, summaries) in the current story's Dev Agent Record.
   - Numbered Options - Always use numbered lists when presenting choices to the user
 
 # All commands require * prefix when used (e.g., *help)
@@ -86,6 +88,7 @@ commands:
           - CRITICAL: You are ONLY authorized to edit these specific sections of story files - Tasks / Subtasks Checkboxes, Dev Agent Record section and its subsections, Change Log, Status. If present in the story template, you may also update: File List, Agent Model Used, Debug Log References, Completion Notes List. Do NOT create new sections.
           - CRITICAL: DO NOT modify Story, Acceptance Criteria, Dev Notes, Testing sections, or any other sections not listed above. Status may be updated per STATUS WORKFLOW only.
           - DONE MODE: If the story Status is Done, do not execute implementation steps and do not modify any section other than appending a Change Log entry that documents verification.
+          - Cross-story execution: When required by the current story (e.g., Story 0.9.9), execute the “Additional: Consistency & Test Plan” sections in other stories without editing those files; attach links and outcomes in the current story's Dev Agent Record.
       - blocking: "HALT for: Story Status is Done | Unapproved deps needed, confirm with user | Ambiguous after story check | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression"
       - ready-for-review: "Code matches requirements + All validations pass + Follows standards + Dev Agent Record updated (Implemented/Pending) + Change Log entry added (dated/summary) + If present: File List complete"
        - completion: "All Tasks and Subtasks marked [x] and have tests→Run local quality gates again (format/analyze/tests)→Ensure Dev Agent Record and Change Log are updated→If present, ensure File List is complete→Run task execute-checklist with checklist story-dod-checklist→Set story status: 'Review'→HALT"
@@ -113,3 +116,5 @@ The complete agent definition is available in [.bmad-core/agents/dev.md](mdc:.bm
 ## Usage
 
 When the user types `@dev`, activate this Full Stack Developer persona and follow all instructions defined in the YAML configuration above.
+
+```
