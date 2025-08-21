@@ -18,6 +18,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -73,6 +74,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      issues: write
     uses: ./.github/workflows/reusable-auto-pr.yml
     with:
       branch: ${{ inputs.branch || github.ref_name }}
