@@ -75,8 +75,9 @@ fi
 echo "[dev-validate] All local checks passed."
 
 # Optional: run workflows locally via act if installed
-# Optional local workflow execution with 'act' (disabled by default)
-if [[ "${RUN_ACT:-false}" == "true" ]]; then
+# Enable if RUN_ACT=true, or auto-run when RUN_ACT=auto (default) and act is available
+RUN_ACT_MODE="${RUN_ACT:-auto}"
+if [[ "$RUN_ACT_MODE" == "true" || ( "$RUN_ACT_MODE" == "auto" && $(command -v act >/dev/null 2>&1; echo $?) -eq 0 ) ]]; then
   if ! command -v act >/dev/null 2>&1; then
     if command -v brew >/dev/null 2>&1; then
       echo "[dev-validate] Installing 'act' via Homebrew..."
@@ -86,16 +87,14 @@ if [[ "${RUN_ACT:-false}" == "true" ]]; then
     fi
   fi
   if command -v act >/dev/null 2>&1; then
-    echo "[dev-validate] Running workflow-lint via act (CI_LOCAL=true)"
-    export CI_LOCAL=true
-    act push -W .github/workflows/workflow-lint.yml -s GITHUB_TOKEN=dummy --container-architecture linux/amd64 || exit 1
-    unset CI_LOCAL
-
-    echo "[dev-validate] Running flutter-ci via act"
-    act push -W .github/workflows/flutter-ci.yml --container-architecture linux/amd64 || exit 1
+    echo "[dev-validate] Running auto-rebase via act (catches github-script runtime errors)"
+    # Use a dummy token to satisfy github-script client
+    act workflow_dispatch -W .github/workflows/auto-rebase.yml -j rebase -s GITHUB_TOKEN=dummy --container-architecture linux/amd64 || exit 1
+  else
+    echo "[dev-validate] act still unavailable; skipping act runs."
   fi
 else
-  echo "[dev-validate] Skipping 'act' workflow execution (set RUN_ACT=true to enable)."
+  echo "[dev-validate] Skipping 'act' workflow execution (set RUN_ACT=true to force; current RUN_ACT=${RUN_ACT_MODE})."
 fi
 
 
