@@ -31,28 +31,30 @@ jobs:
             });
             const story = prs.filter(pr => pr.head.ref.startsWith('story/'));
             return JSON.stringify(story.map(p => ({number: p.number, ref: p.head.ref})));
-      - name: Rebase each PR branch on develop
-        uses: actions/github-script@v7
+      - name: Rebase each PR branch on develop (bash)
         env:
           PRS_JSON: ${{ steps.list.outputs.result }}
-        with:
-          script: |
-            const raw = process.env.PRS_JSON || '';
-            if (!raw || raw.trim() === '') {
-              core.info('No story PRs to rebase.');
-              return;
-            }
-            const items = JSON.parse(raw || '[]');
-            for (const item of items) {
-              core.startGroup(`Rebase ${item.ref}`);
-              await exec.exec('git', ['fetch', 'origin', 'develop', item.ref]);
-              await exec.exec('git', ['checkout', item.ref]);
-              try {
-                await exec.exec('git', ['rebase', 'origin/develop']);
-                await exec.exec('git', ['push', '--force-with-lease', 'origin', item.ref]);
-                core.info(`Rebased ${item.ref}`);
-              } catch (e) {
-                core.warning(`Conflict rebasing ${item.ref}, please resolve manually.`);
-              }
-              core.endGroup();
-            }
+        shell: bash
+        run: |
+          set -euo pipefail
+          RAW="${PRS_JSON:-}"
+          if [[ -z "${RAW}" || "${RAW//[\n\t ]/}" == "" ]]; then
+            echo "No story PRs to rebase."
+            exit 0
+          fi
+          echo "Will process: ${RAW}" | sed 's/.*/[debug] &/'
+          echo "$RAW" | jq -r '.[] | @base64' | while read -r row; do
+            _jq() { echo "${row}" | base64 --decode | jq -r "$1"; }
+            REF=$(_jq '.ref')
+            echo "::group::Rebase ${REF}"
+            git fetch origin develop "${REF}"
+            git checkout "${REF}"
+            if git rebase origin/develop; then
+              git push --force-with-lease origin "${REF}"
+              echo "Rebased ${REF}"
+            else
+              echo "::warning::Conflict rebasing ${REF}, please resolve manually."
+              git rebase --abort || true
+            fi
+            echo "::endgroup::"
+          done
