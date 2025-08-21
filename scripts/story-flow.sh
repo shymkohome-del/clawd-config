@@ -9,6 +9,7 @@ set -euo pipefail
 #   stop-watch                  → stop the running rebase watcher
 #   open-pr [title] [body]      → create PR (story/* → develop) and enable auto-merge if available
 #   status                      → show branch + ahead/behind + watcher status
+#   monitor [branch|#pr]        → watch PR checks and update story Change Log on failures
 
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || true)
 if [[ -z "${REPO_ROOT}" ]]; then
@@ -167,6 +168,7 @@ Commands:
   stop-watch                  Stop rebase watcher
   open-pr [title] [body]      Create PR to develop and request auto-merge
   status                      Show repo status and watcher info
+  monitor [branch|#pr]        Monitor PR checks, update story Change Log on failures
 USAGE
 }
 
@@ -178,6 +180,18 @@ case "${cmd}" in
   stop-watch)     cmd_stop_watch "$@" ;;
   open-pr)        cmd_open_pr "$@" ;;
   status)         cmd_status "$@" ;;
+  monitor)
+    target="${1:-}"
+    if [[ -z "$target" ]]; then
+      # Default to current branch
+      target=$(git rev-parse --abbrev-ref HEAD)
+    fi
+    if [[ ! -x scripts/pr-monitor.sh ]]; then
+      echo "scripts/pr-monitor.sh not found or not executable" >&2
+      exit 3
+    fi
+    scripts/pr-monitor.sh "$target" --interval 20 --timeout 3600
+    ;;
   *)              usage; exit 1 ;;
 esac
 

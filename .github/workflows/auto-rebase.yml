@@ -37,7 +37,6 @@ jobs:
           PRS_JSON: ${{ steps.list.outputs.result }}
         with:
           script: |
-            const exec = require('@actions/exec');
             const raw = process.env.PRS_JSON || '';
             if (!raw || raw.trim() === '') {
               core.info('No story PRs to rebase.');
@@ -46,11 +45,11 @@ jobs:
             const items = JSON.parse(raw || '[]');
             for (const item of items) {
               core.startGroup(`Rebase ${item.ref}`);
-              await exec.exec('git', ['fetch', 'origin', 'develop', item.ref]);
-              await exec.exec('git', ['checkout', item.ref]);
+              await exec('git', ['fetch', 'origin', 'develop', item.ref]);
+              await exec('git', ['checkout', item.ref]);
               try {
-                await exec.exec('git', ['rebase', 'origin/develop']);
-                await exec.exec('git', ['push', '--force-with-lease', 'origin', item.ref]);
+                await exec('git', ['rebase', 'origin/develop']);
+                await exec('git', ['push', '--force-with-lease', 'origin', item.ref]);
                 core.info(`Rebased ${item.ref}`);
               } catch (e) {
                 core.warning(`Conflict rebasing ${item.ref}, please resolve manually.`);

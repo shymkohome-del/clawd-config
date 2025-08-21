@@ -34,7 +34,21 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m pip install --user yamllint==1.35.1
-      - name: Run yamllint on workflows
+      - name: Run yamllint on workflows only
         run: |
           set -euo pipefail
-          ~/.local/bin/yamllint --strict .github/workflows
+          ~/.local/bin/yamllint --strict -c .yamllint.yml .github/workflows
+      - name: Validate github-script for exec redeclaration
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILES=$(grep -RIl "uses: actions/github-script@" .github/workflows | grep -v "/workflow-lint.yml$" || true)
+          if [[ -n "$FILES" ]]; then
+            OFFENDERS=$(echo "$FILES" | xargs -I{} grep -nH "const[[:space:]]\+exec\b" {} || true)
+            if [[ -n "$OFFENDERS" ]]; then
+              echo "ERROR: Found 'const exec' in actions/github-script code. Use injected 'exec' or alias it." >&2
+              echo "$OFFENDERS" | sed 's/^/  /'
+              exit 1
+            fi
+          fi
+          echo "github-script validator: OK"

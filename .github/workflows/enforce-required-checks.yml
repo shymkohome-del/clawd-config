@@ -25,9 +25,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "Repo: $GITHUB_REPOSITORY"
-          echo "Owner: $OWNER"
-          echo "Required contexts: $REQUIRED_CONTEXTS"
+          echo "Repo: ${GITHUB_REPOSITORY}"
+          echo "Owner: ${OWNER}"
+          echo "Required contexts: ${REQUIRED_CONTEXTS}"
 
       - name: Verify admin token presence
         id: token
@@ -78,7 +78,8 @@ jobs:
 
           enforce_for_branch() {
             local BRANCH="$1"
-            echo "\n>>> Enforcing required checks on branch: $BRANCH"
+            echo ""
+            echo ">>> Enforcing required checks on branch: ${BRANCH}"
 
             # Fetch existing protection (if any)
             PROTECTION=$(curl -sS -H "authorization: Bearer ${TOKEN}" -H "accept: application/vnd.github+json" \

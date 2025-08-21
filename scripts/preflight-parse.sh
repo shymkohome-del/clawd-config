@@ -19,8 +19,8 @@ story_file=""
 
 if [[ "$BRANCH" =~ ^story/([0-9]+(\.[0-9]+)*)- ]]; then
   story_id="${BASH_REMATCH[1]}"
-  # find story file by id prefix
-  story_file=$(ls docs/stories/${story_id}.*.md 2>/dev/null | head -n1 || true)
+  # find story file by id prefix (robust to special chars)
+  story_file=$(find docs/stories -maxdepth 1 -type f -name "${story_id}.*.md" | head -n1 || true)
   if [[ -z "${story_file:-}" ]]; then
     reason="story-file-missing"
   else

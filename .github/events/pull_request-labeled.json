@@ -1,0 +1,18 @@
+{
+  "action": "labeled",
+  "label": { "name": "automerge-ok" },
+  "pull_request": {
+    "number": 1,
+    "head": {
+      "ref": "story/0.9.4-reliability-hardening",
+      "sha": "0000000000000000000000000000000000000000"
+    }
+  },
+  "repository": {
+    "name": "crypto_market",
+    "full_name": "local/crypto_market",
+    "owner": { "login": "local" }
+  }
+}
+
+
