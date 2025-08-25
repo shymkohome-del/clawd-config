@@ -22,6 +22,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Common setup
+        uses: ./.github/actions/common-setup
       - name: Check branch when not a PR (push)
         if: ${{ github.event_name == 'push' }}
         shell: bash

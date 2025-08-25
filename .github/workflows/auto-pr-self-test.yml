@@ -21,10 +21,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Prepare scripts
-        run: |
-          set -euo pipefail
-          chmod +x scripts/*.sh 2>/dev/null || true
+      - name: Common setup
+        uses: ./.github/actions/common-setup
+        with:
+          prepare_scripts: 'true'
       - name: Preflight parse
         run: |
           set -euo pipefail

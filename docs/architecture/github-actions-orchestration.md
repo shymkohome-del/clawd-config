@@ -58,7 +58,7 @@
 ## Workflow catalog
 | Workflow file | Purpose | Triggers | Key gates | Outputs / side‑effects |
 |---|---|---|---|---|
-| `workflow-lint.yml` (Workflow Lint) | Lint workflows (actionlint + yamllint) and validate `actions/github-script` usage | `pull_request` to `main`,`develop`; `push` to any | n/a | Check‑run `lint` (required) |
+| `workflow-lint.yml` (Workflow Lint) | Lint workflows (actionlint + yamllint) and enforce unified style (no `actions/github-script`) | `pull_request` to `main`,`develop`; `push` to any | Bans `actions/github-script`; checks for `exec` conflicts if reintroduced | Check‑run `lint` (required) |
 | `pr-lint.yml` (PR Lint) | Enforce story branch regex and story reference in PR; ensure story file exists | `pull_request` (opened/edited/synchronize/reopened), `push` to `story/*` and typical prefixes | For `story/*`: `^story/[0-9]+(\.[0-9]+)*-[a-z0-9-]+$`, PR text must contain `story <id>`, story file must exist | Fails/notes; reminder to keep Status updated |
 | `flutter-ci.yml` (Flutter CI) | Analyze, format check, and test the Flutter app | `pull_request` to `main`,`develop`; `push` to `story/*`; `workflow_dispatch` | n/a | Check‑run `build-and-test` (required) |
 | `auto-pr-from-qa.yml` | On `story/**` pushes, lint + preflight parse, then call the reusable auto‑PR | `push` to `story/**`; `workflow_dispatch` | Delegates story `Status: Done` gate to reusable | Invokes reusable job; orchestrates open‑PR path |
@@ -93,6 +93,7 @@
     - Runs ShellCheck on repo scripts (non‑blocking)
     - Runs Flutter format/analyze/test
     - Executes selected workflows with `act` and `CI_LOCAL=true`
+    - Enforces unified workflow style: Bash/composite actions only (no `actions/github-script`)
 - Targeted `act` runs:
   - `scripts/run-act.sh qa` → simulate push to story branch → `auto-pr-from-qa.yml`
   - `scripts/run-act.sh mog` → simulate PR labeled → `merge-on-green-fallback.yml`

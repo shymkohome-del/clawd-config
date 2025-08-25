@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Common setup
+        uses: ./.github/actions/common-setup
       - name: Enable repo allow_auto_merge via API (non-local only)
         env:
           GH_TOKEN: ${{ secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}

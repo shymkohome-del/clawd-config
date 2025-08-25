@@ -21,6 +21,8 @@ jobs:
       REPO: ${{ github.event.repository.name || github.repository }}
       REQUIRED_CONTEXTS: '["build-and-test","pr-lint","lint"]'
     steps:
+      - name: Common setup
+        uses: ./.github/actions/common-setup
       - name: Show context
         shell: bash
         run: |

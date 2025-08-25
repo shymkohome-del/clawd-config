@@ -17,42 +17,57 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Common setup
+        uses: ./.github/actions/common-setup
+      - name: Install jq
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y jq
       - name: List open PRs from story/* to develop
         id: list
-        uses: actions/github-script@v7
-        with:
-          result-encoding: string
-          script: |
-            const prs = await github.paginate(github.rest.pulls.list, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              base: 'develop'
-            });
-            const story = prs.filter(pr => pr.head.ref.startsWith('story/'));
-            return JSON.stringify(story.map(p => ({number: p.number, ref: p.head.ref})));
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          PAGE=1
+          PRS="[]"
+          while :; do
+            RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H 'accept: application/vnd.github+json' \
+              "${API}/repos/${OWNER}/${REPO}/pulls?state=open&base=develop&per_page=100&page=${PAGE}")
+            COUNT=$(echo "$RESP" | jq 'length')
+            PRS=$(jq -nc --argjson acc "$PRS" --argjson resp "$RESP" '$acc + $resp')
+            if [ "$COUNT" -lt 100 ]; then break; fi
+            PAGE=$((PAGE+1))
+          done
+          STORY=$(echo "$PRS" | jq '[ .[] | select(.head.ref | startswith("story/")) | {number: .number, ref: .head.ref} ]')
+          echo "result=$(echo "$STORY" | jq -c '.')" >> "$GITHUB_OUTPUT"
       - name: Rebase each PR branch on develop
-        uses: actions/github-script@v7
         env:
           PRS_JSON: ${{ steps.list.outputs.result }}
-        with:
-          script: |
-            const raw = process.env.PRS_JSON || '';
-            if (!raw || raw.trim() === '') {
-              core.info('No story PRs to rebase.');
-              return;
-            }
-            const items = JSON.parse(raw || '[]');
-            for (const item of items) {
-              core.startGroup(`Rebase ${item.ref}`);
-              await exec('git', ['fetch', 'origin', 'develop', item.ref]);
-              await exec('git', ['checkout', item.ref]);
-              try {
-                await exec('git', ['rebase', 'origin/develop']);
-                await exec('git', ['push', '--force-with-lease', 'origin', item.ref]);
-                core.info(`Rebased ${item.ref}`);
-              } catch (e) {
-                core.warning(`Conflict rebasing ${item.ref}, please resolve manually.`);
-              }
-              core.endGroup();
-            }
+        shell: bash
+        run: |
+          set -euo pipefail
+          RAW="${PRS_JSON:-}"
+          if [[ -z "$RAW" || "$RAW" == "[]" ]]; then
+            echo "No story PRs to rebase."
+            exit 0
+          fi
+          echo "$RAW" | jq -c '.[]' | while read -r ITEM; do
+            REF=$(echo "$ITEM" | jq -r '.ref')
+            echo "::group::Rebase ${REF}"
+            git fetch origin develop "$REF"
+            git checkout "$REF"
+            if git rebase origin/develop; then
+              git push --force-with-lease origin "$REF"
+              echo "Rebased ${REF}"
+            else
+              echo "::warning::Conflict rebasing ${REF}, please resolve manually."
+              git rebase --abort || true
+            fi
+            echo "::endgroup::"
+          done

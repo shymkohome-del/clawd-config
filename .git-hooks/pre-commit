@@ -20,12 +20,20 @@ if [[ "$CURRENT_BRANCH" =~ ^story/ ]]; then
   fi
 fi
 
-# Lightweight workflow guard: block common github-script 'exec' redeclaration
-if grep -RIl "uses: actions/github-script@" .github/workflows >/dev/null 2>&1; then
-  # Ignore our own validator step message in workflow-lint.yml
-  if grep -RIn "const[[:space:]]\+exec\b" .github/workflows | grep -v "/workflow-lint.yml:" >/dev/null 2>&1; then
-    echo "[pre-commit] ERROR: Found 'const exec' in actions/github-script code. The runner already provides 'exec'." >&2
-    grep -RIn "const[[:space:]]\+exec\b" .github/workflows | grep -v "/workflow-lint.yml:" | sed 's/^/  /'
+# Ban actions/github-script entirely; enforce before commit
+FILES=$(grep -RIl "uses: actions/github-script@" .github/workflows | grep -v "/workflow-lint.yml$" || true)
+if [[ -n "$FILES" ]]; then
+  echo "[pre-commit] ERROR: actions/github-script is banned. Replace with bash/composite action." >&2
+  echo "$FILES" | sed 's/^/  /'
+  exit 1
+fi
+
+# Extra paranoid guard for exec conflicts if reintroduced
+FILES2=$(grep -RIl "uses: actions/github-script@" .github/workflows | grep -v "/workflow-lint.yml$" || true)
+if [[ -n "$FILES2" ]]; then
+  if grep -RIn -E "(\\b(const|let|var)[[:space:]]+exec\\b|import[[:space:]]+(\\*|\{[^}]*\\bexec\\b[^}]*)[[:space:]]+from|require\(['\"]@actions/exec['\"]\))" .github/workflows | grep -v "/workflow-lint.yml:" >/dev/null 2>&1; then
+    echo "[pre-commit] ERROR: Potential 'exec' conflicts detected in github-script code." >&2
+    grep -RIn -E "(\\b(const|let|var)[[:space:]]+exec\\b|import[[:space:]]+(\\*|\{[^}]*\\bexec\\b[^}]*)[[:space:]]+from|require\(['\"]@actions/exec['\"]\))" .github/workflows | grep -v "/workflow-lint.yml:" | sed 's/^/  /'
     exit 1
   fi
 fi

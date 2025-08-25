@@ -70,21 +70,23 @@ else
   fi
 fi
 
-# GitHub Script quick static check: prevent common 'exec' redeclaration in github-script steps
-echo "[dev-validate] Scanning github-script steps for 'const exec' redeclarations..."
+echo "[dev-validate] Enforcing ban on actions/github-script usage..."
 FILES=$(grep -RIl "uses: actions/github-script@" .github/workflows | grep -v "/workflow-lint.yml$" || true)
 if [[ -n "${FILES}" ]]; then
-  OFFENDERS=$(echo "$FILES" | xargs -I{} grep -nH "const[[:space:]]\+exec\b" {} || true)
+  echo "[dev-validate] ERROR: actions/github-script is banned in this repository. Found in:" >&2
+  echo "$FILES" | sed 's/^/  /' >&2
+  echo "[dev-validate] Guidance: Replace with bash/composite actions using curl/gh and our scripts/retry.sh." >&2
+  exit 1
+fi
+echo "[dev-validate] Scanning github-script steps for 'exec' redeclarations/imports (paranoid check)..."
+FILES=$(grep -RIl "uses: actions/github-script@" .github/workflows | grep -v "/workflow-lint.yml$" || true)
+if [[ -n "${FILES}" ]]; then
+  OFFENDERS=$(echo "$FILES" | xargs -I{} grep -nH -E "(\\b(const|let|var)[[:space:]]+exec\\b|import[[:space:]]+(\\*|\{[^}]*\\bexec\\b[^}]*)[[:space:]]+from|require\(['\"]@actions/exec['\"]\))" {} || true)
   if [[ -n "${OFFENDERS}" ]]; then
-    echo "[dev-validate] ERROR: Detected 'const exec' in github-script workflow code."
-    echo "[dev-validate] Hint: github-script exposes 'exec'; use it directly or alias another name if importing."
-    echo "$OFFENDERS" | sed 's/^/  /'
+    echo "[dev-validate] ERROR: Detected potential 'exec' conflicts in github-script code." >&2
+    echo "$OFFENDERS" | sed 's/^/  /' >&2
     exit 1
-  else
-    echo "[dev-validate] OK: No redeclarations of 'exec' found."
   fi
-else
-  echo "[dev-validate] No actions/github-script usages detected; skipping exec redeclaration scan."
 fi
 
 # Flutter/Dart gates (same as pre-push)

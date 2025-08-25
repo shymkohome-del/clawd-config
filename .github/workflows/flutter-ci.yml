@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Common setup
+        uses: ./.github/actions/common-setup
       - name: Detect Flutter app directory
         id: detect
         shell: bash
