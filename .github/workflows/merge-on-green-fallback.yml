@@ -45,7 +45,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "::group::Prepare context"
-          echo "event_name=${EVENT_NAME}" >> "$GITHUB_OUTPUT"
+          printf "event_name=%s\n" "${EVENT_NAME}" >> "$GITHUB_OUTPUT"
           case "${EVENT_NAME}" in
             workflow_run)
               BRANCH="${WR_HEAD_BRANCH}"
@@ -60,8 +60,8 @@ jobs:
               SHA="${GITHUB_SHA:-}"
               ;;
           esac
-          echo "branch=${BRANCH}" >> "$GITHUB_OUTPUT"
-          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+          printf "branch=%s\n" "${BRANCH}" >> "$GITHUB_OUTPUT"
+          printf "sha=%s\n" "${SHA}" >> "$GITHUB_OUTPUT"
           echo "::endgroup::"
 
       - name: Find PR for branch
@@ -97,7 +97,7 @@ jobs:
             echo "::endgroup::"
             exit 0
           fi
-          echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+          printf "pr_number=%s\n" "${PR_NUMBER}" >> "$GITHUB_OUTPUT"
           echo "::endgroup::"
 
       - name: Load PR details and gate by label/branch
@@ -127,10 +127,7 @@ jobs:
           LABELS=$(echo "$PR" | jq -r '(.labels // []) | map(.name) | join(",")')
           MERGEABLE_STATE=$(echo "$PR" | jq -r '.mergeable_state')
           AUTO_MERGE_ENABLED=$(echo "$PR" | jq -r '(.auto_merge != null)')
-          echo "head_branch=${HEAD_BRANCH}" >> "$GITHUB_OUTPUT"
-          echo "labels=${LABELS}" >> "$GITHUB_OUTPUT"
-          echo "mergeable_state=${MERGEABLE_STATE}" >> "$GITHUB_OUTPUT"
-           echo "auto_merge_enabled=${AUTO_MERGE_ENABLED}" >> "$GITHUB_OUTPUT"
+          # Note: Avoid setting verbose outputs here to prevent act parsing issues. Metrics will compute inline later.
           if [[ "$HEAD_BRANCH" =~ ^story/ ]]; then
             if [[ ",${LABELS}," != *",automerge-ok,"* && ",${LABELS}," != *",qa:approved,"* ]]; then
               echo "Story branch without 'automerge-ok' label. Skipping."
@@ -175,7 +172,7 @@ jobs:
           fi
           STATE=$(echo "$PR" | jq -r '.mergeable_state')
           HEAD_SHA=$(echo "$PR" | jq -r '.head.sha')
-          echo "state=$STATE" >> "$GITHUB_OUTPUT"
+          # state output omitted to avoid act parsing issues
           if [[ "$STATE" == "behind" ]]; then
             echo "PR is behind base; attempting to update branch via API..."
             PAYLOAD=$(jq -cn --arg sha "${HEAD_SHA}" '{expected_head_sha:$sha}')
@@ -187,11 +184,11 @@ jobs:
             HTTP=$(echo "$RESP" | sed -n '$s/.*HTTPSTATUS:\([0-9][0-9][0-9]\).*/\1/p')
             BODY=$(echo "$RESP" | sed '$d' | awk 'BEGIN{p=0} p{print} /^\r?$/{p=1}')
             if [[ "$HTTP" == "202" ]]; then
-              echo "updated=true" >> "$GITHUB_OUTPUT"
-              echo "need_rebase=false" >> "$GITHUB_OUTPUT"
+              printf "updated=%s\n" "true" >> "$GITHUB_OUTPUT"
+              printf "need_rebase=%s\n" "false" >> "$GITHUB_OUTPUT"
             else
-              echo "updated=false" >> "$GITHUB_OUTPUT"
-              echo "need_rebase=true" >> "$GITHUB_OUTPUT"
+              printf "updated=%s\n" "false" >> "$GITHUB_OUTPUT"
+              printf "need_rebase=%s\n" "true" >> "$GITHUB_OUTPUT"
               echo "Auto-update failed (HTTP ${HTTP}). Marking as needs rebase."
               # Ensure label exists
               LABEL_DEF=$(jq -cn --arg n 'needs-rebase' --arg c 'd93f0b' --arg d 'Rebase onto develop required' '{name:$n,color:$c,description:$d}')
@@ -210,8 +207,8 @@ jobs:
                   -d '$COMMENT' \"${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/comments\"" >/dev/null || true
             fi
           else
-            echo "updated=false" >> "$GITHUB_OUTPUT"
-            echo "need_rebase=false" >> "$GITHUB_OUTPUT"
+            printf "updated=%s\n" "false" >> "$GITHUB_OUTPUT"
+            printf "need_rebase=%s\n" "false" >> "$GITHUB_OUTPUT"
           fi
           echo "::endgroup::"
 
@@ -259,7 +256,7 @@ jobs:
             done
             if (( ${#REQ_CHECKS[@]} == 0 )); then
               echo "No matching check-runs found for this commit; proceeding as green by default."
-              echo "checks_ok=true" >> "$GITHUB_OUTPUT"
+              printf "checks_ok=%s\n" "true" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             ALL_OK=1
@@ -271,7 +268,7 @@ jobs:
               fi
             done
             if (( ALL_OK == 1 )); then
-              echo "checks_ok=true" >> "$GITHUB_OUTPUT"
+              printf "checks_ok=%s\n" "true" >> "$GITHUB_OUTPUT"
               echo "All required checks are green."
               exit 0
             fi
@@ -279,7 +276,7 @@ jobs:
             echo "Checks not yet green. Attempt ${attempt}/${max_attempts}. Sleeping ${sleep_secs}s..."
             sleep ${sleep_secs}
           done
-          echo "checks_ok=false" >> "$GITHUB_OUTPUT"
+          printf "checks_ok=%s\n" "false" >> "$GITHUB_OUTPUT"
           echo "Timeout waiting for checks to pass. Skipping merge."
           echo "::notice title=Timeout::Checks did not become green in time."
           echo "::endgroup::"

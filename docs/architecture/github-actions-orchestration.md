@@ -8,7 +8,7 @@
 
 ## Big picture
 - Push to a story branch (`story/<id>-<slug>`) kicks off lint and CI.
-- If QA has set the story file to `Status: Done`, automation creates/reuses a PR to `develop`, applies labels that authorize merge, and can enable native GitHub Auto‑merge.
+- For `story/*` branches, a PR to `develop` is created/reused automatically only when the story file contains `Status: Done`. Non‑story prefixes may always create a PR.
 - A merge orchestrator waits for required checks; if native auto‑merge isn’t already enabled, it merges via REST and deletes the source branch. If the branch is behind and can’t be auto‑updated, it labels `needs-rebase` and comments instructions.
 - A scheduled job periodically rebases open story PRs onto `develop`.
 - Branch protection enforces the required checks on `main` and `develop`.
@@ -18,15 +18,11 @@
    - `workflow-lint.yml` validates all workflows.
    - `pr-lint.yml` checks branch naming on push.
    - `flutter-ci.yml` runs analyze/format/test.
-   - `auto-pr-from-qa.yml` runs; it lints workflows, does preflight parse, then calls the reusable auto‑PR job.
+   - `auto-pr-from-qa.yml` runs; it lints workflows, does preflight parse, then calls the reusable auto‑PR job. For `story/*`, PR ensure step runs only if the story file is `Status: Done`.
 
 2. Reusable Auto PR (`reusable-auto-pr.yml`)
-   - For `story/*`: reads `docs/stories/<id>.*.md`. If `Status: Done`:
-     - Create or reuse PR to `develop`.
-     - Apply labels: `automerge-candidate`, `automerge-ok`, `qa:approved`.
-     - Optionally enable native GitHub Auto‑merge (
-         squash) if the repo setting is on.
-   - If story `Status` is not Done: exit without PR/labels.
+   - Ensures a PR exists for supported branches.
+   - Auto‑labeling and auto‑merge enabling remain gated; story `Status: Done` is not required to create the PR and is expected only after merge.
    - For `feature|fix|chore|patch/*`: allowed by this job, but note the top-level entry workflow triggers on pushes to `story/**`.
 
 3. Pull request phase (PR targets `develop`)

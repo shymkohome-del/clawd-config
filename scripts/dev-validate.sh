@@ -125,14 +125,24 @@ if [[ "${RUN_ACT:-true}" == "true" ]]; then
   fi
   if command -v act >/dev/null 2>&1; then
     PLATFORM_MAP="-P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest"
-    echo "[dev-validate] act: workflow-lint"
+    echo "[dev-validate] act: workflow-lint (blocking)"
     act push -W .github/workflows/workflow-lint.yml -s GITHUB_TOKEN=dummy --env CI_LOCAL=true --container-architecture linux/amd64 "$PLATFORM_MAP" || exit 1
 
-    echo "[dev-validate] act: auto-pr-from-qa (push-story)"
-    act push -W .github/workflows/auto-pr-from-qa.yml -e .github/events/push-story.json -s GITHUB_TOKEN=dummy --env CI_LOCAL=true --container-architecture linux/amd64 "$PLATFORM_MAP" || true
+    echo "[dev-validate] act: pr-lint (push-story) (blocking)"
+    act push -W .github/workflows/pr-lint.yml -e .github/events/push-story.json -s GITHUB_TOKEN=dummy --env CI_LOCAL=true --container-architecture linux/amd64 "$PLATFORM_MAP" || exit 1
 
-    echo "[dev-validate] act: merge-on-green-fallback (pull_request labeled)"
-    act pull_request -W .github/workflows/merge-on-green-fallback.yml -e .github/events/pull_request-labeled.json -s GITHUB_TOKEN=dummy --env CI_LOCAL=true --container-architecture linux/amd64 "$PLATFORM_MAP" || true
+    if [[ "${ACT_RUN_FLUTTER_CI:-false}" == "true" ]]; then
+      echo "[dev-validate] act: flutter-ci (push-story) (non-blocking locally unless enabled)"
+      act push -W .github/workflows/flutter-ci.yml -e .github/events/push-story.json -s GITHUB_TOKEN=dummy --env CI_LOCAL=true --container-architecture linux/amd64 "$PLATFORM_MAP" || true
+    else
+      echo "[dev-validate] Skipping flutter-ci via act (set ACT_RUN_FLUTTER_CI=true to enable)."
+    fi
+
+    echo "[dev-validate] act: auto-pr-from-qa (push-story) (blocking)"
+    act push -W .github/workflows/auto-pr-from-qa.yml -e .github/events/push-story.json -s GITHUB_TOKEN=dummy --env CI_LOCAL=true --container-architecture linux/amd64 "$PLATFORM_MAP" || exit 1
+
+    echo "[dev-validate] act: merge-on-green-fallback (pull_request labeled) (blocking)"
+    act pull_request -W .github/workflows/merge-on-green-fallback.yml -e .github/events/pull_request-labeled.json -s GITHUB_TOKEN=dummy --env CI_LOCAL=true --container-architecture linux/amd64 "$PLATFORM_MAP" || exit 1
   fi
 else
   echo "[dev-validate] Skipping 'act' workflow execution (set RUN_ACT=true to enable)."

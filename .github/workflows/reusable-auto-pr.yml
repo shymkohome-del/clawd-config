@@ -96,7 +96,8 @@ jobs:
 
       - name: Ensure PR exists (REST API)
         id: create_pr
-        if: steps.meta.outputs.qa_done == 'true'
+        # Ensure a PR exists. For story/* branches, require Status: Done; for non-story prefixes allow.
+        if: ${{ steps.ctx.outputs.branch != '' && (steps.meta.outputs.story_id == '' || steps.meta.outputs.qa_done == 'true') }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
