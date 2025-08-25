@@ -20,6 +20,60 @@ if [[ "$CURRENT_BRANCH" =~ ^story/ ]]; then
   fi
 fi
 
+# Ban actions/github-script entirely; enforce before commit
+FILES=$(grep -RIl "uses: actions/github-script@" .github/workflows | grep -v "/workflow-lint.yml$" || true)
+if [[ -n "$FILES" ]]; then
+  echo "[pre-commit] ERROR: actions/github-script is banned. Replace with bash/composite action." >&2
+  echo "$FILES" | sed 's/^/  /'
+  exit 1
+fi
+
+# Extra paranoid guard for exec conflicts if reintroduced
+FILES2=$(grep -RIl "uses: actions/github-script@" .github/workflows | grep -v "/workflow-lint.yml$" || true)
+if [[ -n "$FILES2" ]]; then
+  if grep -RIn -E "(\\b(const|let|var)[[:space:]]+exec\\b|import[[:space:]]+(\\*|\{[^}]*\\bexec\\b[^}]*)[[:space:]]+from|require\(['\"]@actions/exec['\"]\))" .github/workflows | grep -v "/workflow-lint.yml:" >/dev/null 2>&1; then
+    echo "[pre-commit] ERROR: Potential 'exec' conflicts detected in github-script code." >&2
+    grep -RIn -E "(\\b(const|let|var)[[:space:]]+exec\\b|import[[:space:]]+(\\*|\{[^}]*\\bexec\\b[^}]*)[[:space:]]+from|require\(['\"]@actions/exec['\"]\))" .github/workflows | grep -v "/workflow-lint.yml:" | sed 's/^/  /'
+    exit 1
+  fi
+fi
+
+# YAML normalization and lint for staged YAML files (workflows and repo YAML)
+CHANGED_YAML=$(git diff --cached --name-only --diff-filter=ACMRTUXB | grep -E '\\.(yml|yaml)$' || true)
+if [[ -n "$CHANGED_YAML" ]]; then
+  echo "[pre-commit] Normalizing YAML whitespace..."
+  # shellcheck disable=SC2086
+  scripts/yaml-format.sh $CHANGED_YAML || true
+  # shellcheck disable=SC2086
+  git add $CHANGED_YAML || true
+
+  if command -v docker >/dev/null 2>&1; then
+    echo "[pre-commit] Running yamllint (Docker) on staged YAML files..."
+    TMP_DIR=$(mktemp -d)
+    while IFS= read -r f; do
+      mkdir -p "$TMP_DIR/$(dirname "$f")"
+      git show ":$f" > "$TMP_DIR/$f"
+    done <<< "$CHANGED_YAML"
+    docker run --rm -v "$REPO_ROOT":/repo -v "$TMP_DIR":/staged cytopia/yamllint -c /repo/.yamllint.yml --format parsable --strict /staged || {
+      echo "[pre-commit] ERROR: yamllint failed. Fix YAML issues above." >&2
+      rm -rf "$TMP_DIR"
+      exit 1
+    }
+    rm -rf "$TMP_DIR"
+  else
+    if command -v yamllint >/dev/null 2>&1; then
+      echo "[pre-commit] Running yamllint on staged YAML files..."
+      # shellcheck disable=SC2086
+      yamllint -c .yamllint.yml --strict $CHANGED_YAML || {
+        echo "[pre-commit] ERROR: yamllint failed. Fix YAML issues above." >&2
+        exit 1
+      }
+    else
+      echo "[pre-commit] WARN: yamllint not available; skipping YAML lint."
+    fi
+  fi
+fi
+
 echo "[pre-commit] OK"
 
 

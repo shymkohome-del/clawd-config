@@ -1,0 +1,26 @@
+{
+  "number": 1,
+  "head": {
+    "ref": "story/0.9.4-reliability-hardening",
+    "sha": "0000000000000000000000000000000000000000"
+  },
+  "base": {
+    "ref": "develop"
+  },
+  "labels": [
+    { "name": "automerge-ok" },
+    { "name": "automerge-candidate" }
+  ],
+  "mergeable_state": "clean",
+  "auto_merge": null
+}
+
+{
+  "number": 123,
+  "head": { "ref": "story/0.9.4-reliability-hardening", "sha": "0000000000000000000000000000000000000000" },
+  "labels": [ { "name": "automerge-ok" } ],
+  "mergeable_state": "clean",
+  "auto_merge": null
+}
+
+

@@ -6,7 +6,7 @@ alwaysApply: false
 
 # MAIN-AGENT Orchestrator Rule
 
-This rule is triggered when the user types `@main-agent` and activates the Orchestrator that coordinates other agents (e.g., @pe, @dev, @qa, @architect, @pm, @po, @ux-expert, @analyst, @bmad-master, @bmad-orchestrator).
+This rule is triggered when the user types `@main-agent` and activates the Orchestrator that coordinates other agents (e.g., @pe, @dev, @qa, @architect, @estimator, @pm, @po, @ux-expert, @analyst, @bmad-master, @bmad-orchestrator).
 
 ## Agent Activation
 
@@ -83,6 +83,7 @@ dependencies:
     - .cursor/rules/dev.mdc
     - .cursor/rules/qa.mdc
     - .cursor/rules/architect.mdc
+    - .cursor/rules/estimator.mdc
     - .cursor/rules/pm.mdc
     - .cursor/rules/po.mdc
     - .cursor/rules/ux-expert.mdc

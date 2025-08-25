@@ -1,0 +1,41 @@
+name: CI → Story Bridge
+
+on:
+  workflow_run:
+    workflows: ["Auto PR and Auto-merge on QA Done"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  update-story-status:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Common setup
+        uses: ./.github/actions/common-setup
+      - name: Append run note to story file
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::group::CI → Story Bridge"
+          BRANCH="${{ github.event.workflow_run.head_branch }}"
+          if [[ "$BRANCH" =~ ^story/([0-9]+(\.[0-9]+)*)- ]]; then
+            ID="${BASH_REMATCH[1]}"
+            FILE=$(find docs/stories -maxdepth 1 -type f -name "${ID}.*.md" | head -n1 || true)
+            if [[ -n "$FILE" ]]; then
+              echo "Run succeeded for ${BRANCH}; noting in story change log (non-committal)."
+              echo "- CI succeeded: workflow run ${{ github.event.workflow_run.id }}" >> "$FILE"
+              # Non-committal; rely on human QA to change Status
+            else
+              echo "Story file not found for ${ID}; nothing to update."
+            fi
+          else
+            echo "Not a story branch; nothing to update."
+          fi
+          echo "::endgroup::"

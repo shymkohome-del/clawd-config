@@ -19,6 +19,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Common setup
+        uses: ./.github/actions/common-setup
       - name: Install actionlint (pinned)
         run: |
           set -euo pipefail
@@ -34,7 +36,31 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m pip install --user yamllint==1.35.1
-      - name: Run yamllint on workflows
+      - name: Run yamllint on workflows only
         run: |
           set -euo pipefail
-          ~/.local/bin/yamllint --strict .github/workflows
+          ~/.local/bin/yamllint --strict -c .yamllint.yml .github/workflows
+      - name: Enforce ban on actions/github-script and validate exec conflicts
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILES=$(grep -RIl "uses: actions/github-script@" .github/workflows | grep -v "/workflow-lint.yml$" || true)
+          if [[ -n "$FILES" ]]; then
+            echo "ERROR: actions/github-script is banned in this repository. Found in:" >&2
+            echo "$FILES" | sed 's/^/  /' >&2
+            exit 1
+          fi
+          FILES=$(grep -RIl "uses: actions/github-script@" .github/workflows | grep -v "/workflow-lint.yml$" || true)
+          if [[ -n "$FILES" ]]; then
+            # Split long pattern across lines for yamllint line-length compliance
+            PATTERN="(\\b(const|let|var)[[:space:]]+exec\\b|"
+            PATTERN+="import[[:space:]]+(\\*|\{[^}]*\\bexec\\b[^}]*)[[:space:]]+from|"
+            PATTERN+="require\(['\"]@actions/exec['\"]\))"
+            OFFENDERS=$(echo "$FILES" | xargs -I{} grep -nH -E "$PATTERN" {} || true)
+            if [[ -n "$OFFENDERS" ]]; then
+              echo "ERROR: Detected potential 'exec' conflicts in github-script code." >&2
+              echo "$OFFENDERS" | sed 's/^/  /' >&2
+              exit 1
+            fi
+          fi
+          echo "workflow guard: OK"

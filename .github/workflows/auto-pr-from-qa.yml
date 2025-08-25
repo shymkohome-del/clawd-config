@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - 'story/**'
-      - 'feature/**'
-      - 'fix/**'
-      - 'chore/**'
-      - 'patch/**'
   workflow_dispatch:
     inputs:
       branch:
@@ -32,6 +28,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Common setup
+        uses: ./.github/actions/common-setup
       - name: Install actionlint (pinned)
         run: |
           set -euo pipefail
@@ -52,9 +50,39 @@ jobs:
           set -euo pipefail
           ~/.local/bin/yamllint --strict .github/workflows
 
-  open-pr-and-automerge-reusable:
+  preflight-parse:
+    name: Preflight parse
     needs: [workflow-lint]
-    if: ${{ vars.AUTO_PR_ENABLED != 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Common setup
+        uses: ./.github/actions/common-setup
+        with:
+          prepare_scripts: 'true'
+      - name: Run preflight parser
+        id: preflight
+        shell: bash
+        run: |
+          set -euo pipefail
+          BRANCH="${{ inputs.branch || github.ref_name }}"
+          RESP=$(./scripts/preflight-parse.sh "$BRANCH")
+          echo "$RESP"
+          echo "::group::Summary"
+          {
+            echo "### Preflight parse"
+            echo "- Branch: ${BRANCH}"
+            echo "- $(printf '%s' "$RESP" | tr '\n' ' ' | sed 's/  */ /g')"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::endgroup::"
+
+  open-pr-and-automerge-reusable:
+    needs: [workflow-lint, preflight-parse]
+    # Skip this job in local act runs where repo is mocked as local/crypto_market
+    if: ${{ vars.AUTO_PR_ENABLED != 'false' && github.repository != 'local/crypto_market' }}
     permissions:
       contents: write
       pull-requests: write
@@ -63,8 +91,21 @@ jobs:
       branch: ${{ inputs.branch || github.ref_name }}
       enable_auto_merge: ${{ vars.AUTO_MERGE_ENABLED != 'false' }}
       auto_approve: ${{ vars.AUTO_APPROVE_ENABLED != 'false' }}
-      dry_run: false
+      dry_run: ${{ (github.event_name == 'workflow_dispatch' && inputs.branch == '') || github.repository == 'local/crypto_market' }}
     secrets: inherit
+  simulate-open-pr-locally:
+    needs: [workflow-lint, preflight-parse]
+    if: ${{ vars.AUTO_PR_ENABLED != 'false' && github.repository == 'local/crypto_market' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simulate reusable auto-PR locally
+        run: |
+          set -euo pipefail
+          echo "::group::Local simulation"
+          echo "Simulating PR create/reuse and labeling (dry-run)"
+          echo "Branch: ${{ inputs.branch || github.ref_name }}"
+          echo "Story gating respected via preflight step"
+          echo "::endgroup::"
   note-auto-pr-disabled:
     needs: [workflow-lint]
     if: ${{ vars.AUTO_PR_ENABLED == 'false' }}
