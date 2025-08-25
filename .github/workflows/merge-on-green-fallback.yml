@@ -245,6 +245,11 @@ jobs:
                   -w '\nHTTPSTATUS:%{http_code}' \"${API}/repos/${OWNER}/${REPO}/commits/${SHA}/check-runs\""
             )
             RESP=$(echo "$RESP" | sed '$d' | awk 'BEGIN{p=0} p{print} /^\r?$/{p=1}')
+            # Guard: if .check_runs is null or missing, treat as empty array
+            HAS_ARRAY=$(echo "$RESP" | jq -e '(.check_runs | type) == "array"' || true)
+            if [[ "$HAS_ARRAY" != "true" ]]; then
+              RESP=$(echo "$RESP" | jq '{check_runs: []}')
+            fi
             # Build required checks set based on which candidate checks exist on this commit
             REQ_CHECKS=()
             for NAME in "${CANDIDATE_CHECKS[@]}"; do

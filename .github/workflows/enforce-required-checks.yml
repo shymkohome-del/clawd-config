@@ -21,6 +21,10 @@ jobs:
       REPO: ${{ github.event.repository.name || github.repository }}
       REQUIRED_CONTEXTS: '["build-and-test","pr-lint","lint"]'
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Common setup
         uses: ./.github/actions/common-setup
       - name: Show context
