@@ -50,7 +50,7 @@ jobs:
 
           echo "Branch: $HEAD_REF"
           echo "Title: $TITLE"
-          echo "Body length: ${#BODY:-0}"
+          echo "Body length: $(printf '%s' "${BODY:-}" | wc -c | awk '{print $1}')"
 
           fail=0
 
