@@ -42,7 +42,7 @@ References:
 - This repository is a single Flutter app (not a monorepo). Module boundaries are represented by `lib/` directories (`core/`, `features/`, `shared/`) instead of separate packages.
 - Providers/services live within their respective `features/*/providers` directories. Shared UI and utilities live under `shared/`.
 - Naming normalization: the feature folder is `market/` (avoids `marketplace/` to keep names concise).
-- State management note: current bootstrap uses `flutter_bloc` repository providers in `main.dart` as a lightweight placeholder. The broader architecture examples may reference Riverpod; migration can be done later without changing the folder structure.
+- State management note: project standard is `flutter_bloc` (Bloc/Cubit). Older docs that referenced Riverpod have been aligned to Bloc.
 
 ## Commit Style
 
