@@ -36,6 +36,9 @@ class AppConfig {
   final String? coingeckoApiKey;
   final String? kycProviderApiKey;
 
+  // Feature flags
+  final bool featurePrincipalShim;
+
   const AppConfig({
     required this.oauthGoogleClientId,
     required this.oauthGoogleClientSecret,
@@ -50,6 +53,7 @@ class AppConfig {
     this.chainlinkApiKey,
     this.coingeckoApiKey,
     this.kycProviderApiKey,
+    this.featurePrincipalShim = false,
   });
 
   /// Load config from compile-time environment defines.
@@ -129,6 +133,12 @@ class AppConfig {
       return value;
     }
 
+    bool parseBool(String? value, {bool defaultValue = false}) {
+      final v = (value ?? '').trim().toLowerCase();
+      if (v.isEmpty) return defaultValue;
+      return v == '1' || v == 'true' || v == 'yes' || v == 'on';
+    }
+
     // Build the config, throwing for missing required keys
     return AppConfig(
       oauthGoogleClientId: requireKey('OAUTH_GOOGLE_CLIENT_ID'),
@@ -150,6 +160,10 @@ class AppConfig {
       kycProviderApiKey: (defines['KYC_PROVIDER_API_KEY'] ?? '').isEmpty
           ? null
           : defines['KYC_PROVIDER_API_KEY'],
+      featurePrincipalShim: parseBool(
+        defines['FEATURE_PRINCIPAL_SHIM'],
+        defaultValue: false,
+      ),
     );
   }
 }
