@@ -37,6 +37,8 @@ Describe what changed and why. Link to docs if relevant.
   - `AUTO_MERGE_ENABLED=false` (disables auto-merge)
   - `AUTO_APPROVE_ENABLED=false` (disables auto-approval)
 
+Tip: These variables are repository-level Action variables (Settings → Actions → Variables). If a PR didn’t auto-open/merge, first verify they’re not set to `false`.
+
 ## Screenshots / Notes
 
 Add any relevant screenshots or notes for QA.
