@@ -93,6 +93,23 @@ class _DelayedOkAuthService implements AuthService {
   }
 
   @override
+  Future<Result<User, AuthError>> loginWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    return Result.ok(
+      User(
+        id: 'principal-email',
+        email: email,
+        username: email.split('@')[0],
+        authProvider: 'email',
+        createdAtMillis: 0,
+      ),
+    );
+  }
+
+  @override
   Future<Result<User, AuthError>> register({
     required String email,
     required String password,
@@ -114,4 +131,10 @@ class _DelayedOkAuthService implements AuthService {
   Future<Result<Map<String, dynamic>, AuthError>> getUserProfile({
     required String principal,
   }) async => Result.ok({'principal': principal});
+
+  @override
+  Future<void> logout() async {}
+
+  @override
+  Future<User?> getCurrentUser() async => null;
 }
