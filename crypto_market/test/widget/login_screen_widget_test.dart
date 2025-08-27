@@ -7,26 +7,26 @@ void main() {
   group('LoginScreen Widget Tests', () {
     testWidgets('LoginScreen renders correctly', (tester) async {
       await tester.pumpWidget(
-        TestAppWrapper(
-          includeRouter: false,
-          child: const LoginScreen(),
-        ),
+        TestAppWrapper(includeRouter: false, child: const LoginScreen()),
       );
 
       await tester.pumpAndSettle();
 
       // Verify basic elements are present
       expect(find.byType(LoginScreen), findsOneWidget);
-      expect(find.byType(TextFormField), findsNWidgets(2)); // email and password fields
-      expect(find.byType(ElevatedButton), findsAtLeastNWidgets(1)); // login button
+      expect(
+        find.byType(TextFormField),
+        findsNWidgets(2),
+      ); // email and password fields
+      expect(
+        find.byType(ElevatedButton),
+        findsAtLeastNWidgets(1),
+      ); // login button
     });
 
     testWidgets('Login form has required fields', (tester) async {
       await tester.pumpWidget(
-        TestAppWrapper(
-          includeRouter: false,
-          child: const LoginScreen(),
-        ),
+        TestAppWrapper(includeRouter: false, child: const LoginScreen()),
       );
 
       await tester.pumpAndSettle();
@@ -34,11 +34,11 @@ void main() {
       // Check for form fields
       final textFields = find.byType(TextFormField);
       expect(textFields, findsNWidgets(2));
-      
+
       // Test text input
       await tester.enterText(textFields.at(0), 'test@email.com');
       await tester.enterText(textFields.at(1), 'password123');
-      
+
       expect(find.text('test@email.com'), findsOneWidget);
       expect(find.text('password123'), findsOneWidget);
     });
