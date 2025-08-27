@@ -6,7 +6,12 @@ import 'package:crypto_market/features/auth/providers/user_service_provider.dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockICPService extends Mock {}
+class MockICPService extends Mock {
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    return super.noSuchMethod(invocation);
+  }
+}
 
 class MockFile extends Mock implements File {}
 
