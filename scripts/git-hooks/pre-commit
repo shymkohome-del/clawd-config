@@ -1,0 +1,34 @@
+#!/bin/bash
+# Pre-commit hook to prevent direct commits to protected branches
+# Place this in .git/hooks/pre-commit and make executable
+
+set -euo pipefail
+
+# Get current branch name
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+PROTECTED_BRANCHES=("main" "master" "develop" "staging" "production")
+
+# Check if we're on a protected branch
+for protected in "${PROTECTED_BRANCHES[@]}"; do
+    if [[ "$BRANCH" == "$protected" ]]; then
+        echo "🚫 COMMIT BLOCKED: Direct commits to '$BRANCH' are not allowed!"
+        echo ""
+        echo "✅ Proper workflow:"
+        echo "  1. Create a feature branch: git checkout -b feature/your-feature-name"
+        echo "  2. Make your changes and commit to the feature branch"
+        echo "  3. Push and create a PR: gh pr create"
+        echo "  4. Let the automation handle the merge after QA approval"
+        echo ""
+        echo "🔧 Quick fix for current changes:"
+        echo "  git stash                                    # Save your changes"
+        echo "  git checkout -b feature/$(date +%Y%m%d-%H%M%S)  # Create feature branch"
+        echo "  git stash pop                                # Restore your changes"
+        echo "  git add . && git commit -m \"Your message\"    # Commit on feature branch"
+        echo ""
+        exit 1
+    fi
+done
+
+# If we reach here, we're on a feature branch - allow the commit
+echo "✅ Committing to feature branch '$BRANCH' - Good practice!"
+exit 0
