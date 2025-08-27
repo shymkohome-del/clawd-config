@@ -28,7 +28,16 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-note() { local m="$*"; if [[ -n "$LOG_FILE" ]]; then printf '[%(%H:%M:%S)T] %s\n' -1 "$m" | tee -a "$LOG_FILE"; else printf '[%(%H:%M:%S)T] %s\n' -1 "$m"; fi; }
+note() {
+  local m="$*"
+  local ts
+  ts=$(date '+%H:%M:%S')
+  if [[ -n "$LOG_FILE" ]]; then
+    printf '[%s] %s\n' "$ts" "$m" | tee -a "$LOG_FILE"
+  else
+    printf '[%s] %s\n' "$ts" "$m"
+  fi
+}
 
 # Resolve PR number
 PR_NUM=""

@@ -1,4 +1,11 @@
 # **Testing Strategy**
+## **CI Gates**
+
+- Code format: `dart format --output=none --set-exit-if-changed .`
+- Static analysis: `flutter analyze --fatal-infos --fatal-warnings`
+- Tests: `flutter test --no-pub`
+
+These are executed by `Flutter CI`. Branch protection requires the `Flutter CI / build-and-test`, `PR Lint / pr-lint`, and `Workflow Lint / lint` checks to succeed prior to merge. Auto-merge will only occur when these checks are green and QA has applied `qa:approved`.
 
 ## **Testing Pyramid**
 

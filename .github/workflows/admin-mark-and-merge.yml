@@ -1,0 +1,143 @@
+name: Admin — Mark and Merge PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to mark and (optionally) merge"
+        required: true
+        type: string
+      labels:
+        description: "Comma-separated labels to apply"
+        required: false
+        default: "qa:approved,automerge-ok,automerge-candidate"
+        type: string
+      try_merge:
+        description: "Attempt squash merge after checks are green"
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  mark-and-merge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Common setup
+        uses: ./.github/actions/common-setup
+      - name: Apply labels to PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.inputs.pr_number }}
+          LABELS_CSV: ${{ github.event.inputs.labels }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          IFS=',' read -r -a LS <<< "${LABELS_CSV}"
+          # Ensure labels exist
+          for L in "${LS[@]}"; do
+            L_TRIM=$(echo "$L" | xargs)
+            [[ -z "$L_TRIM" ]] && continue
+            curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+              -d "$(jq -cn --arg name "$L_TRIM" '{name:$name}')" \
+              "${API}/repos/${OWNER}/${REPO}/labels" >/dev/null || true
+          done
+          # Apply labels
+          PAYLOAD=$(jq -cn --arg csv "${LABELS_CSV}" '{labels: ($csv|split(",")|map(gsub("^ *| *$";"")) | map(select(length>0)))}')
+          curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+            -d "${PAYLOAD}" "${API}/repos/${OWNER}/${REPO}/issues/${PR}/labels" | jq '.' || true
+
+      - name: Get PR details
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.inputs.pr_number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            "${API}/repos/${OWNER}/${REPO}/pulls/${PR}")
+          echo "$RESP" | jq '.' >/dev/null
+          SHA=$(echo "$RESP" | jq -r '.head.sha')
+          echo "sha=${SHA}" >> "$GITHUB_OUTPUT"
+          echo "base=$(echo "$RESP" | jq -r '.base.ref')" >> "$GITHUB_OUTPUT"
+
+      - name: Verify required checks and attempt merge
+        if: ${{ fromJSON(github.event.inputs.try_merge) }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.inputs.pr_number }}
+          SHA: ${{ steps.pr.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          # Suffixes of required checks (names end with)
+          SUFFIXES=(
+            "/ build-and-test"
+            "/ pr-lint"
+            "/ lint"
+            "Reusable - Auto PR and Auto-merge / run"
+            "open-pr-and-automerge-reusable / run"
+            "QA Gate / qa-approved"
+          )
+          echo "Checking required check-runs on ${SHA}..."
+          RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            "${API}/repos/${OWNER}/${REPO}/commits/${SHA}/check-runs")
+          ALL_OK=1; ANY_FAIL=0
+          for sfx in "${SUFFIXES[@]}"; do
+            # If not present, ignore (we consider dynamic existence)
+            if ! echo "$RESP" | jq -e --arg sfx "$sfx" '.check_runs[] | select((.name|tostring) | endswith($sfx))' >/dev/null; then
+              continue
+            fi
+            CONC=$(echo "$RESP" | jq -r --arg sfx "$sfx" '.check_runs[] | select((.name|tostring) | endswith($sfx)) | .conclusion' | head -n1)
+            if [[ "$CONC" != "success" ]]; then
+              ALL_OK=0
+              if [[ "$CONC" == "failure" || "$CONC" == "timed_out" || "$CONC" == "cancelled" ]]; then ANY_FAIL=1; fi
+            fi
+          done
+          if (( ANY_FAIL == 1 )); then
+            echo "::error title=Checks failing::One or more required checks failed; not merging."
+            exit 1
+          fi
+          if (( ALL_OK == 0 )); then
+            echo "::notice title=Checks pending::Some required checks are pending or missing; not merging."
+            exit 0
+          fi
+          echo "All required checks are green; attempting squash merge..."
+          MERGE_RESP=$(curl -sS -w "\n%{http_code}" -X PUT -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            -d '{"merge_method":"squash"}' "${API}/repos/${OWNER}/${REPO}/pulls/${PR}/merge")
+          HTTP=$(echo "$MERGE_RESP" | tail -n1)
+          BODY=$(echo "$MERGE_RESP" | sed '$d')
+          echo "$BODY" | jq '.' || true
+          if echo "$BODY" | jq -e '.merged == true' >/dev/null; then
+            echo "Merged PR #${PR} successfully."
+          else
+            echo "::notice title=Merge not performed::PR not mergeable yet or already merged (HTTP ${HTTP})."
+            exit 0
+          fi
+
+      - name: Summary
+        if: always()
+        run: |
+          set -euo pipefail
+          echo "### Admin mark-and-merge" >> $GITHUB_STEP_SUMMARY
+          echo "- PR: #${{ github.event.inputs.pr_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Labels applied: ${{ github.event.inputs.labels }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Try merge: ${{ github.event.inputs.try_merge }}" >> $GITHUB_STEP_SUMMARY

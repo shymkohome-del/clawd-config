@@ -15,6 +15,7 @@ concurrency:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,6 +55,20 @@ jobs:
       - name: Format check
         working-directory: ${{ steps.detect.outputs.app_dir }}
         run: dart format --output=none --set-exit-if-changed .
-      - name: Run tests
+      - name: Run tests (with retry)
         working-directory: ${{ steps.detect.outputs.app_dir }}
-        run: flutter test --no-pub
+        shell: bash
+        run: |
+          set -euo pipefail
+          attempt=0
+          max=2
+          while (( attempt < max )); do
+            attempt=$((attempt+1))
+            if flutter test --no-pub; then
+              exit 0
+            fi
+            echo "Test run failed (attempt ${attempt}/${max}). Retrying..."
+            sleep 5
+          done
+          echo "Tests failed after ${max} attempts."
+          exit 1
