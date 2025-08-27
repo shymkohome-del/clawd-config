@@ -151,10 +151,10 @@ class AuthState {
 ```
 
 **State Management Patterns:**
-- **Riverpod Providers**: Global state management with dependency injection
-- **StateNotifier Classes**: Encapsulated state logic with proper separation of concerns
-- **Async Providers**: Automatic handling of loading/error states for async operations
-- **Family Modifiers**: Parameterized providers for reusable state logic
+- **Bloc/Cubit**: Event/state management with unidirectional data flow
+- **RepositoryProvider**: Dependency injection via flutter_bloc
+- **BlocProvider/BlocBuilder/BlocListener**: UI integration patterns
+- **Cubit**: Lightweight state containers for simple flows
 
 ## **Routing Architecture**
 
@@ -216,8 +216,8 @@ class ProtectedRoute extends StatelessWidget {
   const ProtectedRoute({required this.child, super.key});
   
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authProvider);
+  Widget build(BuildContext context) {
+    final authState = context.select((AuthCubit c) => c.state);
     
     if (authState.isLoading) {
       return const LoadingScreen();

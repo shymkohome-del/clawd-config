@@ -1,0 +1,28 @@
+// Candid interface stub for User Management canister
+// This is a placeholder to unblock frontend typing and integration.
+// Not used at runtime by this Flutter app.
+
+type User = record {
+  id: principal;
+  email: text;
+  username: text;
+  authProvider: text;
+  reputation: nat64;
+  createdAt: nat64;
+  lastLogin: opt nat64;
+  isActive: bool;
+  kycVerified: bool;
+  profileImage: opt text;
+};
+
+type RegisterResult = variant { ok: User; err: text };
+
+type OAuthProvider = variant { google; apple; github; facebook };
+
+type LoginResult = variant { ok: User; err: text };
+
+service : {
+  register: (text, text, text) -> (RegisterResult);
+  loginWithOAuth: (OAuthProvider, text) -> (LoginResult);
+  getUserProfile: (principal) -> (opt User);
+}

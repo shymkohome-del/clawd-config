@@ -9,7 +9,7 @@ This is the DEFINITIVE technology selection for the entire project. All developm
 | Frontend Language | Dart | 3.4+ | Mobile app development | Type-safe, compiled, excellent performance |
 | Frontend Framework | Flutter | 3.22+ | Cross-platform mobile apps | Single codebase for iOS/Android, hot reload |
 | UI Component Library | Material Design | Built-in | Native UI components | Consistent platform-native look and feel |
-| State Management | Riverpod | 2.4+ | State management | Simple, powerful, testable state management |
+| State Management | flutter_bloc | 8.x | State management | Widely adopted, Cubit/Bloc patterns, great tooling |
 | Smart Contract Language | Motoko | Latest | ICP smart contracts | Native language for ICP, strong typing |
 | Smart Contract Toolkit | DFX SDK | Latest | ICP development and deployment | Official ICP development toolkit |
 | Authentication | Hybrid Auth (in-canister) | Custom | Traditional + OAuth + ICP principal mapping | Lower barrier to entry while maintaining on-chain authorization |

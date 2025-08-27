@@ -1,0 +1,27 @@
+// ic-repl test for user_management canister
+// Requires dfx and ic-repl; run locally as part of backend tests.
+
+import "mo:base/Principal";
+
+// deploy
+identity alice;
+identity bob;
+
+let can = call "deploy user_management";
+
+// Register with alice
+call can.register("alice@example.com", "password123", "alice");
+
+// Fetch profile by principal
+let alice_p = principal-of alice;
+call can.getUserProfile(alice_p);
+
+// Negative: duplicate email
+call can.register("alice@example.com", "password456", "alice2");
+
+// OAuth login with bob, should create lightweight profile
+identity bob;
+call can.loginWithOAuth(variant { google }, "token-abcdefg");
+
+let bob_p = principal-of bob;
+call can.getUserProfile(bob_p);

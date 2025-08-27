@@ -1,0 +1,21 @@
+{
+  "canisters": {
+    "user_management": {
+      "main": "canisters/user_management/src/main.mo",
+      "type": "motoko",
+      "candid": "canisters/user_management/user_management.did"
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}

@@ -212,6 +212,38 @@ jobs:
           fi
           echo "::endgroup::"
 
+      - name: Ensure required labels exist
+        if: steps.meta.outputs.qa_done == 'true' && steps.meta.outputs.story_id != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::group::Ensure required labels exist"
+          if [[ "${{ steps.ctx.outputs.dry_run }}" == "true" || "${CI_LOCAL:-}" == "true" ]]; then
+            echo "dry-run: Skipping label creation."
+            echo "::endgroup::"
+            exit 0
+          fi
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          # Define desired labels with colors and descriptions
+          declare -A LABELS
+          LABELS[automerge-candidate]="27ae60|Eligible for auto-merge once checks pass"
+          LABELS[automerge-ok]="2ecc71|Approved for auto-merge"
+          LABELS[qa:approved]="1abc9c|QA approved"
+          for NAME in "${!LABELS[@]}"; do
+            COLOR="${LABELS[$NAME]%%|*}"
+            DESC="${LABELS[$NAME]#*|}"
+            DEF=$(jq -cn --arg n "$NAME" --arg c "$COLOR" --arg d "$DESC" '{name:$n,color:$c,description:$d}')
+            # Create label if missing; ignore conflicts
+            ./scripts/retry.sh 5 2 -- bash -lc \
+              "curl -sS -i -X POST -H 'authorization: Bearer ${GH_TOKEN}' -H 'accept: application/vnd.github+json' -H 'content-type: application/json' \
+                -d '${DEF}' 'https://api.github.com/repos/${OWNER}/${REPO}/labels'" >/dev/null || true
+          done
+          echo "::endgroup::"
+
       - name: Label PR (automerge-candidate)
         if: steps.meta.outputs.qa_done == 'true'
         env:
