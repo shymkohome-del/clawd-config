@@ -7,6 +7,10 @@ import 'package:crypto_market/features/market/providers/market_service_provider.
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:crypto_market/features/auth/screens/register_screen.dart'
     as auth_ui;
+import 'package:crypto_market/features/auth/screens/login_screen.dart';
+import 'package:crypto_market/features/auth/cubit/auth_cubit.dart';
+import 'package:crypto_market/features/auth/cubit/profile_cubit.dart';
+import 'package:crypto_market/features/auth/providers/user_service_provider.dart';
 import 'package:crypto_market/core/i18n/locale_controller.dart';
 
 void main() {
@@ -23,11 +27,28 @@ void main() {
           RepositoryProvider<MarketServiceProvider>(
             create: (_) => MarketServiceProvider(icpService),
           ),
+          RepositoryProvider<UserServiceProvider>(
+            create: (_) => UserServiceProvider(icpService),
+          ),
           RepositoryProvider<LocaleController>(
             create: (_) => LocaleController(),
           ),
         ],
-        child: const MyApp(),
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<AuthCubit>(
+              create: (context) => AuthCubit(
+                authService: RepositoryProvider.of<AuthService>(context),
+              )..checkSession(), // Check for existing session on app start
+            ),
+            BlocProvider<ProfileCubit>(
+              create: (context) => ProfileCubit(
+                RepositoryProvider.of<UserServiceProvider>(context),
+              ),
+            ),
+          ],
+          child: const MyApp(),
+        ),
       ),
     );
   } on AppConfigValidationError catch (e) {
@@ -52,7 +73,14 @@ class MyApp extends StatelessWidget {
           ),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          initialRoute: '/login',
+          home: BlocBuilder<AuthCubit, AuthState>(
+            builder: (context, state) {
+              if (state is AuthSuccess) {
+                return HomeScreen(user: state.user);
+              }
+              return const LoginScreen();
+            },
+          ),
           routes: {
             '/login': (context) => const LoginScreen(),
             '/register': (context) => const auth_ui.RegisterScreen(),
@@ -82,34 +110,23 @@ class ConfigErrorApp extends StatelessWidget {
   }
 }
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class HomeScreen extends StatelessWidget {
+  final User? user;
+
+  const HomeScreen({super.key, this.user});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).loginTitle),
+        title: Text(l10n.homeTitle),
         actions: [
-          PopupMenuButton<Locale?>(
-            icon: const Icon(Icons.language),
-            onSelected: (locale) => RepositoryProvider.of<LocaleController>(
-              context,
-            ).setLocale(locale),
-            itemBuilder: (context) => [
-              PopupMenuItem<Locale?>(
-                value: const Locale('en'),
-                child: Text(AppLocalizations.of(context).languageEnglish),
-              ),
-              PopupMenuItem<Locale?>(
-                value: const Locale('lv'),
-                child: Text(AppLocalizations.of(context).languageLatvian),
-              ),
-              PopupMenuItem<Locale?>(
-                value: null,
-                child: Text(AppLocalizations.of(context).languageSystem),
-              ),
-            ],
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              context.read<AuthCubit>().logout();
+            },
           ),
         ],
       ),
@@ -117,41 +134,15 @@ class LoginScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Login Screen (placeholder)'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/register'),
-              child: Text(AppLocalizations.of(context).goToRegister),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// Register screen moved to features/auth/screens/register_screen.dart
-
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments;
-    String? principal;
-    if (args is User) {
-      principal = args.id.isNotEmpty ? args.id : null;
-    }
-    return Scaffold(
-      appBar: AppBar(title: Text(AppLocalizations.of(context).homeTitle)),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('Home Screen (placeholder)'),
-            if (principal != null) ...[
-              const SizedBox(height: 12),
-              Text('Principal: $principal'),
+            Text(l10n.homeTitle),
+            if (user != null) ...[
+              const SizedBox(height: 16),
+              Text('${l10n.email}: ${user!.email}'),
+              Text('${l10n.username}: ${user!.username}'),
+              if (user!.id.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text('Principal: ${user!.id}'),
+              ],
             ],
           ],
         ),

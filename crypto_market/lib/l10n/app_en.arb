@@ -37,5 +37,8 @@
   "camera": "Camera",
   "retry": "Retry",
   "updatingProfile": "Updating profile...",
-  "profileUpdatedSuccess": "Profile updated successfully"
+  "profileUpdatedSuccess": "Profile updated successfully",
+  "logout": "Logout",
+  "sessionRestored": "Session restored",
+  "sessionExpired": "Session expired, please login again"
 }

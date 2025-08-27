@@ -31,6 +31,23 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  Future<void> loginWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {
+    if (state is AuthSubmitting) return;
+    emit(AuthState.submitting());
+    final result = await _authService.loginWithEmailPassword(
+      email: email,
+      password: password,
+    );
+    if (result.isOk) {
+      emit(AuthState.success(result.ok));
+    } else {
+      emit(AuthState.failure(result.err));
+    }
+  }
+
   Future<void> loginWithOAuth({
     required String provider,
     required String token,
@@ -45,6 +62,20 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthState.success(result.ok));
     } else {
       emit(AuthState.failure(result.err));
+    }
+  }
+
+  Future<void> logout() async {
+    await _authService.logout();
+    emit(AuthState.initial());
+  }
+
+  Future<void> checkSession() async {
+    final user = await _authService.getCurrentUser();
+    if (user != null) {
+      emit(AuthState.success(user));
+    } else {
+      emit(AuthState.initial());
     }
   }
 

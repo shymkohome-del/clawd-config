@@ -23,6 +23,25 @@ class User {
     'authProvider': authProvider,
     'createdAt': createdAtMillis,
   };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is User &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          email == other.email &&
+          username == other.username &&
+          authProvider == other.authProvider &&
+          createdAtMillis == other.createdAtMillis;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      email.hashCode ^
+      username.hashCode ^
+      authProvider.hashCode ^
+      createdAtMillis.hashCode;
 }
 
 /// Skeleton ICPService with initialization hooks and method stubs.
@@ -89,6 +108,38 @@ class ICPService {
         id: '',
         email: email,
         username: username,
+        authProvider: 'email',
+        createdAtMillis: DateTime.now().millisecondsSinceEpoch,
+      );
+    });
+  }
+
+  Future<Result<User, AuthError>> loginWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {
+    // TODO: replace with actual canister actor call
+    return _wrapAuthCall<User>(() async {
+      // Simple validation - in real implementation, validate against canister
+      if (email.isEmpty || password.isEmpty) {
+        throw AuthInvalidCredentialsException();
+      }
+
+      if (config.featurePrincipalShim) {
+        final principal = _deriveDeterministicPrincipal(email);
+        return User(
+          id: principal,
+          email: email,
+          username: email.split('@')[0], // Extract username from email
+          authProvider: 'email',
+          createdAtMillis: DateTime.now().millisecondsSinceEpoch,
+        );
+      }
+
+      return User(
+        id: '',
+        email: email,
+        username: email.split('@')[0],
         authProvider: 'email',
         createdAtMillis: DateTime.now().millisecondsSinceEpoch,
       );

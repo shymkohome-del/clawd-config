@@ -37,5 +37,8 @@
   "camera": "Kamera",
   "retry": "Mēģināt vēlreiz",
   "updatingProfile": "Atjaunina profilu...",
-  "profileUpdatedSuccess": "Profils veiksmīgi atjaunots"
+  "profileUpdatedSuccess": "Profils veiksmīgi atjaunots",
+  "logout": "Iziet",
+  "sessionRestored": "Sesija atjaunota",
+  "sessionExpired": "Sesijas laiks beidzies, lūdzu pieteikšanās vēlreiz"
 }
