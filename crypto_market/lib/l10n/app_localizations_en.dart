@@ -33,6 +33,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get usernameMinLength => 'Min length 3';
 
   @override
+  String get usernameMaxLength => 'Max length 30';
+
+  @override
+  String get usernameInvalidChars => 'Only letters, numbers, _ and - allowed';
+
+  @override
   String get passwordLabel => 'Password';
 
   @override
@@ -63,6 +69,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorUnknown => 'Something went wrong';
 
   @override
+  String get errorImagePicker => 'Error selecting image';
+
+  @override
   String get homeTitle => 'Home';
 
   @override
@@ -82,4 +91,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get configErrorTitle => 'Configuration Error';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get username => 'Username';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get authProvider => 'Auth Provider';
+
+  @override
+  String get selectImageSource => 'Select Image Source';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get updatingProfile => 'Updating profile...';
+
+  @override
+  String get profileUpdatedSuccess => 'Profile updated successfully';
 }

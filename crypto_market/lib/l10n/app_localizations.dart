@@ -146,6 +146,18 @@ abstract class AppLocalizations {
   /// **'Min length 3'**
   String get usernameMinLength;
 
+  /// No description provided for @usernameMaxLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Max length 30'**
+  String get usernameMaxLength;
+
+  /// No description provided for @usernameInvalidChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Only letters, numbers, _ and - allowed'**
+  String get usernameInvalidChars;
+
   /// No description provided for @passwordLabel.
   ///
   /// In en, this message translates to:
@@ -206,6 +218,12 @@ abstract class AppLocalizations {
   /// **'Something went wrong'**
   String get errorUnknown;
 
+  /// No description provided for @errorImagePicker.
+  ///
+  /// In en, this message translates to:
+  /// **'Error selecting image'**
+  String get errorImagePicker;
+
   /// No description provided for @homeTitle.
   ///
   /// In en, this message translates to:
@@ -247,6 +265,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Configuration Error'**
   String get configErrorTitle;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @username.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get username;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @authProvider.
+  ///
+  /// In en, this message translates to:
+  /// **'Auth Provider'**
+  String get authProvider;
+
+  /// No description provided for @selectImageSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Image Source'**
+  String get selectImageSource;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @updatingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating profile...'**
+  String get updatingProfile;
+
+  /// No description provided for @profileUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdatedSuccess;
 }
 
 class _AppLocalizationsDelegate
