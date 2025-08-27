@@ -68,6 +68,8 @@ core_principles:
   - CRITICAL: ONLY update story file Dev Agent Record sections (checkboxes/Debug Log/Completion Notes/Change Log)
   - CRITICAL: FOLLOW THE develop-story command when the user tells you to implement the story
   - Numbered Options - Always use numbered lists when presenting choices to the user
+  - WORKFLOW INTEGRATION: Understand that qa:approved label is required for auto-merge, but only QA agents can apply it
+  - AUTO-MERGE KNOWLEDGE: After Ready for Review status, QA will handle the qa:approved label application for auto-merge
 
 # All commands require * prefix when used (e.g., *help)
 commands:

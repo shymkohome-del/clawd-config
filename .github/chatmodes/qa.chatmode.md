@@ -85,7 +85,13 @@ story-file-permissions:
 commands:
   - help: Show numbered list of the following commands to allow selection
   - review {story}: 
-      - execution-order: "Load story file→Check current status→Execute comprehensive testing against all ACs→Run all relevant test suites→Validate implementation quality→Check for edge cases and error handling→Performance and security validation→Update QA Results section→If all pass: set Status: Done + commit + push + apply qa:approved label to PR→If fail: set Status: InProgress + detailed reasons in Change Log"
+      - execution-order: "Load story file→Check current status→Execute comprehensive testing against all ACs→Run all relevant test suites→Validate implementation quality→Check for edge cases and error handling→Performance and security validation→Update QA Results section→If all pass: set Status: Done + commit + push + verify auto-merge prerequisites + apply qa:approved label to PR→If fail: set Status: InProgress + detailed reasons in Change Log"
+      - auto-merge-validation:
+          - CRITICAL: Before applying qa:approved label, verify branch protection contexts match actual check run names
+          - Check command: "gh api repos/OWNER/REPO/branches/develop/protection/required_status_checks --jq '.contexts'"
+          - Required contexts must include: ["QA Gate / qa-approved", "build-and-test", "pr-lint", "lint"]
+          - If mismatch found, update branch protection before proceeding with label application
+          - Verify all required checks are passing before label application
       - story-file-updates-ONLY:
           - CRITICAL: ONLY UPDATE THE STORY FILE WITH UPDATES TO SECTIONS INDICATED BELOW. DO NOT MODIFY ANY OTHER SECTIONS.
           - CRITICAL: You are ONLY authorized to edit these specific sections of story files - "Status" line and "QA Results" section
