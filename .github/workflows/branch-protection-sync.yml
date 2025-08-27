@@ -26,16 +26,62 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Sync branch protection contexts with actual workflow names
+      - name: Test Secret and Sync Branch Protection
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.BRANCH_PROTECTION_PAT }}
         shell: bash
         run: |
           set -euo pipefail
 
-          echo "::group::Analyzing required contexts from workflows"
+          echo "🔍 Testing secret access and authentication..."
 
-          # Extract required contexts from our actual workflows
+          # Check if secret is available
+          if [[ -z "${GH_TOKEN:-}" ]]; then
+            echo "❌ BRANCH_PROTECTION_PAT secret is not set or empty"
+            echo "Please ensure the secret is properly configured in repository settings"
+            exit 1
+          fi
+
+          echo "✅ Secret is available (length: ${#GH_TOKEN})"
+
+          # Test basic GitHub API access
+          echo "🔐 Testing GitHub API authentication..."
+          if ! USER=$(gh api user --jq '.login' 2>/dev/null); then
+            echo "❌ GitHub API authentication failed with BRANCH_PROTECTION_PAT"
+            echo "Please verify the PAT has correct permissions"
+            exit 1
+          fi
+
+          echo "✅ Authenticated as: $USER"
+
+          # Test repository access
+          echo "📁 Testing repository access..."
+          if ! REPO_INFO=$(gh api repos/"${GITHUB_REPOSITORY}" --jq '.full_name' 2>/dev/null); then
+            echo "❌ Repository access failed"
+            exit 1
+          fi
+
+          echo "✅ Repository access confirmed: $REPO_INFO"
+
+          echo "🛡️ Testing branch protection access..."
+
+          # Get repository components
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+
+          # Test if we can access branch protection settings
+          if ! CURRENT=$(gh api repos/"${OWNER}"/"${REPO}"/branches/develop/protection/required_status_checks --jq '.contexts' 2>/dev/null); then
+            echo "❌ Cannot access branch protection settings"
+            echo "Please verify the PAT has 'repo' scope and admin permissions"
+            exit 1
+          fi
+
+          echo "✅ Branch protection access confirmed"
+          echo "Current contexts: $CURRENT"
+
+          echo "🔧 Proceeding with branch protection sync..."
+
+          # Define required contexts from our workflows
           REQUIRED_CONTEXTS=(
             "QA Gate / qa-approved"      # From qa-gate.yml
             "build-and-test"            # From flutter-ci.yml
@@ -46,21 +92,13 @@ jobs:
           echo "Expected required contexts:"
           printf ' - %s\n' "${REQUIRED_CONTEXTS[@]}"
 
-          # Get current branch protection settings
-          OWNER="${GITHUB_REPOSITORY%%/*}"
-          REPO="${GITHUB_REPOSITORY#*/}"
-
-          echo "::group::Checking current branch protection"
-          CURRENT=$(gh api repos/"${OWNER}"/"${REPO}"/branches/develop/protection/required_status_checks --jq '.contexts')
-          echo "Current contexts: $CURRENT"
-
           # Build the new contexts JSON array
           NEW_CONTEXTS_JSON=$(printf '%s\n' "${REQUIRED_CONTEXTS[@]}" | jq -R . | jq -s .)
           echo "New contexts JSON: $NEW_CONTEXTS_JSON"
 
           # Compare and update if different
           if [[ "$CURRENT" != "$NEW_CONTEXTS_JSON" ]]; then
-            echo "::group::Updating branch protection contexts"
+            echo "🔄 Updating branch protection contexts..."
             echo '{"strict":true,"contexts":'$NEW_CONTEXTS_JSON'}' | \
               gh api repos/"${OWNER}"/"${REPO}"/branches/develop/protection/required_status_checks \
               -X PATCH --input -
@@ -69,7 +107,9 @@ jobs:
             echo "✅ Branch protection contexts are already in sync"
           fi
 
-          echo "::group::Validation"
+          # Final validation
+          echo "🔍 Final validation..."
           UPDATED=$(gh api repos/"${OWNER}"/"${REPO}"/branches/develop/protection/required_status_checks --jq '.contexts')
           echo "Final contexts: $UPDATED"
-          echo "::endgroup::"
+
+          echo "🎉 Branch protection sync completed successfully!"
