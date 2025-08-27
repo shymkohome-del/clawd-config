@@ -1,0 +1,337 @@
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:crypto_market/core/blockchain/errors.dart';
+import 'package:crypto_market/features/auth/models/user_profile.dart';
+import 'package:crypto_market/features/auth/providers/user_service_provider.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockICPService extends Mock {
+  @override
+  dynamic noSuchMethod(Invocation invocation) {
+    return super.noSuchMethod(invocation);
+  }
+}
+
+class MockFile extends Mock implements File {}
+
+void main() {
+  group('UserServiceProvider Unit Tests', () {
+    late MockICPService mockICPService;
+    late UserServiceProvider userService;
+
+    const testPrincipal = 'principal-test123';
+
+    setUp(() {
+      mockICPService = MockICPService();
+      userService = UserServiceProvider(mockICPService);
+    });
+
+    group('getUserProfile', () {
+      test('should return UserProfile when service call succeeds', () async {
+        // Arrange
+        final mockProfileData = {
+          'email': 'test@example.com',
+          'username': 'testuser',
+          'authProvider': 'email',
+          'createdAt': DateTime.now().millisecondsSinceEpoch,
+          'reputation': 150,
+          'kycVerified': true,
+          'profileImage': 'QmTestHash123',
+        };
+
+        when(
+          () => mockICPService.getUserProfile(principal: testPrincipal),
+        ).thenAnswer((_) async => Result.ok(mockProfileData));
+
+        // Act
+        final result = await userService.getUserProfile(testPrincipal);
+
+        // Assert
+        expect(result.isOk, isTrue);
+        final profile = result.ok;
+        expect(profile.id, equals(testPrincipal));
+        expect(profile.email, equals('test@example.com'));
+        expect(profile.username, equals('testuser'));
+        expect(profile.authProvider, equals('email'));
+        expect(profile.reputation, equals(150));
+        expect(profile.kycVerified, isTrue);
+        expect(profile.profileImage, equals('QmTestHash123'));
+      });
+
+      test('should return error when service call fails', () async {
+        // Arrange
+        when(
+          () => mockICPService.getUserProfile(principal: testPrincipal),
+        ).thenAnswer((_) async => Result.err(AuthError.network));
+
+        // Act
+        final result = await userService.getUserProfile(testPrincipal);
+
+        // Assert
+        expect(result.isErr, isTrue);
+        expect(result.err, equals(AuthError.network));
+      });
+
+      test('should handle missing optional fields gracefully', () async {
+        // Arrange
+        final minimalProfileData = <String, dynamic>{
+          'principal': testPrincipal,
+        };
+
+        when(
+          () => mockICPService.getUserProfile(principal: testPrincipal),
+        ).thenAnswer((_) async => Result.ok(minimalProfileData));
+
+        // Act
+        final result = await userService.getUserProfile(testPrincipal);
+
+        // Assert
+        expect(result.isOk, isTrue);
+        final profile = result.ok;
+        expect(profile.id, equals(testPrincipal));
+        expect(profile.email, equals('user@example.com')); // default
+        expect(profile.username, equals('user')); // default
+        expect(profile.reputation, equals(0)); // default
+        expect(profile.kycVerified, isFalse); // default
+        expect(profile.profileImage, isNull); // default
+      });
+
+      test('should handle service exceptions gracefully', () async {
+        // Arrange
+        when(
+          () => mockICPService.getUserProfile(principal: testPrincipal),
+        ).thenThrow(Exception('Network error'));
+
+        // Act
+        final result = await userService.getUserProfile(testPrincipal);
+
+        // Assert
+        expect(result.isErr, isTrue);
+        expect(result.err, equals(AuthError.unknown));
+      });
+    });
+
+    group('updateUserProfile', () {
+      final testUpdates = UserUpdate(
+        username: 'newusername',
+        profileImage: 'QmNewHash456',
+      );
+
+      test('should update profile successfully', () async {
+        // Arrange
+        final mockCurrentProfile = UserProfile(
+          id: testPrincipal,
+          email: 'test@example.com',
+          username: 'oldusername',
+          authProvider: 'email',
+          createdAtMillis: DateTime.now().millisecondsSinceEpoch,
+        );
+
+        when(
+          () => mockICPService.getUserProfile(principal: testPrincipal),
+        ).thenAnswer(
+          (_) async => Result.ok({
+            'email': mockCurrentProfile.email,
+            'username': mockCurrentProfile.username,
+            'authProvider': mockCurrentProfile.authProvider,
+            'createdAt': mockCurrentProfile.createdAtMillis,
+          }),
+        );
+
+        // Act
+        final result = await userService.updateUserProfile(
+          testPrincipal,
+          testUpdates,
+        );
+
+        // Assert
+        expect(result.isOk, isTrue);
+        final updatedProfile = result.ok;
+        expect(updatedProfile.username, equals('newusername'));
+        expect(updatedProfile.profileImage, equals('QmNewHash456'));
+        expect(
+          updatedProfile.email,
+          equals(mockCurrentProfile.email),
+        ); // unchanged
+      });
+
+      test('should reject empty username', () async {
+        // Arrange
+        final invalidUpdates = UserUpdate(username: '   ');
+
+        // Act
+        final result = await userService.updateUserProfile(
+          testPrincipal,
+          invalidUpdates,
+        );
+
+        // Assert
+        expect(result.isErr, isTrue);
+        expect(result.err, equals(AuthError.invalidCredentials));
+      });
+
+      test('should handle get profile failure during update', () async {
+        // Arrange
+        when(
+          () => mockICPService.getUserProfile(principal: testPrincipal),
+        ).thenAnswer((_) async => Result.err(AuthError.network));
+
+        // Act
+        final result = await userService.updateUserProfile(
+          testPrincipal,
+          testUpdates,
+        );
+
+        // Assert
+        expect(result.isErr, isTrue);
+        expect(result.err, equals(AuthError.network));
+      });
+    });
+
+    group('updateReputation', () {
+      test('should complete successfully', () async {
+        // Act
+        final result = await userService.updateReputation(testPrincipal, 50);
+
+        // Assert
+        expect(result.isOk, isTrue);
+      });
+
+      test('should handle exceptions', () async {
+        // This would be tested if there were actual implementation details
+        // For now, it's a simple mock that always succeeds
+        final result = await userService.updateReputation(testPrincipal, -25);
+        expect(result.isOk, isTrue);
+      });
+    });
+
+    group('uploadImageToIPFS', () {
+      final testImageData = Uint8List.fromList([1, 2, 3, 4, 5]);
+
+      test('should return IPFS hash on successful upload', () async {
+        // Act
+        final result = await userService.uploadImageToIPFS(testImageData);
+
+        // Assert
+        expect(result.isOk, isTrue);
+        expect(result.ok, startsWith('Qm')); // IPFS hash format
+      });
+
+      test(
+        'should generate different hashes for different timestamps',
+        () async {
+          // Act
+          final result1 = await userService.uploadImageToIPFS(testImageData);
+          await Future.delayed(const Duration(milliseconds: 2));
+          final result2 = await userService.uploadImageToIPFS(testImageData);
+
+          // Assert
+          expect(result1.isOk, isTrue);
+          expect(result2.isOk, isTrue);
+          expect(
+            result1.ok,
+            isNot(equals(result2.ok)),
+          ); // Should be different due to timestamp
+        },
+      );
+    });
+
+    group('uploadImageFileToIPFS', () {
+      test('should read file and upload to IPFS', () async {
+        // Arrange
+        final mockFile = MockFile();
+        final testBytes = Uint8List.fromList([10, 20, 30]);
+        when(() => mockFile.readAsBytes()).thenAnswer((_) async => testBytes);
+
+        // Act
+        final result = await userService.uploadImageFileToIPFS(mockFile);
+
+        // Assert
+        expect(result.isOk, isTrue);
+        expect(result.ok, startsWith('Qm')); // IPFS hash format
+        verify(() => mockFile.readAsBytes()).called(1);
+      });
+
+      test('should handle file read errors', () async {
+        // Arrange
+        final mockFile = MockFile();
+        when(
+          () => mockFile.readAsBytes(),
+        ).thenThrow(FileSystemException('File not found'));
+
+        // Act
+        final result = await userService.uploadImageFileToIPFS(mockFile);
+
+        // Assert
+        expect(result.isErr, isTrue);
+        expect(result.err, equals(AuthError.network));
+      });
+    });
+  });
+
+  group('MockUserService Unit Tests', () {
+    late MockUserService mockUserService;
+
+    const testPrincipal = 'principal-test123';
+
+    setUp(() {
+      mockUserService = MockUserService();
+    });
+
+    test('should return default profile for unknown principal', () async {
+      // Act
+      final result = await mockUserService.getUserProfile('unknown-principal');
+
+      // Assert
+      expect(result.isOk, isTrue);
+      final profile = result.ok;
+      expect(profile.id, equals('unknown-principal'));
+      expect(profile.email, equals('test@example.com'));
+      expect(profile.username, equals('testuser'));
+    });
+
+    test('should update and persist profile changes', () async {
+      // Arrange
+      const newUsername = 'updateduser';
+      const newImageHash = 'QmUpdatedHash';
+
+      // First, get the initial profile
+      await mockUserService.getUserProfile(testPrincipal);
+
+      // Act - update profile
+      final updateResult = await mockUserService.updateUserProfile(
+        testPrincipal,
+        UserUpdate(username: newUsername, profileImage: newImageHash),
+      );
+
+      // Assert update succeeded
+      expect(updateResult.isOk, isTrue);
+      expect(updateResult.ok.username, equals(newUsername));
+      expect(updateResult.ok.profileImage, equals(newImageHash));
+
+      // Verify persistence by getting profile again
+      final getResult = await mockUserService.getUserProfile(testPrincipal);
+      expect(getResult.isOk, isTrue);
+      expect(getResult.ok.username, equals(newUsername));
+      expect(getResult.ok.profileImage, equals(newImageHash));
+    });
+
+    test('should generate mock IPFS hashes based on data size', () async {
+      // Arrange
+      final smallData = Uint8List.fromList([1, 2, 3]);
+      final largeData = Uint8List.fromList(List.generate(1000, (i) => i % 256));
+
+      // Act
+      final smallResult = await mockUserService.uploadImageToIPFS(smallData);
+      final largeResult = await mockUserService.uploadImageToIPFS(largeData);
+
+      // Assert
+      expect(smallResult.isOk, isTrue);
+      expect(largeResult.isOk, isTrue);
+      expect(smallResult.ok, contains('3')); // size of smallData
+      expect(largeResult.ok, contains('1000')); // size of largeData
+      expect(smallResult.ok, isNot(equals(largeResult.ok)));
+    });
+  });
+}

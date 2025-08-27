@@ -22,6 +22,7 @@ This index mirrors the execution order from `docs/prd/4b-user-stories-and-accept
 - [0.6 Logging and Error Handling Baseline](./0.6.logging-and-error-handling-baseline.md)
 - [0.7 Auth Skeleton (UI-only)](./0.7.auth-skeleton-ui-only.md)
 - [0.8 Security Baseline](./0.8.security-baseline.md)
+- [0.10 Dependency Updates](./0.10.dependency-updates.md)
 
 ## Epic 1: User & Identity
 - [1.1 Register with email/social](./1.1.register-with-email-or-social.md)

@@ -37,6 +37,7 @@ dependencies:
   # State Management
   bloc: ^8.1.4
   flutter_bloc: ^8.1.5
+  equatable: ^2.0.5
   
   # Networking
   dio: ^5.7.0
@@ -50,6 +51,7 @@ dependencies:
   flutter_screenutil: ^5.9.3
   cached_network_image: ^3.4.1
   intl: ^0.20.2
+  image_picker: ^1.1.2
   
   # Local Storage
   shared_preferences: ^2.5.3
