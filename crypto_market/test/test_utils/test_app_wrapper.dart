@@ -20,12 +20,12 @@ class TestAppWrapper extends StatelessWidget {
   final String? initialLocation;
 
   const TestAppWrapper({
-    Key? key,
+    super.key,
     required this.child,
     this.mockAuthService,
     this.includeRouter = true,
     this.initialLocation = '/',
-  }) : super(key: key);
+  });
 
   static GoRouter createTestRouter({
     String initialLocation = '/',
