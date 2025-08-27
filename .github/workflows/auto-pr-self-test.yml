@@ -4,36 +4,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  self-test:
-    runs-on: ubuntu-latest
+  matrix-tests:
+    permissions:
+      contents: write
+      pull-requests: write
+    secrets: inherit
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - branch: "feature/demo"
-            done: false
-          - branch: "story/0.9.5-reusable"
-            done: false
-          - branch: "story/0.9.5-reusable"
-            done: true
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Common setup
-        uses: ./.github/actions/common-setup
-        with:
-          prepare_scripts: 'true'
-      - name: Preflight parse
-        run: |
-          set -euo pipefail
-          BR="${{ matrix.branch }}"
-          if [[ "${{ matrix.done }}" == "true" && "$BR" == story/* ]]; then
-            ID=$(echo "$BR" | sed -n 's/^story\/\([0-9][0-9\.]*\)-.*/\1/p')
-            FILE=$(find docs/stories -maxdepth 1 -type f -name "${ID}.*.md" | head -n1 || true)
-            if [[ -n "$FILE" ]]; then
-              sed -i.bak 's/^Status:.*/Status: Done/' "$FILE" || true
-            fi
-          fi
-          ./scripts/preflight-parse.sh "$BR" || true
+        case:
+          - name: feature branch
+            branch: feature/selftest
+          - name: story branch (no file)
+            branch: story/1.2-selftest-done
+          - name: story branch (no file)
+            branch: story/1.3-selftest-not-done
+    uses: ./.github/workflows/reusable-auto-pr.yml
+    with:
+      branch: ${{ matrix.case.branch }}
+      enable_auto_merge: false
+      auto_approve: false
+      dry_run: true

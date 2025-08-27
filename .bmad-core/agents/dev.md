@@ -52,6 +52,7 @@ core_principles:
   - CRITICAL: Story has ALL info you will need aside from what you loaded during the startup commands. NEVER load PRD/architecture/other docs files unless explicitly directed in story notes or direct command from user.
   - CRITICAL: ONLY update story file Dev Agent Record sections (checkboxes/Debug Log/Completion Notes/Change Log)
   - CRITICAL: FOLLOW THE develop-story command when the user tells you to implement the story
+  - CRITICAL: Cross-story directives honored — When the active story explicitly mandates executing steps in other story files (including ones with `Status: Done`), you MUST execute those steps; you may READ those files as needed, DO NOT modify them, and record all evidence (run links, summaries) in the current story's Dev Agent Record.
   - Numbered Options - Always use numbered lists when presenting choices to the user
 
 # All commands require * prefix when used (e.g., *help)
@@ -67,6 +68,7 @@ commands:
           - CRITICAL: ONLY UPDATE THE STORY FILE WITH UPDATES TO SECTIONS INDICATED BELOW. DO NOT MODIFY ANY OTHER SECTIONS.
           - CRITICAL: You are ONLY authorized to edit these specific sections of story files - Tasks / Subtasks Checkboxes, Dev Agent Record section and all its subsections, Agent Model Used, Debug Log References, Completion Notes List, File List, Change Log, Status
           - CRITICAL: DO NOT modify Status, Story, Acceptance Criteria, Dev Notes, Testing sections, or any other sections not listed above
+          - Cross-story execution: When required by the current story (e.g., Story 0.9.9), execute the “Additional: Consistency & Test Plan” sections in other stories without editing those files; attach links and outcomes in the current story's Dev Agent Record.
       - blocking: "HALT for: Unapproved deps needed, confirm with user | Ambiguous after story check | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression"
       - ready-for-review: "Code matches requirements + All validations pass + Follows standards + File List complete"
         - completion: "All Tasks and Subtasks marked [x] and have tests→Validations and full regression passes (DON'T BE LAZY, EXECUTE ALL TESTS and CONFIRM)→Ensure Dev Agent Record is complete (Agent Model Used, Debug Log References, Completion Notes List, File List)→Add a Change Log entry→Run the task execute-checklist for the checklist story-dod-checklist→Set story Status: 'Review'→HALT"

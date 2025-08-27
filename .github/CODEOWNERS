@@ -2,8 +2,6 @@
 .github/workflows/*    @maintainers @devops
 scripts/*              @maintainers @devops
 
-# Protect workflows and automation scripts
-.github/workflows/*  @Vatalion
-scripts/*            @Vatalion
-docs/stories/*       @Vatalion
+# Stories are co-owned by Maintainers/DevOps and the project lead
+docs/stories/*       @maintainers @devops @Vatalion
 

@@ -3,8 +3,12 @@ name: Auto Rebase Story PRs
 on:
   push:
     branches: [ develop ]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [ develop ]
   schedule:
     - cron: '*/30 * * * *'
+  workflow_dispatch:
 
 jobs:
   rebase:
@@ -12,6 +16,9 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@v4
