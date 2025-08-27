@@ -61,7 +61,8 @@ echo "[pre-push] OK"
 
 # Full local validation (CI parity)
 if [[ -x scripts/dev-validate.sh ]]; then
-  scripts/dev-validate.sh
+  # Run with RUN_ACT=auto to execute fast local workflow simulations when available
+  RUN_ACT=auto scripts/dev-validate.sh
 else
   echo "[pre-push] WARN: scripts/dev-validate.sh not found; consider running it manually."
 fi

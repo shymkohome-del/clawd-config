@@ -1,32 +1,15 @@
-name: QA Auto Merge
+name: QA Auto Merge (Disabled - superseded by fallback)
 
 on:
-  pull_request:
-    types: [labeled, unlabeled, edited, synchronize]
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/qa-auto-merge.yml
 
 jobs:
-  merge-when-approved:
-    if: >-
-      ${{ github.event_name == 'pull_request' &&
-          contains(github.event.pull_request.labels.*.name, 'qa-approved') &&
-          github.event.pull_request.base.ref == 'develop' &&
-          (
-            startsWith(github.event.pull_request.head.ref, 'story/') ||
-            startsWith(github.event.pull_request.head.ref, 'chore/') ||
-            startsWith(github.event.pull_request.head.ref, 'fix/') ||
-            startsWith(github.event.pull_request.head.ref, 'patch/') ||
-            startsWith(github.event.pull_request.head.ref, 'feat/') ||
-            startsWith(github.event.pull_request.head.ref, 'feature/') ||
-            startsWith(github.event.pull_request.head.ref, 'hotfix/')
-          ) }}
+  disabled:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: write
     steps:
-      - name: Enable auto-merge (squash)
-        uses: peter-evans/enable-pull-request-automerge@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          pull-request-number: ${{ github.event.pull_request.number }}
-          merge-method: squash
+      - name: This workflow is disabled in favor of merge-on-green-fallback.yml
+        run: |
+          echo "qa-auto-merge.yml is disabled to avoid duplication. Use 'Merge on Green (Fallback)'."

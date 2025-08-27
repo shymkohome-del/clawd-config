@@ -19,7 +19,7 @@ jobs:
     env:
       OWNER: ${{ github.repository_owner }}
       REPO: ${{ github.event.repository.name || github.repository }}
-      REQUIRED_CONTEXTS: '["build-and-test","pr-lint","lint"]'
+      REQUIRED_CONTEXTS: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,6 +34,12 @@ jobs:
           echo "Repo: ${GITHUB_REPOSITORY}"
           echo "Owner: ${OWNER}"
           echo "Required contexts: ${REQUIRED_CONTEXTS}"
+
+      - name: Install jq
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y jq
 
       - name: Verify admin token presence
         id: token
@@ -61,7 +67,9 @@ jobs:
           echo
           echo "This will configure branch protection to require these status checks on main/develop:"
           echo "- Workflow Lint / lint"
-          echo "- Auto PR and Auto-merge on QA Done / Workflow Lint"
+          echo "- PR Lint / pr-lint"
+          echo "- Flutter CI / build-and-test"
+          echo "- QA Gate / qa-approved"
 
       - name: Enforce required checks for branches
         if: steps.token.outputs.has_token == 'true'
@@ -131,3 +139,96 @@ jobs:
         run: |
           set -euo pipefail
           echo "Enforcement job finished. See logs above for branch results."
+
+  report-pr-required-checks:
+    name: Report PR required checks
+    needs: [enforce]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      checks: read
+    env:
+      REQUIRED_CONTEXTS: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
+    steps:
+      - name: Install jq
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y
+          sudo apt-get install -y jq
+      - name: List open PRs to develop (story/* only)
+        id: list
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          API="https://api.github.com"
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          PAGE=1
+          PRS="[]"
+          while :; do
+            RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H 'accept: application/vnd.github+json' \
+              "${API}/repos/${OWNER}/${REPO}/pulls?state=open&base=develop&per_page=100&page=${PAGE}")
+            COUNT=$(echo "$RESP" | jq 'length')
+            PRS=$(jq -nc --argjson acc "$PRS" --argjson resp "$RESP" '$acc + $resp')
+            if [ "$COUNT" -lt 100 ]; then break; fi
+            PAGE=$((PAGE+1))
+          done
+          STORY=$(echo "$PRS" | jq '[ .[] | select(.head.ref | startswith("story/")) | {number: .number, sha: .head.sha} ]')
+          echo "result=$(echo "$STORY" | jq -c '.')" >> "$GITHUB_OUTPUT"
+      - name: Evaluate checks per PR and comment/label
+        if: ${{ steps.list.outputs.result != '' }}
+        env:
+          PRS_JSON: ${{ steps.list.outputs.result }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          API="https://api.github.com"
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          REQUIRED_CONTEXTS_JSON='${REQUIRED_CONTEXTS}'
+          echo "$PRS_JSON" | jq -r '.[] | @base64' | while read -r row; do
+            _jq() { echo "$row" | base64 --decode | jq -r "$1"; }
+            PR=$(_jq '.number'); SHA=$(_jq '.sha')
+            echo "::group::PR #${PR} checks"
+            RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+              "${API}/repos/${OWNER}/${REPO}/commits/${SHA}/check-runs")
+            MISSING=$(jq -nc --argjson req "$REQUIRED_CONTEXTS_JSON" --argjson have "$(echo "$RESP" | jq '[.check_runs[].name]')" \
+              '$req - $have')
+            FAILED=$(echo "$RESP" | jq -r '.check_runs[] | select(.conclusion != "success") | .name')
+            COMMENT=""
+            if [[ "$MISSING" != "[]" ]]; then
+              COMMENT+=$'Required checks missing on this commit:\n'
+              COMMENT+=$(echo "$MISSING" | jq -r '.[] | "- " + .')$'\n'
+            fi
+            if [[ -n "$FAILED" ]]; then
+              COMMENT+=$'Non-green checks:\n'
+              COMMENT+=$(printf '%s\n' "$FAILED" | sed 's/^/- /')$'\n'
+            fi
+            if [[ -n "$COMMENT" ]]; then
+              # Ensure labels exist
+              curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+                -d '{"name":"checks:red","color":"b60205","description":"Required checks failing/missing"}' \
+                "${API}/repos/${OWNER}/${REPO}/labels" >/dev/null || true
+              curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+                -d '{"labels":["checks:red"]}' "${API}/repos/${OWNER}/${REPO}/issues/${PR}/labels" >/dev/null || true
+              BODY=$'Required checks status summary (enforced):\n\n'"$COMMENT"
+              curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+                -d "$(jq -cn --arg body "$BODY" '{body:$body}')" \
+                "${API}/repos/${OWNER}/${REPO}/issues/${PR}/comments" >/dev/null || true
+            else
+              # Remove red label if present
+              curl -sS -X DELETE -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+                "${API}/repos/${OWNER}/${REPO}/issues/${PR}/labels/checks:red" >/dev/null || true
+            fi
+            echo "::endgroup::"
+          done
+      - name: Emit summary
+        if: always()
+        run: |
+          set -euo pipefail
+          echo "### Required checks report" >> $GITHUB_STEP_SUMMARY
+          echo "- Processed PRs: $(echo '${{ steps.list.outputs.result || '[]' }}' | jq 'length')" >> $GITHUB_STEP_SUMMARY

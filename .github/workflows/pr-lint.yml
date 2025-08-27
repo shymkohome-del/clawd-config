@@ -50,7 +50,8 @@ jobs:
 
           echo "Branch: $HEAD_REF"
           echo "Title: $TITLE"
-          echo "Body length: $(printf '%s' "${BODY:-}" | wc -c | awk '{print $1}')"
+          BODY_LEN=$(printf '%s' "$BODY" | wc -c | tr -d '[:space:]')
+          echo "Body length: ${BODY_LEN}"
 
           fail=0
 
@@ -88,3 +89,11 @@ jobs:
           # Keep lint simple; print reminder unconditionally.
           echo "::notice::Reminder: Ensure the story's Status is updated appropriately."
           exit $fail
+
+      - name: Enforce story PR targets develop (guard)
+        if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'story/') && github.event.pull_request.base.ref != 'develop' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::error::Story branches must open PRs to 'develop'. Current base: '${{ github.event.pull_request.base.ref }}'"
+          exit 1

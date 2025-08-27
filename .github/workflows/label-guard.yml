@@ -1,0 +1,61 @@
+name: Label Guard (QA Authority)
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  guard:
+    if: ${{ github.event.label.name == 'qa:approved' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Enforce QA-only approval label
+        env:
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
+          ALLOWED: ${{ vars.QA_APPROVERS || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          PR_NUMBER='${{ github.event.pull_request.number }}'
+          ACTOR='${{ github.actor }}'
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+
+          # Determine allowlist from repo variables (comma/space separated usernames)
+          mapfile -t allowed_arr < <(printf '%s' "${ALLOWED}" | tr ', ' '\n' | sed '/^$/d' | sort -u)
+
+          is_allowed=false
+          for u in "${allowed_arr[@]:-}"; do
+            if [[ "$ACTOR" == "$u" ]]; then is_allowed=true; break; fi
+          done
+
+          if [[ "$is_allowed" != "true" ]]; then
+            echo "Actor $ACTOR is not allowed to set qa:approved. Removing label."
+            # Remove the label
+            curl -sS -X DELETE -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+              "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels/qa:approved" >/dev/null || true
+            # Comment guidance
+            BODY=$'Only QA approvers may apply the `qa:approved` label. Your change has been reverted.\n\n'
+            BODY+=$'If you believe this is in error, contact QA lead to be added to QA_APPROVERS.'
+            curl -sS -X POST \
+              -H "authorization: Bearer ${GH_TOKEN}" \
+              -H "accept: application/vnd.github+json" \
+              -H "content-type: application/json" \
+              -d "$(jq -cn --arg body "$BODY" '{body:$body}')" \
+              "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/comments" >/dev/null || true
+            # Apply qa:blocker for visibility
+            curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+              -d '{"labels":["qa:blocker"]}' "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" >/dev/null || true
+          else
+            echo "Actor $ACTOR is allowed to apply qa:approved."
+          fi

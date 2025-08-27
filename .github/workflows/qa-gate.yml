@@ -1,0 +1,29 @@
+name: QA Gate
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, labeled, unlabeled]
+    branches: [ develop ]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  qa-approved:
+    name: QA Gate / qa-approved
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check for qa:approved label
+        shell: bash
+        env:
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: |
+          set -euo pipefail
+          if [[ ",${LABELS}," == *",qa:approved,"* ]]; then
+            echo "QA approved label present."
+          else
+            echo "::error::Missing required QA approval label 'qa:approved'."
+            exit 1
+          fi
