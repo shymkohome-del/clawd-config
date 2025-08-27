@@ -33,6 +33,12 @@ class AppLocalizationsLv extends AppLocalizations {
   String get usernameMinLength => 'Minimālais garums 3';
 
   @override
+  String get usernameMaxLength => 'Maksimālais garums 30';
+
+  @override
+  String get usernameInvalidChars => 'Atļauti tikai burti, cipari, _ un -';
+
+  @override
   String get passwordLabel => 'Parole';
 
   @override
@@ -63,6 +69,9 @@ class AppLocalizationsLv extends AppLocalizations {
   String get errorUnknown => 'Radās kļūda';
 
   @override
+  String get errorImagePicker => 'Kļūda attēla izvēlē';
+
+  @override
   String get homeTitle => 'Sākums';
 
   @override
@@ -82,4 +91,34 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get configErrorTitle => 'Konfigurācijas kļūda';
+
+  @override
+  String get profile => 'Profils';
+
+  @override
+  String get username => 'Lietotājvārds';
+
+  @override
+  String get email => 'E-pasts';
+
+  @override
+  String get authProvider => 'Autentifikācijas sniedzējs';
+
+  @override
+  String get selectImageSource => 'Izvēlieties attēla avotu';
+
+  @override
+  String get gallery => 'Galerija';
+
+  @override
+  String get camera => 'Kamera';
+
+  @override
+  String get retry => 'Mēģināt vēlreiz';
+
+  @override
+  String get updatingProfile => 'Atjaunina profilu...';
+
+  @override
+  String get profileUpdatedSuccess => 'Profils veiksmīgi atjaunots';
 }
