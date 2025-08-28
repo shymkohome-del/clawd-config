@@ -91,8 +91,14 @@ class AuthError extends DomainError {
 
   factory AuthError.loginFailed([String? message]) => AuthError(
     AuthErrorType.loginFailed,
-    message ?? 'Login failed. Please try again',
+    message ?? 'Login failed',
     code: 'AUTH_LOGIN_FAILED',
+  );
+
+  factory AuthError.insufficientPrivileges([String? message]) => AuthError(
+    AuthErrorType.principalMismatch,
+    message ?? 'Insufficient privileges to perform this action',
+    code: 'AUTH_INSUFFICIENT_PRIVILEGES',
   );
 }
 
@@ -241,5 +247,11 @@ class BusinessLogicError extends DomainError {
       BusinessLogicError(
         message ?? 'This operation is not allowed',
         code: 'BUSINESS_INVALID_OPERATION',
+      );
+
+  factory BusinessLogicError.rateLimitExceeded([String? message]) =>
+      BusinessLogicError(
+        message ?? 'Rate limit exceeded. Please try again later',
+        code: 'BUSINESS_RATE_LIMIT_EXCEEDED',
       );
 }
