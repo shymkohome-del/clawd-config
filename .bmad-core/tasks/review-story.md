@@ -59,23 +59,37 @@ When a developer agent marks a story as "Review", perform a comprehensive senior
    - Check for any missing functionality
    - Validate edge cases are handled
 
-8. **Test Coverage Review**
+8. **Tasks/Subtasks Completion Validation**
+   - Review the "Tasks / Subtasks" section in the story file
+   - For each task/subtask listed:
+     - Verify the functionality exists and works correctly
+     - Test the implementation against the task description
+     - Check edge cases and error handling for that specific task
+     - Mark as `[x]` complete ONLY when QA validation confirms it works as specified
+     - Leave as `[ ]` incomplete if not implemented or not working properly
+   - CRITICAL: This is a QA responsibility - update completion status based on actual testing evidence
+
+9. **Test Coverage Review**
    - Ensure unit tests cover edge cases
    - Add missing tests if critical coverage is lacking
    - Verify integration tests (if required) are comprehensive
    - Check that test assertions are meaningful
    - Look for missing test scenarios
 
-9. **Documentation and Comments**
+10. **Documentation and Comments**
    - Verify code is self-documenting where possible
    - Add comments for complex logic if missing
    - Ensure any API changes are documented
 
-## Update Story File - QA Results Section ONLY
+## Update Story File - QA Results Section AND Tasks/Subtasks Completion Status
 
-**CRITICAL**: You are ONLY authorized to update the "QA Results" section of the story file. DO NOT modify any other sections.
+**CRITICAL**: You are authorized to update TWO things in the story file:
+1. The "QA Results" section - append your comprehensive review findings
+2. The "Tasks/Subtasks" completion status - mark [x] completed tasks based on QA validation
 
-After review and any refactoring, append your results to the story file in the QA Results section. If the `## QA Results` section is missing, create it at the end of the file before writing your results.
+DO NOT modify any other sections (Story, Acceptance Criteria, Dev Notes, Testing, Dev Agent Record, Change Log, etc.).
+
+After review and any refactoring, update both sections in the story file:
 
 ```markdown
 ## QA Results
@@ -103,6 +117,16 @@ After review and any refactoring, append your results to the story file in the Q
 - Project Structure: [✓/✗] [notes if any]
 - Testing Strategy: [✓/✗] [notes if any]
 - All ACs Met: [✓/✗] [notes if any]
+
+### Tasks/Subtasks Validation
+
+[For each task/subtask in the story, document validation results]
+
+- **Task 1**: [Description] → [✓ Implemented and working / ✗ Not implemented / ⚠️ Partially working - details]
+- **Task 2**: [Description] → [✓ Implemented and working / ✗ Not implemented / ⚠️ Partially working - details]
+- **Subtask A**: [Description] → [✓ Implemented and working / ✗ Not implemented / ⚠️ Partially working - details]
+
+**IMPORTANT**: After documenting validation results above, update the actual Tasks/Subtasks section in the story file to mark [x] completed items based on this validation.
 
 ### Improvements Checklist
 

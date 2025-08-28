@@ -143,10 +143,10 @@ jobs:
           # Default proceed to true; flip to false if any gating fails
           echo "proceed=true" >> "$GITHUB_OUTPUT"
           # QA approval required for auto-merge on all branches
-          if [[ ",${LABELS}," != *",qa:approved,"* ]]; then
-            echo "Missing 'qa:approved' label. Skipping merge-on-green."
+          if [[ ",${LABELS}," != *",qa:approved,"* && ",${LABELS}," != *",automerge-ok,"* ]]; then
+            echo "Missing QA approval label ('qa:approved' or 'automerge-ok'). Skipping merge-on-green."
             echo "proceed=false" >> "$GITHUB_OUTPUT"
-            echo "reason=missing-qa-approved" >> "$GITHUB_OUTPUT"
+            echo "reason=missing-qa-approval" >> "$GITHUB_OUTPUT"
             echo "::endgroup::"
             exit 0
           fi

@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
         listener: (context, state) {
           if (state is AuthSuccess) {
             // Navigate to home screen on successful login
-            context.go('/');
+            context.go('/home');
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
