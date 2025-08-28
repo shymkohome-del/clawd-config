@@ -286,16 +286,16 @@ jobs:
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" -w "\nHTTPSTATUS:%{http_code}" >/dev/null || true
           echo "::endgroup::"
 
-      - name: Label PR (automerge-ok)
+      - name: Label PR (QA approved)
         if: steps.meta.outputs.qa_done == 'true'
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
-          echo "::group::Label PR (automerge-ok)"
+          echo "::group::Label PR (QA approved - automerge-ok + qa:approved)"
           if [[ "${{ steps.ctx.outputs.dry_run }}" == "true" ]]; then
-            echo "dry-run: Skipping label application (automerge-ok)."; echo "::endgroup::"; exit 0; fi
+            echo "dry-run: Skipping label application (QA approved)."; echo "::endgroup::"; exit 0; fi
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
@@ -310,7 +310,7 @@ jobs:
           fi
           if [[ -z "$PR_NUMBER" ]]; then
             echo "No PR found to label. Skipping."; echo "::endgroup::"; exit 0; fi
-          PAYLOAD='{"labels":["automerge-ok"]}'
+          PAYLOAD='{"labels":["automerge-ok","qa:approved"]}'
           bash scripts/retry.sh 6 2 -- curl -sS -i -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" -w "\nHTTPSTATUS:%{http_code}" >/dev/null || true
           echo "::endgroup::"
