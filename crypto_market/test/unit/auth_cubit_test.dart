@@ -18,7 +18,23 @@ class _MockAuthService implements AuthService {
         email: email,
         username: username,
         authProvider: 'email',
-        createdAtMillis: 0,
+        createdAtMillis: DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
+  }
+
+  @override
+  Future<Result<User, AuthError>> loginWithEmailPassword({
+    required String email,
+    required String password,
+  }) async {
+    return Result.ok(
+      User(
+        id: 'principal-mock',
+        email: email,
+        username: email.split('@')[0],
+        authProvider: 'email',
+        createdAtMillis: DateTime.now().millisecondsSinceEpoch,
       ),
     );
   }
@@ -28,18 +44,20 @@ class _MockAuthService implements AuthService {
     required String provider,
     required String token,
   }) async {
-    if (provider == 'google' || provider == 'apple') {
-      return Result.ok(
-        User(
-          id: 'principal-oauth',
-          email: 'oauth@example.com',
-          username: 'oauth',
-          authProvider: provider,
-          createdAtMillis: 0,
-        ),
-      );
+    // Return failure for unknown providers
+    if (provider == 'unknown') {
+      return const Result.err(AuthError.unknown);
     }
-    return const Result.err(AuthError.unknown);
+
+    return Result.ok(
+      User(
+        id: 'oauth-principal-mock',
+        email: 'oauth@example.com',
+        username: 'oauth_user',
+        authProvider: provider,
+        createdAtMillis: DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
   }
 
   @override
@@ -48,6 +66,12 @@ class _MockAuthService implements AuthService {
   }) async {
     return Result.ok({'principal': principal});
   }
+
+  @override
+  Future<void> logout() async {}
+
+  @override
+  Future<User?> getCurrentUser() async => null;
 }
 
 void main() {

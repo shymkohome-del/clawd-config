@@ -121,4 +121,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileUpdatedSuccess => 'Profile updated successfully';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get sessionRestored => 'Session restored';
+
+  @override
+  String get sessionExpired => 'Session expired, please login again';
 }

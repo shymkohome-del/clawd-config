@@ -325,6 +325,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile updated successfully'**
   String get profileUpdatedSuccess;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// No description provided for @sessionRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Session restored'**
+  String get sessionRestored;
+
+  /// No description provided for @sessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired, please login again'**
+  String get sessionExpired;
 }
 
 class _AppLocalizationsDelegate

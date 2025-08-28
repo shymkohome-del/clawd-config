@@ -121,4 +121,14 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get profileUpdatedSuccess => 'Profils veiksmīgi atjaunots';
+
+  @override
+  String get logout => 'Iziet';
+
+  @override
+  String get sessionRestored => 'Sesija atjaunota';
+
+  @override
+  String get sessionExpired =>
+      'Sesijas laiks beidzies, lūdzu pieteikšanās vēlreiz';
 }
