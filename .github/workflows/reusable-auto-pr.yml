@@ -72,7 +72,7 @@ jobs:
           set -euo pipefail
           BRANCH="${{ steps.ctx.outputs.branch }}"
           echo "branch_name=$BRANCH" >> "$GITHUB_OUTPUT"
-          # Identify branch type and story metadata (no QA status gate here; merge is gated later by QA label)
+          # Identify branch type and story metadata
           if [[ "$BRANCH" =~ ^story/([0-9]+(\.[0-9]+)*)- ]]; then
             echo "is_supported=true" >> "$GITHUB_OUTPUT"
             echo "is_story=true" >> "$GITHUB_OUTPUT"
@@ -80,14 +80,27 @@ jobs:
             STORY_FILE=$(ls docs/stories/${STORY_ID}.*.md 2>/dev/null | head -n1 || true)
             echo "story_id=${STORY_ID}" >> "$GITHUB_OUTPUT"
             echo "story_file=${STORY_FILE}" >> "$GITHUB_OUTPUT"
+
+            # Check QA status using preflight parser
+            PREFLIGHT_OUTPUT=$(bash scripts/preflight-parse.sh "$BRANCH")
+            QA_DONE=$(echo "$PREFLIGHT_OUTPUT" | grep -E '^qa_done=' | cut -d'=' -f2)
+            REASON=$(echo "$PREFLIGHT_OUTPUT" | grep -E '^reason=' | cut -d'=' -f2)
+            echo "qa_done=${QA_DONE}" >> "$GITHUB_OUTPUT"
+            if [[ -n "${REASON}" ]]; then
+              echo "reason=${REASON}" >> "$GITHUB_OUTPUT"
+            fi
           elif [[ "$BRANCH" =~ ^(feature|fix|chore|patch)/ ]]; then
             echo "is_supported=true" >> "$GITHUB_OUTPUT"
             echo "is_story=false" >> "$GITHUB_OUTPUT"
             echo "story_id=" >> "$GITHUB_OUTPUT"
             echo "story_file=" >> "$GITHUB_OUTPUT"
+            echo "qa_done=false" >> "$GITHUB_OUTPUT"
           else
             echo "is_supported=false" >> "$GITHUB_OUTPUT"
             echo "is_story=false" >> "$GITHUB_OUTPUT"
+            echo "story_id=" >> "$GITHUB_OUTPUT"
+            echo "story_file=" >> "$GITHUB_OUTPUT"
+            echo "qa_done=false" >> "$GITHUB_OUTPUT"
             echo "reason=unsupported-branch" >> "$GITHUB_OUTPUT"
           fi
 
@@ -273,16 +286,16 @@ jobs:
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" -w "\nHTTPSTATUS:%{http_code}" >/dev/null || true
           echo "::endgroup::"
 
-      - name: Label PR (automerge-ok)
+      - name: Label PR (QA approved)
         if: steps.meta.outputs.qa_done == 'true'
         env:
           GH_TOKEN: ${{ secrets.BOT_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
-          echo "::group::Label PR (automerge-ok)"
+          echo "::group::Label PR (QA approved - automerge-ok + qa:approved)"
           if [[ "${{ steps.ctx.outputs.dry_run }}" == "true" ]]; then
-            echo "dry-run: Skipping label application (automerge-ok)."; echo "::endgroup::"; exit 0; fi
+            echo "dry-run: Skipping label application (QA approved)."; echo "::endgroup::"; exit 0; fi
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
@@ -297,7 +310,7 @@ jobs:
           fi
           if [[ -z "$PR_NUMBER" ]]; then
             echo "No PR found to label. Skipping."; echo "::endgroup::"; exit 0; fi
-          PAYLOAD='{"labels":["automerge-ok"]}'
+          PAYLOAD='{"labels":["automerge-ok","qa:approved"]}'
           bash scripts/retry.sh 6 2 -- curl -sS -i -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" -w "\nHTTPSTATUS:%{http_code}" >/dev/null || true
           echo "::endgroup::"
