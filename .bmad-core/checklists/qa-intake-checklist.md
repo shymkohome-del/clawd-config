@@ -21,8 +21,8 @@ Steps:
    - Derive test cases from Acceptance Criteria and BDD scenarios in the story
 6. Execute tests
    - Append results in the story file's `## QA Results` section. Include build hash and timestamps
-7. Report outcomes
-   - If pass: Complete the QA Results section and set story Status to `Done`. If PR was missing required story reference, request Dev to update PR title/body before approval.
+7. Report outcomes and watch for merge
+   - If pass: Complete the QA Results section, set story Status to `Done`, and push changes. Then run `scripts/qa-watch-and-sync.sh story/${id}-${slug}` to watch for PR merge and automatically sync develop branch when complete.
    - If fail: Open defects with clear repro steps and reference them in the story's QA Results section
 
 Outcome:
