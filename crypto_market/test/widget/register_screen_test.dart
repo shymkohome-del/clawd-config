@@ -42,13 +42,13 @@ void main() {
               routes: [
                 GoRoute(
                   path: '/register',
-                  builder: (context, state) => RegisterScreen(authServiceOverride: auth),
+                  builder: (context, state) =>
+                      RegisterScreen(authServiceOverride: auth),
                 ),
                 GoRoute(
                   path: '/home',
-                  builder: (context, state) => const Scaffold(
-                    body: Center(child: Text('Home')),
-                  ),
+                  builder: (context, state) =>
+                      const Scaffold(body: Center(child: Text('Home'))),
                 ),
               ],
             ),
