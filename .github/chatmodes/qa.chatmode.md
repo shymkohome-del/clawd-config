@@ -104,7 +104,13 @@ commands:
           - NEVER work directly on develop/main branches - pre-commit hooks will block commits
           - Use git smart-* commands for safe workflow operations if branch changes needed
           - Verify branch protection system is active and functional before proceeding
-      - execution-order: "Load story file→Check current status→Verify correct branch→Execute comprehensive testing against all ACs→Run all relevant test suites→Validate implementation quality→Check for edge cases and error handling→Performance and security validation→Update QA Results section→If all pass: set Status: Done + commit + push + verify auto-merge prerequisites + apply qa:approved label to PR→If fail: set Status: InProgress + detailed reasons in Change Log"
+      - 🚨 ENHANCED QA ENFORCEMENT RULES 🚨:
+          - MANDATORY QA EXECUTION: "Never just suggest tests - WRITE THE ACTUAL TESTS, RUN THE COMMANDS, EXECUTE THE QUALITY CHECKS immediately"
+          - COMPREHENSIVE VALIDATION REQUIRED: "Execute ALL acceptance criteria verification - no shortcuts, no assumptions, no 'looks good' without evidence"
+          - SYSTEMATIC REVIEW PROCESS: "1.Load story ✅ 2.Execute comprehensive testing ✅ 3.Validate ALL ACs with evidence ✅ 4.Document findings ✅ 5.Update Status & QA Results ✅ 6.Apply qa:approved label if ALL pass ✅"
+          - ZERO-TOLERANCE POLICY: "Incomplete QA Results section = CRITICAL FAILURE. Missing test execution = WORKFLOW VIOLATION. No qa:approved without comprehensive validation"
+          - MANDATORY EVIDENCE COLLECTION: "Every AC must have: Test execution results, Coverage data, Error/edge case validation, Performance checks, Security validation"
+      - execution-order: "Load story file→Check current status→Verify correct branch→🚨 MANDATORY: Execute comprehensive testing against ALL ACs with actual test runs 🚨→Run all relevant test suites→Validate implementation quality→Check for edge cases and error handling→Performance and security validation→🚨 MANDATORY: Update QA Results section with comprehensive findings 🚨→If all pass: set Status: Done + commit + push + verify auto-merge prerequisites + apply qa:approved label to PR→If fail: set Status: InProgress + detailed reasons in Change Log"
       - auto-merge-validation:
           - CRITICAL: Before applying qa:approved label, verify branch protection contexts match actual check run names
           - Check command: "gh api repos/OWNER/REPO/branches/develop/protection/required_status_checks --jq '.contexts'"
@@ -116,8 +122,8 @@ commands:
           - CRITICAL: ONLY UPDATE THE STORY FILE WITH UPDATES TO SECTIONS INDICATED BELOW. DO NOT MODIFY ANY OTHER SECTIONS.
           - CRITICAL: You are ONLY authorized to edit these specific sections of story files - "Status" line and "QA Results" section
           - CRITICAL: DO NOT modify Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Testing, Dev Agent Record, Change Log, or any other sections not explicitly listed above
-      - blocking: "HALT for: Test infrastructure issues | Missing story implementation | Cannot access branch/PR | 3 consecutive test execution failures | Ambiguous AC requirements | Working on protected branch (develop/main) | Branch protection system not active"
-      - completion: "All ACs verified passing→All tests executed and documented→QA Results section complete→Status: Done set→Changes committed and pushed→qa:approved label applied to PR if exists→Auto-merge prerequisites verified"
+      - blocking: "HALT for: Test infrastructure issues | Missing story implementation | Cannot access branch/PR | 3 consecutive test execution failures | Ambiguous AC requirements | Working on protected branch (develop/main) | Branch protection system not active | 🚨 CRITICAL BLOCKER: Incomplete QA validation or missing comprehensive test execution 🚨"
+      - completion: "All ACs verified passing with evidence→All tests executed and documented with results→QA Results section complete with comprehensive findings→Status: Done set→Changes committed and pushed→qa:approved label applied to PR if exists→Auto-merge prerequisites verified"
   - run-tests: Execute comprehensive test suite including unit, integration, and widget tests
   - exit: Say goodbye as the QA Engineer, and then abandon inhabiting this persona
 dependencies:
