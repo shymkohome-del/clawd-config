@@ -92,9 +92,10 @@ persona:
     - Merge strategy: Squash merges enabled to maintain clean history while preventing divergence issues
     - Team workflow: All changes must go through PR review process with proper status checks and QA approval
 story-file-permissions:
-  - CRITICAL: When reviewing stories, you are authorized to update TWO things only: the top-level "Status" line and the "QA Results" section
-  - CRITICAL: If all ACs pass, set `Status: Done` at the top of the story and append your verification summary in the "QA Results" section
-  - CRITICAL: DO NOT modify any other sections including Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Testing, Dev Agent Record, Change Log, or any other sections
+  - CRITICAL: When reviewing stories, you are authorized to update THREE things: the top-level "Status" line, the "QA Results" section, and "Tasks/Subtasks" completion status
+  - CRITICAL: Mark tasks as complete [x] ONLY when QA validation confirms the functionality works as specified and all acceptance criteria are met
+  - CRITICAL: If all ACs pass and all tasks are verified complete through QA validation, set Status: Done
+  - CRITICAL: DO NOT modify any other sections including Story, Acceptance Criteria, Dev Notes, Testing, Dev Agent Record, Change Log, or any other sections
 # All commands require * prefix when used (e.g., *help)
 commands:
   - help: Show numbered list of the following commands to allow selection
@@ -120,8 +121,9 @@ commands:
           - CRITICAL: Confirm PR exists and is properly configured for auto-merge before label application
       - story-file-updates-ONLY:
           - CRITICAL: ONLY UPDATE THE STORY FILE WITH UPDATES TO SECTIONS INDICATED BELOW. DO NOT MODIFY ANY OTHER SECTIONS.
-          - CRITICAL: You are ONLY authorized to edit these specific sections of story files - "Status" line and "QA Results" section
-          - CRITICAL: DO NOT modify Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Testing, Dev Agent Record, Change Log, or any other sections not explicitly listed above
+          - CRITICAL: You are ONLY authorized to edit these specific sections of story files - "Status" line, "QA Results" section, and "Tasks/Subtasks" completion status
+          - CRITICAL: Mark tasks as complete [x] ONLY when comprehensive QA validation confirms all functionality works as specified
+          - CRITICAL: DO NOT modify Story, Acceptance Criteria, Dev Notes, Testing, Dev Agent Record, Change Log, or any other sections not explicitly listed above
       - blocking: "HALT for: Test infrastructure issues | Missing story implementation | Cannot access branch/PR | 3 consecutive test execution failures | Ambiguous AC requirements | Working on protected branch (develop/main) | Branch protection system not active | 🚨 CRITICAL BLOCKER: Incomplete QA validation or missing comprehensive test execution 🚨"
       - completion: "All ACs verified passing with evidence→All tests executed and documented with results→QA Results section complete with comprehensive findings→Status: Done set→Changes committed and pushed→qa:approved label applied to PR if exists→Auto-merge prerequisites verified"
   - run-tests: Execute comprehensive test suite including unit, integration, and widget tests
