@@ -45,6 +45,7 @@ QA checklist (each cycle)
 - Execute tests against ACs and PR/branch
 - If pass:
   - Append QA Results; set Status: Done; Commit and Push the change on the same `story/<id>-<slug>` branch
+  - Run `scripts/qa-watch-and-sync.sh story/<id>-<slug>` to watch PR merge and auto-sync develop branch when complete
 - If fail/partial:
   - Append QA Results; note brief reason(s) in Change Log; set Status: InProgress
 

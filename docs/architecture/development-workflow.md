@@ -84,6 +84,7 @@ Branch protection should require the above checks on `develop` and `main`. Use `
 ### QA agent (`@qa`)
 
 - Review story ACs; update `## QA Results` and apply `qa:approved` when acceptable.
+- After setting `Status: Done` and pushing, run `scripts/qa-watch-and-sync.sh <branch>` to watch PR merge and automatically sync develop branch.
 - Automation adds `qa:ready` on PR creation; only QA approvers may add `qa:approved`.
 - If any AC fails/partial: do not apply `qa:approved`; automation will apply `qa:blocker` on CI failures and append a concise failure summary to `## QA Results`.
 
