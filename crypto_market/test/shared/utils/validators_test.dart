@@ -125,10 +125,22 @@ void main() {
       final result = PasswordValidator.validate('pass');
 
       expect(result.isValid, isFalse);
-      expect(result.errors, contains('Password must be at least 8 characters long'));
-      expect(result.errors, contains('Password must contain at least one uppercase letter'));
-      expect(result.errors, contains('Password must contain at least one digit'));
-      expect(result.errors, contains('Password must contain at least one special character'));
+      expect(
+        result.errors,
+        contains('Password must be at least 8 characters long'),
+      );
+      expect(
+        result.errors,
+        contains('Password must contain at least one uppercase letter'),
+      );
+      expect(
+        result.errors,
+        contains('Password must contain at least one digit'),
+      );
+      expect(
+        result.errors,
+        contains('Password must contain at least one special character'),
+      );
     });
   });
 
