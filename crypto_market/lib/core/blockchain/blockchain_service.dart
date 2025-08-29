@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:crypto_market/core/config/app_config.dart';
+import 'package:crypto_market/core/config/environment_config.dart';
 import 'package:crypto_market/core/logger/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -18,21 +19,8 @@ class BlockchainService {
        _dio = dio,
        _logger = logger;
 
-  /// Check if running in mainnet mode based on canister IDs
-  bool get _isMainnet {
-    // If canister IDs start with a known mainnet pattern or are configured for IC
-    return !_config.canisterIdUserManagement.startsWith('rdmx6') &&
-        !_config.canisterIdUserManagement.startsWith('rrkah');
-  }
-
   /// Get base canister URL based on network configuration
-  String get _baseUrl {
-    if (_isMainnet) {
-      return 'https://ic0.app';
-    } else {
-      return 'http://127.0.0.1:8000';
-    }
-  }
+  String get _baseUrl => CanisterConfig.baseUrl;
 
   /// Generic canister call method
   Future<Map<String, dynamic>> _callCanister({
@@ -101,7 +89,7 @@ class BlockchainService {
     required String username,
   }) async {
     return await _callCanister(
-      canisterId: _config.canisterIdUserManagement,
+      canisterId: CanisterConfig.getCanisterId('user_management'),
       method: 'register',
       args: {'email': email, 'password': password, 'username': username},
     );
@@ -120,7 +108,7 @@ class BlockchainService {
     };
 
     return await _callCanister(
-      canisterId: _config.canisterIdUserManagement,
+      canisterId: CanisterConfig.getCanisterId('user_management'),
       method: 'loginWithOAuth',
       args: {'provider': oauthProvider, 'token': token},
     );
@@ -129,7 +117,7 @@ class BlockchainService {
   Future<Map<String, dynamic>?> getUserProfile(String principalId) async {
     try {
       final result = await _callCanister(
-        canisterId: _config.canisterIdUserManagement,
+        canisterId: CanisterConfig.getCanisterId('user_management'),
         method: 'getUserProfile',
         args: {'user': principalId},
         isQuery: true,
@@ -156,7 +144,7 @@ class BlockchainService {
     required List<String> paymentMethods,
   }) async {
     return await _callCanister(
-      canisterId: _config.canisterIdMarketplace,
+      canisterId: CanisterConfig.getCanisterId('marketplace'),
       method: 'createListing',
       args: {
         'title': title,
@@ -172,7 +160,7 @@ class BlockchainService {
   Future<Map<String, dynamic>?> getListing(String listingId) async {
     try {
       return await _callCanister(
-        canisterId: _config.canisterIdMarketplace,
+        canisterId: CanisterConfig.getCanisterId('marketplace'),
         method: 'getListing',
         args: {'listingId': listingId},
         isQuery: true,

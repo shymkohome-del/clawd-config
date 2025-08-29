@@ -111,6 +111,20 @@ else
   echo "[dev-validate] WARN: Could not locate Flutter app directory; skipping Flutter gates."
 fi
 
+# Optional: lint Node scripts (non-fatal)
+if command -v npm >/dev/null 2>&1; then
+  if [[ -f "package.json" ]]; then
+    echo "[dev-validate] Linting JS/TS scripts..."
+    if npm run -s lint:scripts >/dev/null 2>&1; then
+      npm run -s lint:scripts
+    else
+      echo "[dev-validate] INFO: No lint:scripts or ESLint config present; skipping"
+    fi
+  fi
+else
+  echo "[dev-validate] INFO: npm not available; skipping scripts lint"
+fi
+
 echo "[dev-validate] All local checks passed."
 
 # Optional: run workflows locally via act if installed
