@@ -59,14 +59,16 @@ else
     echo "[dev-validate] WARN: yamllint unavailable; skipping"
   fi
 fi
-# Optional: direct shellcheck on local shell scripts (non-blocking if unavailable)
+# Optional: shellcheck on all repo shell scripts (non-fatal if tool missing)
 if command -v shellcheck >/dev/null 2>&1; then
-  echo "[dev-validate] Running shellcheck on repository shell scripts..."
-  find scripts -maxdepth 1 -type f -name "*.sh" -print0 | xargs -0 -I{} shellcheck -S style {} || true
+  echo "[dev-validate] Running shellcheck on repository shell scripts (recursive)..."
+  find . \( -path './.git' -o -path './node_modules' -o -path './build' -o -path './coverage' -o -path './crypto_market/build' -o -path './.dart_tool' -o -path './.dfx' \) -prune -o -type f -name "*.sh" -print0 \
+    | xargs -0 -r -I{} shellcheck -S style "{}" || true
 else
   if command -v docker >/dev/null 2>&1; then
-    echo "[dev-validate] Running shellcheck via Docker on repository shell scripts..."
-    find scripts -maxdepth 1 -type f -name "*.sh" -print0 | xargs -0 -I{} docker run --rm -v "$REPO_ROOT":/mnt koalaman/shellcheck:stable /bin/sh -lc "shellcheck -S style /mnt/{}" || true
+    echo "[dev-validate] Running shellcheck via Docker on repository shell scripts (recursive)..."
+    find . \( -path './.git' -o -path './node_modules' -o -path './build' -o -path './coverage' -o -path './crypto_market/build' -o -path './.dart_tool' -o -path './.dfx' \) -prune -o -type f -name "*.sh" -print0 \
+      | xargs -0 -r -I{} docker run --rm -v "$REPO_ROOT":/mnt koalaman/shellcheck:stable /bin/sh -lc "shellcheck -S style /mnt/{}" || true
   fi
 fi
 
@@ -111,18 +113,84 @@ else
   echo "[dev-validate] WARN: Could not locate Flutter app directory; skipping Flutter gates."
 fi
 
-# Optional: lint Node scripts (non-fatal)
+# JS/TS validations (non-fatal if npm unavailable)
 if command -v npm >/dev/null 2>&1; then
   if [[ -f "package.json" ]]; then
-    echo "[dev-validate] Linting JS/TS scripts..."
+    echo "[dev-validate] Linting JS/TS scripts with ESLint (if configured)..."
     if npm run -s lint:scripts >/dev/null 2>&1; then
       npm run -s lint:scripts
     else
       echo "[dev-validate] INFO: No lint:scripts or ESLint config present; skipping"
     fi
+    echo "[dev-validate] Checking formatting with Prettier (non-fatal if missing)..."
+    if npx --yes prettier --version >/dev/null 2>&1; then
+      npx --yes prettier --check "**/*.{md,json,yml,yaml}"
+    else
+      echo "[dev-validate] INFO: Prettier not available; skipping format check"
+    fi
   fi
 else
   echo "[dev-validate] INFO: npm not available; skipping scripts lint"
+fi
+
+# Python validations: syntax check and ruff (if available)
+PY_FILES=$(git ls-files '*.py' 2>/dev/null || true)
+if [[ -n "$PY_FILES" ]]; then
+  if command -v python3 >/dev/null 2>&1; then
+    echo "[dev-validate] Python syntax check (py_compile)..."
+    # Fail on syntax errors
+    echo "$PY_FILES" | python3 - <<'PY'
+import sys, py_compile, pathlib
+files = [p.strip() for p in sys.stdin.read().splitlines() if p.strip()]
+failed = []
+for f in files:
+    try:
+        py_compile.compile(f, doraise=True)
+    except Exception as e:
+        print(f"[dev-validate] ERROR: Python syntax error in {f}: {e}", file=sys.stderr)
+        failed.append(f)
+if failed:
+    sys.exit(1)
+PY
+  else
+    echo "[dev-validate] WARN: python3 not available; skipping Python syntax check"
+  fi
+  if command -v ruff >/dev/null 2>&1; then
+    echo "[dev-validate] Python lint (ruff)..."
+    ruff check --exit-non-zero-on-fix . || true
+  fi
+fi
+
+# Motoko validations: lightweight syntax checks via moc if available
+MOTO_DIR=""
+for cand in "crypto_market" "."; do
+  if [[ -f "$cand/dfx.json" ]]; then
+    MOTO_DIR="$cand"
+    break
+  fi
+done
+
+if [[ -n "$MOTO_DIR" ]]; then
+  if command -v moc >/dev/null 2>&1; then
+    echo "[dev-validate] Motoko syntax check with moc --check..."
+    # Check all .mo files under canisters
+    find "$MOTO_DIR/canisters" -type f -name "*.mo" -print0 \
+      | xargs -0 -r -I{} moc --check "{}"
+  else
+    if command -v dfx >/dev/null 2>&1; then
+      echo "[dev-validate] INFO: moc unavailable but dfx present; you may run 'dfx canister build' manually if desired (heavy). Skipping in local validation."
+    else
+      echo "[dev-validate] INFO: Motoko toolchain not available; skipping Motoko checks"
+    fi
+  fi
+fi
+
+# TypeScript typecheck (if present)
+if command -v npx >/dev/null 2>&1; then
+  if [[ -f "tsconfig.json" ]]; then
+    echo "[dev-validate] TypeScript typecheck (tsc --noEmit)..."
+    npx --yes tsc --noEmit
+  fi
 fi
 
 echo "[dev-validate] All local checks passed."

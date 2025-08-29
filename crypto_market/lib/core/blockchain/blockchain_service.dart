@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:crypto_market/core/config/app_config.dart';
 import 'package:crypto_market/core/config/environment_config.dart';
 import 'package:crypto_market/core/logger/logger.dart';
 import 'package:dio/dio.dart';
@@ -7,16 +6,13 @@ import 'package:flutter/foundation.dart';
 
 /// Real blockchain service for ICP canister interactions
 class BlockchainService {
-  final AppConfig _config;
   final Dio _dio;
   final Logger _logger;
 
   BlockchainService({
-    required AppConfig config,
     required Dio dio,
     required Logger logger,
-  }) : _config = config,
-       _dio = dio,
+  }) : _dio = dio,
        _logger = logger;
 
   /// Get base canister URL based on network configuration
@@ -193,7 +189,7 @@ class BlockchainService {
     if (isActive != null) updateArgs['isActive'] = [isActive];
 
     return await _callCanister(
-      canisterId: _config.canisterIdMarketplace,
+      canisterId: CanisterConfig.getCanisterId('marketplace'),
       method: 'updateListing',
       args: {'listingId': listingId, 'req': updateArgs},
     );
@@ -218,7 +214,7 @@ class BlockchainService {
     if (paymentMethod != null) filters['paymentMethod'] = [paymentMethod];
 
     return await _callCanister(
-      canisterId: _config.canisterIdMarketplace,
+      canisterId: CanisterConfig.getCanisterId('marketplace'),
       method: 'searchListings',
       args: {'filters': filters, 'offset': offset, 'limit': limit},
       isQuery: true,
@@ -228,7 +224,7 @@ class BlockchainService {
   Future<List<Map<String, dynamic>>> getUserListings(String principalId) async {
     try {
       final result = await _callCanister(
-        canisterId: _config.canisterIdMarketplace,
+        canisterId: CanisterConfig.getCanisterId('marketplace'),
         method: 'getUserListings',
         args: {'user': principalId},
         isQuery: true,
