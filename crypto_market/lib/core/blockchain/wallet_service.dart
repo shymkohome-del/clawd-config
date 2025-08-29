@@ -14,12 +14,7 @@ enum WalletType {
 }
 
 /// Wallet connection status
-enum WalletConnectionStatus {
-  disconnected,
-  connecting,
-  connected,
-  error,
-}
+enum WalletConnectionStatus { disconnected, connecting, connected, error }
 
 /// Wallet account information
 class WalletAccount {
@@ -53,9 +48,11 @@ class WalletAccount {
 /// Multi-wallet service for blockchain interactions
 class WalletService {
   final Logger _logger;
-  final StreamController<WalletConnectionStatus> _statusController = StreamController<WalletConnectionStatus>.broadcast();
-  final StreamController<WalletAccount?> _accountController = StreamController<WalletAccount?>.broadcast();
-  
+  final StreamController<WalletConnectionStatus> _statusController =
+      StreamController<WalletConnectionStatus>.broadcast();
+  final StreamController<WalletAccount?> _accountController =
+      StreamController<WalletAccount?>.broadcast();
+
   WalletConnectionStatus _status = WalletConnectionStatus.disconnected;
   WalletAccount? _currentAccount;
 
@@ -88,12 +85,14 @@ class WalletService {
   /// Connect to a specific wallet type
   Future<bool> connect(WalletType walletType) async {
     if (!isWalletAvailable(walletType)) {
-      _logger.logError('Wallet ${walletType.displayName} not available on this platform');
+      _logger.logError(
+        'Wallet ${walletType.displayName} not available on this platform',
+      );
       return false;
     }
 
     _setStatus(WalletConnectionStatus.connecting);
-    
+
     try {
       switch (walletType) {
         case WalletType.metamask:
@@ -113,7 +112,9 @@ class WalletService {
   /// Disconnect current wallet
   Future<void> disconnect() async {
     if (_currentAccount != null) {
-      _logger.logInfo('Disconnecting from ${_currentAccount!.walletType.displayName}');
+      _logger.logInfo(
+        'Disconnecting from ${_currentAccount!.walletType.displayName}',
+      );
     }
 
     _currentAccount = null;
@@ -133,21 +134,21 @@ class WalletService {
   // MetaMask implementation
   Future<bool> _connectMetaMask() async {
     if (!kIsWeb) return false;
-    
+
     try {
       await Future.delayed(const Duration(seconds: 1));
-      
+
       const mockAccount = WalletAccount(
         address: '0x1234567890123456789012345678901234567890',
         name: 'MetaMask Account 1',
         walletType: WalletType.metamask,
         balances: {'ETH': 1.5, 'BTC': 0.05},
       );
-      
+
       _currentAccount = mockAccount;
       _setStatus(WalletConnectionStatus.connected);
       _accountController.add(_currentAccount);
-      
+
       _logger.logInfo('Connected to MetaMask: ${mockAccount.address}');
       return true;
     } catch (e) {
@@ -160,18 +161,18 @@ class WalletService {
   Future<bool> _connectWalletConnect() async {
     try {
       await Future.delayed(const Duration(seconds: 2));
-      
+
       const mockAccount = WalletAccount(
         address: '0x9876543210987654321098765432109876543210',
         name: 'Mobile Wallet',
         walletType: WalletType.walletConnect,
         balances: {'ETH': 0.8, 'USDC': 500.0},
       );
-      
+
       _currentAccount = mockAccount;
       _setStatus(WalletConnectionStatus.connected);
       _accountController.add(_currentAccount);
-      
+
       _logger.logInfo('Connected to WalletConnect: ${mockAccount.address}');
       return true;
     } catch (e) {
@@ -184,18 +185,18 @@ class WalletService {
   Future<bool> _connectInternetIdentity() async {
     try {
       await Future.delayed(const Duration(milliseconds: 800));
-      
+
       const mockAccount = WalletAccount(
         address: 'rrkah-fqaaa-aaaah-qcufa-cai',
         name: 'Internet Identity',
         walletType: WalletType.internetIdentity,
         balances: {'ICP': 10.5, 'ckBTC': 0.001},
       );
-      
+
       _currentAccount = mockAccount;
       _setStatus(WalletConnectionStatus.connected);
       _accountController.add(_currentAccount);
-      
+
       _logger.logInfo('Connected to Internet Identity: ${mockAccount.address}');
       return true;
     } catch (e) {

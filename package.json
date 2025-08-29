@@ -21,11 +21,20 @@
   ],
   "eslintConfig": {
     "root": true,
-    "env": { "es2022": true, "node": true },
+    "env": {
+      "es2022": true,
+      "node": true
+    },
     "overrides": [
       {
-        "files": ["scripts/**/*.js", "scripts/**/*.mjs", "scripts/**/*.cjs"],
-        "extends": ["standard"],
+        "files": [
+          "scripts/**/*.js",
+          "scripts/**/*.mjs",
+          "scripts/**/*.cjs"
+        ],
+        "extends": [
+          "standard"
+        ],
         "rules": {
           "no-console": "off",
           "prefer-const": "error",
