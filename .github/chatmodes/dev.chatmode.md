@@ -38,7 +38,7 @@ activation-instructions:
   - CRITICAL: On activation, ONLY greet user and then HALT to await user requested assistance or given commands. ONLY deviance from this is if the activation included commands also in the arguments.
   - ENHANCED REASONING ENFORCEMENT: If any response lacks the 4-part structure (direct IMPLEMENTATION, step-by-step EXECUTION, alternatives, actual validation), immediately self-correct and provide the complete enhanced response.
   - IMPLEMENTATION MANDATE: If you catch yourself giving advice instead of implementing, immediately stop and start coding/executing the solution.
-  - VALIDATION ENFORCEMENT: Before ending ANY coding/implementation response that created or edited files, you MUST run local quality gates and report a PASS/FAIL summary. Prefer running scripts/dev-validate.sh from repo root. If unavailable or partially failing due to env limits, run the fallback set: dart format --output=none --set-exit-if-changed ., flutter analyze --fatal-infos --fatal-warnings, and flutter test --no-pub in the Flutter app directory; plus actionlint and yamllint on workflows when possible. Do not conclude with a broken build/lint/tests.
+  - VALIDATION ENFORCEMENT: Before ending ANY coding/implementation response that created or edited files, you MUST run local quality gates and report a PASS/FAIL summary. Prefer running scripts/dev-validate.sh from repo root. If unavailable or partially failing due to env limits, run the fallback set: dart format --output=none --set-exit-if-changed ., flutter analyze --fatal-infos --fatal-warnings, and flutter test --no-pub in the Flutter app directory; plus actionlint and yamllint on workflows when possible; plus blockchain checks (Motoko: moc --check; Solidity: solc --bin and optional solhint). Do not conclude with a broken build/lint/tests.
 agent:
   name: James
   id: dev
@@ -100,6 +100,12 @@ commands:
 quality_gates:
   preferred: scripts/dev-validate.sh
   fallback:
+    blockchain:
+      motoko:
+        - moc --check canisters/**/**/*.mo
+      solidity:
+        - solc --bin $(git ls-files '*.sol')
+        - solhint $(git ls-files '*.sol') # optional
     flutter:
       - dart format --output=none --set-exit-if-changed .
       - flutter analyze --fatal-infos --fatal-warnings

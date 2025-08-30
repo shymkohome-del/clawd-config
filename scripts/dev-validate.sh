@@ -185,6 +185,36 @@ if [[ -n "$MOTO_DIR" ]]; then
   fi
 fi
 
+# Solidity validations: compile check via solc if available
+SOL_FILES=$(git ls-files -z '*.sol' 2>/dev/null || true)
+if [[ -n "$SOL_FILES" ]]; then
+  if command -v solc >/dev/null 2>&1; then
+    echo "[dev-validate] Solidity compile check with solc (bin generation only)..."
+    FAIL=0
+    while IFS= read -r -d '' f; do
+      # Compile to bytecode (no output captured); failure indicates syntax/type errors
+      if ! solc --bin "$f" >/dev/null 2>&1; then
+        echo "[dev-validate] ERROR: solc failed for $f" >&2
+        FAIL=1
+      fi
+    done < <(git ls-files -z '*.sol')
+    if [[ $FAIL -ne 0 ]]; then
+      echo "[dev-validate] Solidity compile errors detected."
+      exit 1
+    fi
+  else
+    echo "[dev-validate] WARN: solc not available; skipping Solidity compile checks"
+  fi
+  # Optional lint with solhint if available (non-fatal)
+  if command -v npx >/dev/null 2>&1; then
+    if npx --yes solhint --version >/dev/null 2>&1; then
+      echo "[dev-validate] Solidity lint with solhint (non-fatal)..."
+      # shellcheck disable=SC2046
+      npx --yes solhint -q $(git ls-files '*.sol') || true
+    fi
+  fi
+fi
+
 # TypeScript typecheck (if present)
 if command -v npx >/dev/null 2>&1; then
   if [[ -f "tsconfig.json" ]]; then
