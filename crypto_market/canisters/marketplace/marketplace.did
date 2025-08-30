@@ -1,0 +1,98 @@
+service : {
+  createListing : (record {
+    title: text;
+    description: text;
+    cryptoAsset: text;
+    amount: nat64;
+    priceInUsd: nat64;
+    paymentMethods: vec text;
+  }) -> (variant { ok : record {
+    id: text;
+    seller: principal;
+    title: text;
+    description: text;
+    cryptoAsset: text;
+    amount: nat64;
+    priceInUsd: nat64;
+    paymentMethods: vec text;
+    isActive: bool;
+    createdAt: nat64;
+    updatedAt: nat64;
+  }; err : text });
+  
+  getListing : (text) -> (variant { ok : record {
+    id: text;
+    seller: principal;
+    title: text;
+    description: text;
+    cryptoAsset: text;
+    amount: nat64;
+    priceInUsd: nat64;
+    paymentMethods: vec text;
+    isActive: bool;
+    createdAt: nat64;
+    updatedAt: nat64;
+  }; err : text }) query;
+  
+  updateListing : (text, record {
+    title: opt text;
+    description: opt text;
+    amount: opt nat64;
+    priceInUsd: opt nat64;
+    paymentMethods: opt vec text;
+    isActive: opt bool;
+  }) -> (variant { ok : record {
+    id: text;
+    seller: principal;
+    title: text;
+    description: text;
+    cryptoAsset: text;
+    amount: nat64;
+    priceInUsd: nat64;
+    paymentMethods: vec text;
+    isActive: bool;
+    createdAt: nat64;
+    updatedAt: nat64;
+  }; err : text });
+  
+  deleteListing : (text) -> (variant { ok : (); err : text });
+  
+  searchListings : (record {
+    cryptoAsset: opt text;
+    minAmount: opt nat64;
+    maxAmount: opt nat64;
+    minPrice: opt nat64;
+    maxPrice: opt nat64;
+    paymentMethod: opt text;
+  }, nat, nat) -> (variant { ok : record {
+    listings: vec record {
+      id: text;
+      seller: principal;
+      title: text;
+      description: text;
+      cryptoAsset: text;
+      amount: nat64;
+      priceInUsd: nat64;
+      paymentMethods: vec text;
+      isActive: bool;
+      createdAt: nat64;
+      updatedAt: nat64;
+    };
+    totalCount: nat;
+    hasMore: bool;
+  }; err : text }) query;
+  
+  getUserListings : (principal) -> (vec record {
+    id: text;
+    seller: principal;
+    title: text;
+    description: text;
+    cryptoAsset: text;
+    amount: nat64;
+    priceInUsd: nat64;
+    paymentMethods: vec text;
+    isActive: bool;
+    createdAt: nat64;
+    updatedAt: nat64;
+  }) query;
+}

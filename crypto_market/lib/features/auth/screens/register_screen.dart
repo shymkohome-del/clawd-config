@@ -4,6 +4,7 @@ import 'package:crypto_market/features/auth/providers/auth_service_provider.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:crypto_market/l10n/app_localizations.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key, this.authServiceOverride});
@@ -63,11 +64,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         body: BlocConsumer<AuthCubit, AuthState>(
           listener: (context, state) {
             if (state is AuthSuccess) {
-              Navigator.pushReplacementNamed(
-                context,
-                '/home',
-                arguments: state.user,
-              );
+              context.go('/home');
             } else if (state is AuthFailure) {
               final message = _errorToMessage(state.error);
               ScaffoldMessenger.of(

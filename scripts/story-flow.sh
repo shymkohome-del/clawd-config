@@ -10,6 +10,7 @@ set -euo pipefail
 #   open-pr [title] [body]      → create PR (story/* → develop) and enable auto-merge if available
 #   status                      → show branch + ahead/behind + watcher status
 #   monitor [branch|#pr]        → watch PR checks and update story Change Log on failures
+#   qa-watch [branch|#pr]       → QA: watch PR merge and auto-sync develop branch on success
 
 REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || true)
 if [[ -z "${REPO_ROOT}" ]]; then
@@ -169,6 +170,7 @@ Commands:
   open-pr [title] [body]      Create PR to develop and request auto-merge
   status                      Show repo status and watcher info
   monitor [branch|#pr]        Monitor PR checks, update story Change Log on failures
+  qa-watch [branch|#pr]       QA: Watch PR merge and auto-sync develop branch on success
 USAGE
 }
 
@@ -191,6 +193,18 @@ case "${cmd}" in
       exit 3
     fi
     scripts/pr-monitor.sh "$target" --interval 20 --timeout 3600
+    ;;
+  qa-watch)
+    target="${1:-}"
+    if [[ -z "$target" ]]; then
+      # Default to current branch
+      target=$(git rev-parse --abbrev-ref HEAD)
+    fi
+    if [[ ! -x scripts/qa-watch-and-sync.sh ]]; then
+      echo "scripts/qa-watch-and-sync.sh not found or not executable" >&2
+      exit 3
+    fi
+    scripts/qa-watch-and-sync.sh "$target" --interval 20 --timeout 3600
     ;;
   *)              usage; exit 1 ;;
 esac

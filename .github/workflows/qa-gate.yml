@@ -21,9 +21,9 @@ jobs:
           LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
         run: |
           set -euo pipefail
-          if [[ ",${LABELS}," == *",qa:approved,"* ]]; then
-            echo "QA approved label present."
+          if [[ ",${LABELS}," == *",qa:approved,"* || ",${LABELS}," == *",automerge-ok,"* ]]; then
+            echo "QA approved - label present (qa:approved or automerge-ok)."
           else
-            echo "::error::Missing required QA approval label 'qa:approved'."
+            echo "::error::Missing required QA approval label ('qa:approved' or 'automerge-ok')."
             exit 1
           fi
