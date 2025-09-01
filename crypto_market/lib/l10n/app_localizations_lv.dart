@@ -174,4 +174,120 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get editFailure => 'Neizdevās atjaunināt sludinājumu';
+
+  @override
+  String get ok => 'Labi';
+
+  @override
+  String get errorTitleAuthentication => 'Autentifikācijas kļūda';
+
+  @override
+  String get errorTitleConnection => 'Savienojuma kļūda';
+
+  @override
+  String get errorTitleInvalidInput => 'Nederīga ievade';
+
+  @override
+  String get errorTitleOperation => 'Operācijas kļūda';
+
+  @override
+  String get errorTitleGeneric => 'Kļūda';
+
+  @override
+  String get errorAuthInvalidCredentials => 'Nederīgs e-pasts vai parole';
+
+  @override
+  String get errorAuthUserNotFound => 'Lietotājs nav atrasts';
+
+  @override
+  String get errorAuthEmailExists => 'Konts ar šo e-pastu jau pastāv';
+
+  @override
+  String get errorAuthWeakPassword => 'Parole ir pārāk vāja';
+
+  @override
+  String get errorAuthAccountLocked => 'Konts ir īslaicīgi bloķēts';
+
+  @override
+  String get errorAuthSessionExpired =>
+      'Sesijas laiks beidzies. Lūdzu piesakieties vēlreiz';
+
+  @override
+  String get errorAuthInvalidToken => 'Nederīgs autentifikācijas marķieris';
+
+  @override
+  String get errorAuthPrincipalMismatch =>
+      'ICP autentifikācijas principal neatbilst';
+
+  @override
+  String get errorAuthRegistrationFailed =>
+      'Reģistrācija neizdevās. Lūdzu mēģiniet vēlreiz';
+
+  @override
+  String get errorAuthLoginFailed => 'Pieteikšanās neizdevās';
+
+  @override
+  String get errorAuthInsufficientPrivileges =>
+      'Nepietiekamas privilēģijas šai darbībai';
+
+  @override
+  String get errorNetworkConnectionTimeout =>
+      'Savienojuma taimauts. Lūdzu pārbaudiet interneta savienojumu';
+
+  @override
+  String get errorNetworkNoInternet => 'Nav pieejams interneta savienojums';
+
+  @override
+  String get errorNetworkServerError => 'Radās servera kļūda';
+
+  @override
+  String get errorNetworkCanisterUnavailable =>
+      'ICP kanistrs pašlaik nav pieejams';
+
+  @override
+  String get errorNetworkRateLimitExceeded =>
+      'Pārāk daudz pieprasījumu. Lūdzu uzgaidiet un mēģiniet vēlreiz';
+
+  @override
+  String get errorNetworkInvalidResponse => 'Nederīga servera atbilde';
+
+  @override
+  String get errorNetworkRequestFailed => 'Pieprasījums neizdevās';
+
+  @override
+  String errorValidationRequired(Object field) {
+    return '$field ir obligāts';
+  }
+
+  @override
+  String errorValidationFormat(Object field) {
+    return '$field formāts ir nederīgs';
+  }
+
+  @override
+  String errorValidationLength(Object field) {
+    return '$field garums ir nederīgs';
+  }
+
+  @override
+  String errorValidationRange(Object field) {
+    return '$field ir ārpus diapazona';
+  }
+
+  @override
+  String get errorBusinessInsufficientBalance =>
+      'Nepietiekams atlikums šim darījumam';
+
+  @override
+  String get errorBusinessMarketClosed => 'Tirgus pašlaik ir slēgts';
+
+  @override
+  String get errorBusinessInvalidOperation => 'Šī darbība nav atļauta';
+
+  @override
+  String get errorBusinessRateLimitExceeded =>
+      'Pieprasījumu limits pārsniegts. Lūdzu mēģiniet vēlāk';
+
+  @override
+  String get successGeneric => 'Darbība veiksmīgi pabeigta';
 }

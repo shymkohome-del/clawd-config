@@ -54,5 +54,50 @@
   "confirmUpdateNo": "Atcelt",
   "saveChanges": "Saglabāt izmaiņas",
   "editSuccess": "Sludinājums veiksmīgi atjaunināts",
-  "editFailure": "Neizdevās atjaunināt sludinājumu"
+  "editFailure": "Neizdevās atjaunināt sludinājumu",
+  "ok": "Labi",
+  "errorTitleAuthentication": "Autentifikācijas kļūda",
+  "errorTitleConnection": "Savienojuma kļūda",
+  "errorTitleInvalidInput": "Nederīga ievade",
+  "errorTitleOperation": "Operācijas kļūda",
+  "errorTitleGeneric": "Kļūda",
+  "errorAuthInvalidCredentials": "Nederīgs e-pasts vai parole",
+  "errorAuthUserNotFound": "Lietotājs nav atrasts",
+  "errorAuthEmailExists": "Konts ar šo e-pastu jau pastāv",
+  "errorAuthWeakPassword": "Parole ir pārāk vāja",
+  "errorAuthAccountLocked": "Konts ir īslaicīgi bloķēts",
+  "errorAuthSessionExpired": "Sesijas laiks beidzies. Lūdzu piesakieties vēlreiz",
+  "errorAuthInvalidToken": "Nederīgs autentifikācijas marķieris",
+  "errorAuthPrincipalMismatch": "ICP autentifikācijas principal neatbilst",
+  "errorAuthRegistrationFailed": "Reģistrācija neizdevās. Lūdzu mēģiniet vēlreiz",
+  "errorAuthLoginFailed": "Pieteikšanās neizdevās",
+  "errorAuthInsufficientPrivileges": "Nepietiekamas privilēģijas šai darbībai",
+  "errorNetworkConnectionTimeout": "Savienojuma taimauts. Lūdzu pārbaudiet interneta savienojumu",
+  "errorNetworkNoInternet": "Nav pieejams interneta savienojums",
+  "errorNetworkServerError": "Radās servera kļūda",
+  "errorNetworkCanisterUnavailable": "ICP kanistrs pašlaik nav pieejams",
+  "errorNetworkRateLimitExceeded": "Pārāk daudz pieprasījumu. Lūdzu uzgaidiet un mēģiniet vēlreiz",
+  "errorNetworkInvalidResponse": "Nederīga servera atbilde",
+  "errorNetworkRequestFailed": "Pieprasījums neizdevās",
+  "errorValidationRequired": "{field} ir obligāts",
+  "@errorValidationRequired": {
+    "placeholders": {"field": {}}
+  },
+  "errorValidationFormat": "{field} formāts ir nederīgs",
+  "@errorValidationFormat": {
+    "placeholders": {"field": {}}
+  },
+  "errorValidationLength": "{field} garums ir nederīgs",
+  "@errorValidationLength": {
+    "placeholders": {"field": {}}
+  },
+  "errorValidationRange": "{field} ir ārpus diapazona",
+  "@errorValidationRange": {
+    "placeholders": {"field": {}}
+  },
+  "errorBusinessInsufficientBalance": "Nepietiekams atlikums šim darījumam",
+  "errorBusinessMarketClosed": "Tirgus pašlaik ir slēgts",
+  "errorBusinessInvalidOperation": "Šī darbība nav atļauta",
+  "errorBusinessRateLimitExceeded": "Pieprasījumu limits pārsniegts. Lūdzu mēģiniet vēlāk",
+  "successGeneric": "Darbība veiksmīgi pabeigta"
 }

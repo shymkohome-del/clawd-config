@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/logger/logger.dart';
 import '../../core/error/domain_errors.dart';
+import '../../core/l10n/localized_errors.dart';
+import '../../l10n/app_localizations.dart';
 
 /// A reusable error dialog widget for displaying user-friendly error messages
 class ErrorDialog extends StatelessWidget {
@@ -48,11 +50,13 @@ class ErrorDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context);
+    final localized = LocalizedErrorFactory.fromDomainError(l10n, error);
 
     return AlertDialog(
       icon: Icon(Icons.error_outline, color: colorScheme.error, size: 48),
       title: Text(
-        title ?? _getDefaultTitle(),
+        title ?? localized.title,
         style: theme.textTheme.titleLarge?.copyWith(
           color: colorScheme.onSurface,
         ),
@@ -62,7 +66,7 @@ class ErrorDialog extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            _getUserFriendlyMessage(),
+            localized.message,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -103,25 +107,10 @@ class ErrorDialog extends StatelessWidget {
           ),
         FilledButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('OK'),
+          child: Text(l10n.ok),
         ),
       ],
     );
-  }
-
-  String _getDefaultTitle() {
-    return switch (error.runtimeType) {
-      const (AuthError) => 'Authentication Error',
-      const (NetworkError) => 'Connection Error',
-      const (ValidationError) => 'Invalid Input',
-      const (BusinessLogicError) => 'Operation Error',
-      _ => 'Error',
-    };
-  }
-
-  String _getUserFriendlyMessage() {
-    // Return the domain error message as it's already user-friendly
-    return error.message;
   }
 }
 
@@ -132,11 +121,11 @@ class ErrorDialogHelper {
     AuthError error, {
     VoidCallback? onRetry,
   }) {
+    final l10n = AppLocalizations.of(context);
     return ErrorDialog.show(
       context,
       error,
-      title: 'Authentication Error',
-      actionButtonText: onRetry != null ? 'Retry' : null,
+      actionButtonText: onRetry != null ? l10n.retry : null,
       onActionPressed: onRetry,
     );
   }
@@ -146,11 +135,11 @@ class ErrorDialogHelper {
     NetworkError error, {
     VoidCallback? onRetry,
   }) {
+    final l10n = AppLocalizations.of(context);
     return ErrorDialog.show(
       context,
       error,
-      title: 'Connection Error',
-      actionButtonText: onRetry != null ? 'Retry' : null,
+      actionButtonText: onRetry != null ? l10n.retry : null,
       onActionPressed: onRetry,
     );
   }
@@ -159,7 +148,7 @@ class ErrorDialogHelper {
     BuildContext context,
     ValidationError error,
   ) {
-    return ErrorDialog.show(context, error, title: 'Invalid Input');
+    return ErrorDialog.show(context, error);
   }
 
   static Future<void> showBusinessLogicError(
@@ -167,11 +156,11 @@ class ErrorDialogHelper {
     BusinessLogicError error, {
     VoidCallback? onRetry,
   }) {
+    final l10n = AppLocalizations.of(context);
     return ErrorDialog.show(
       context,
       error,
-      title: 'Operation Error',
-      actionButtonText: onRetry != null ? 'Retry' : null,
+      actionButtonText: onRetry != null ? l10n.retry : null,
       onActionPressed: onRetry,
     );
   }
