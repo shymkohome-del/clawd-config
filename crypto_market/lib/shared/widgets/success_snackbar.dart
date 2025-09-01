@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/logger/logger.dart';
+import '../../l10n/app_localizations.dart';
 
 /// A reusable success snackbar for showing success messages
 class SuccessSnackbar {
@@ -47,29 +48,32 @@ class SuccessSnackbar {
 
   /// Show a success snackbar for authentication operations
   static void showAuthSuccess(
-    BuildContext context,
-    String message, {
+    BuildContext context, {
+    String? message,
     Duration duration = const Duration(seconds: 3),
   }) {
-    show(context, message, duration: duration);
+    final l10n = AppLocalizations.of(context);
+    show(context, message ?? l10n.successGeneric, duration: duration);
   }
 
   /// Show a success snackbar for profile operations
   static void showProfileSuccess(
-    BuildContext context,
-    String message, {
+    BuildContext context, {
+    String? message,
     Duration duration = const Duration(seconds: 3),
   }) {
-    show(context, message, duration: duration);
+    final l10n = AppLocalizations.of(context);
+    show(context, message ?? l10n.successGeneric, duration: duration);
   }
 
   /// Show a success snackbar for market operations
   static void showMarketSuccess(
-    BuildContext context,
-    String message, {
+    BuildContext context, {
+    String? message,
     Duration duration = const Duration(seconds: 3),
   }) {
-    show(context, message, duration: duration);
+    final l10n = AppLocalizations.of(context);
+    show(context, message ?? l10n.successGeneric, duration: duration);
   }
 
   /// Show a generic success snackbar with custom styling
