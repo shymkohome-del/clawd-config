@@ -131,4 +131,47 @@ class AppLocalizationsLv extends AppLocalizations {
   @override
   String get sessionExpired =>
       'Sesijas laiks beidzies, lūdzu pieteikšanās vēlreiz';
+
+  @override
+  String get editListingTitle => 'Rediģēt sludinājumu';
+
+  @override
+  String get listingTitleLabel => 'Nosaukums';
+
+  @override
+  String get priceLabel => 'Cena';
+
+  @override
+  String get titleRequired => 'Nosaukums ir obligāts';
+
+  @override
+  String get priceRequired => 'Cena ir obligāta';
+
+  @override
+  String get pricePositive => 'Cenai jābūt lielākai par 0';
+
+  @override
+  String get replaceImage => 'Mainīt attēlu';
+
+  @override
+  String get confirmUpdateTitle => 'Atjaunināt sludinājumu?';
+
+  @override
+  String get confirmUpdateMessage =>
+      'Vai tiešām vēlaties atjaunināt šo sludinājumu?';
+
+  @override
+  String get confirmUpdateYes => 'Atjaunināt';
+
+  @override
+  String get confirmUpdateNo => 'Atcelt';
+
+  @override
+  String get saveChanges => 'Saglabāt izmaiņas';
+
+  @override
+  String get editSuccess => 'Sludinājums veiksmīgi atjaunināts';
+
+  @override
+  String get editFailure => 'Neizdevās atjaunināt sludinājumu';
 }

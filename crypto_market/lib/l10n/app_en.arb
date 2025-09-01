@@ -40,5 +40,19 @@
   "profileUpdatedSuccess": "Profile updated successfully",
   "logout": "Logout",
   "sessionRestored": "Session restored",
-  "sessionExpired": "Session expired, please login again"
+  "sessionExpired": "Session expired, please login again",
+  "editListingTitle": "Edit Listing",
+  "listingTitleLabel": "Title",
+  "priceLabel": "Price",
+  "titleRequired": "Title is required",
+  "priceRequired": "Price is required",
+  "pricePositive": "Price must be greater than 0",
+  "replaceImage": "Replace Image",
+  "confirmUpdateTitle": "Update Listing?",
+  "confirmUpdateMessage": "Are you sure you want to update this listing?",
+  "confirmUpdateYes": "Update",
+  "confirmUpdateNo": "Cancel",
+  "saveChanges": "Save Changes",
+  "editSuccess": "Listing updated successfully",
+  "editFailure": "Failed to update listing"
 }

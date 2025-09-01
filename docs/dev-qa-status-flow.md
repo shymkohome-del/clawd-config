@@ -1,5 +1,7 @@
 Dev ↔ QA Status Flow (Quick Reference)
 
+For quick persona actions, use the chat shortcut commands documented in `AGENTS.md` (e.g., `dev *develop [1.2.profile-and-reputation.md](docs/stories/1.2.profile-and-reputation.md)`).
+
 High-level lifecycle
 
 - SM: Draft -> Approved

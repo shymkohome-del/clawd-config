@@ -130,4 +130,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionExpired => 'Session expired, please login again';
+
+  @override
+  String get editListingTitle => 'Edit Listing';
+
+  @override
+  String get listingTitleLabel => 'Title';
+
+  @override
+  String get priceLabel => 'Price';
+
+  @override
+  String get titleRequired => 'Title is required';
+
+  @override
+  String get priceRequired => 'Price is required';
+
+  @override
+  String get pricePositive => 'Price must be greater than 0';
+
+  @override
+  String get replaceImage => 'Replace Image';
+
+  @override
+  String get confirmUpdateTitle => 'Update Listing?';
+
+  @override
+  String get confirmUpdateMessage =>
+      'Are you sure you want to update this listing?';
+
+  @override
+  String get confirmUpdateYes => 'Update';
+
+  @override
+  String get confirmUpdateNo => 'Cancel';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get editSuccess => 'Listing updated successfully';
+
+  @override
+  String get editFailure => 'Failed to update listing';
 }

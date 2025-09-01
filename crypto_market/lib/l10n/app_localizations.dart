@@ -343,6 +343,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Session expired, please login again'**
   String get sessionExpired;
+
+  /// No description provided for @editListingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Listing'**
+  String get editListingTitle;
+
+  /// No description provided for @listingTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get listingTitleLabel;
+
+  /// No description provided for @priceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get priceLabel;
+
+  /// No description provided for @titleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is required'**
+  String get titleRequired;
+
+  /// No description provided for @priceRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Price is required'**
+  String get priceRequired;
+
+  /// No description provided for @pricePositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Price must be greater than 0'**
+  String get pricePositive;
+
+  /// No description provided for @replaceImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace Image'**
+  String get replaceImage;
+
+  /// No description provided for @confirmUpdateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Listing?'**
+  String get confirmUpdateTitle;
+
+  /// No description provided for @confirmUpdateMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to update this listing?'**
+  String get confirmUpdateMessage;
+
+  /// No description provided for @confirmUpdateYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get confirmUpdateYes;
+
+  /// No description provided for @confirmUpdateNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get confirmUpdateNo;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @editSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing updated successfully'**
+  String get editSuccess;
+
+  /// No description provided for @editFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update listing'**
+  String get editFailure;
 }
 
 class _AppLocalizationsDelegate

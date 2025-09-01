@@ -2,13 +2,17 @@
 set -euo pipefail
 
 if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 <docs/stories/<id>.<slug>.md>" >&2
+  echo "Usage: $0 docs/stories/<id>.<slug>.md" >&2
   exit 1
 fi
 
-story_file="$1"
-base="$(basename "$story_file")"
+file="$1"
+base="$(basename "$file")"
 name="${base%.md}"
-id="${name%.*}"
-slug="${name##*.}"
+
+# Derive id as everything before the first dot, slug as everything after
+id="${name%%.*}"
+slug="${name#*.}"
+
 echo "story/${id}-${slug}"
+

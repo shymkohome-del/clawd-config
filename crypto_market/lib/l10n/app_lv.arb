@@ -40,5 +40,19 @@
   "profileUpdatedSuccess": "Profils veiksmīgi atjaunots",
   "logout": "Iziet",
   "sessionRestored": "Sesija atjaunota",
-  "sessionExpired": "Sesijas laiks beidzies, lūdzu pieteikšanās vēlreiz"
+  "sessionExpired": "Sesijas laiks beidzies, lūdzu pieteikšanās vēlreiz",
+  "editListingTitle": "Rediģēt sludinājumu",
+  "listingTitleLabel": "Nosaukums",
+  "priceLabel": "Cena",
+  "titleRequired": "Nosaukums ir obligāts",
+  "priceRequired": "Cena ir obligāta",
+  "pricePositive": "Cenai jābūt lielākai par 0",
+  "replaceImage": "Mainīt attēlu",
+  "confirmUpdateTitle": "Atjaunināt sludinājumu?",
+  "confirmUpdateMessage": "Vai tiešām vēlaties atjaunināt šo sludinājumu?",
+  "confirmUpdateYes": "Atjaunināt",
+  "confirmUpdateNo": "Atcelt",
+  "saveChanges": "Saglabāt izmaiņas",
+  "editSuccess": "Sludinājums veiksmīgi atjaunināts",
+  "editFailure": "Neizdevās atjaunināt sludinājumu"
 }
