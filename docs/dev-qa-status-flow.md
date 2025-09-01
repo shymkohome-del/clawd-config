@@ -7,6 +7,13 @@ High-level lifecycle
 - QA: Ready for Review -> Done (or back to InProgress with reasons)
 - Loop Dev <-> QA until QA sets Done
 
+Chat shortcuts
+
+- `dev *develop [<file>](docs/stories/<id>.<slug>.md)`
+- `qa *review [<file>](docs/stories/<id>.<slug>.md)`
+
+See `AGENTS.md` for full shortcut details.
+
 Roles and ownership
 
 - Scrum Master (SM)
