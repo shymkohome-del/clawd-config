@@ -80,6 +80,12 @@ Workflow file: `.github/workflows/flutter-ci.yml` (name: Flutter CI). Triggers o
 - dart format --output=none --set-exit-if-changed .
 - flutter test
 
+### Running tests locally
+
+```bash
+flutter test --reporter expanded
+```
+
 ### Automated Story Flow
 
 Use `scripts/story-flow.sh` to automate the Dev ↔ QA flow.
