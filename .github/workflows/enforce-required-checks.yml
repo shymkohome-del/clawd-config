@@ -19,7 +19,8 @@ jobs:
     env:
       OWNER: ${{ github.repository_owner }}
       REPO: ${{ github.event.repository.name || github.repository }}
-      REQUIRED_CONTEXTS: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
+      REQUIRED_CONTEXTS_MAIN: '["Main Release Gate / main-release-gate","Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
+      REQUIRED_CONTEXTS_DEVELOP: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,7 +34,8 @@ jobs:
           set -euo pipefail
           echo "Repo: ${GITHUB_REPOSITORY}"
           echo "Owner: ${OWNER}"
-          echo "Required contexts: ${REQUIRED_CONTEXTS}"
+          echo "Required contexts (main): ${REQUIRED_CONTEXTS_MAIN}"
+          echo "Required contexts (develop): ${REQUIRED_CONTEXTS_DEVELOP}"
 
       - name: Install jq
         run: |
@@ -66,6 +68,7 @@ jobs:
           echo "- Re-run this workflow (workflow_dispatch)"
           echo
           echo "This will configure branch protection to require these status checks on main/develop:"
+          echo "- Main Release Gate / main-release-gate (main only)"
           echo "- Workflow Lint / lint"
           echo "- PR Lint / pr-lint"
           echo "- Flutter CI / build-and-test"
@@ -87,11 +90,10 @@ jobs:
             REPO_NAME="$REPO"
           fi
 
-          # Required contexts JSON array from env (must be valid JSON)
-          REQUIRED_CONTEXTS_JSON="${REQUIRED_CONTEXTS}"
 
           enforce_for_branch() {
             local BRANCH="$1"
+            local REQUIRED_CONTEXTS_JSON="$2"
             echo ""
             echo ">>> Enforcing required checks on branch: ${BRANCH}"
 
@@ -130,8 +132,8 @@ jobs:
             echo "✓ Required contexts enforced on $BRANCH"
           }
 
-          enforce_for_branch main || true
-          enforce_for_branch develop || true
+          enforce_for_branch main "$REQUIRED_CONTEXTS_MAIN" || true
+          enforce_for_branch develop "$REQUIRED_CONTEXTS_DEVELOP" || true
 
       - name: Summary
         if: always()
