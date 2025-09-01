@@ -1,0 +1,18 @@
+name: "Common Setup"
+description: "Optional script preparation for workflows (checkout must be run before using this action)"
+inputs:
+  prepare_scripts:
+    description: "Run chmod on repo scripts folder"
+    required: false
+    default: "false"
+runs:
+  using: "composite"
+  steps:
+    - name: Prepare scripts
+      if: ${{ inputs.prepare_scripts == 'true' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        chmod +x scripts/*.sh 2>/dev/null || true
+
+

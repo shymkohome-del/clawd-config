@@ -14,7 +14,57 @@ customTechnicalDocuments: null
 devLoadAlwaysFiles:
   - docs/architecture/coding-standards.md
   - docs/architecture/tech-stack.md
-  - docs/architecture/source-tree.md
+  - docs/architecture/development-workflow.md
+  - docs/dev-qa-status-flow.md
+  - checklists/story-git-init-checklist.md
+  - checklists/story-dod-checklist.md
 devDebugLog: .ai/debug-log.md
 devStoryLocation: docs/stories
 slashPrefix: BMad
+
+# QA agent always-loaded resources
+qaLoadAlwaysFiles:
+  - checklists/qa-intake-checklist.md
+  - checklists/qa-on-dev-update-checklist.md
+  - templates/qa-handoff.md
+  - docs/dev-qa-status-flow.md
+qaDebugLog: null
+
+policies:
+  git:
+    requireFeatureBranch: true
+    requireUpstream: true
+    requirePushOnCompletion: true
+    requirePrOnCompletion: true
+    branchTemplate: "story/${id}-${slug}"
+    commitTemplate: "feat(story-${id}): ${title}"
+    pr:
+      requireStoryReference: true
+      acceptableReferencePatterns:
+        - "story ${id}"
+        - "story-${id}"
+        - "story/${id}"
+        - "story: ${id}"
+  qa:
+    requireStoryLinkInPR: true
+    trackPRs: true
+    watchBranchPattern: "story/${id}-${slug}"
+    useCiStatusForGate: true
+
+# Optional hooks some agents honor; safe no-op for others
+devHooks:
+  onStart:
+    checklist: checklists/story-git-init-checklist.md
+  onCompletion:
+    checklist: checklists/story-dod-checklist.md
+qaHooks:
+  onIntake:
+    checklist: checklists/qa-intake-checklist.md
+  onDevUpdate:
+    checklist: checklists/qa-on-dev-update-checklist.md
+
+templates:
+  slugRules:
+    lowerCase: true
+    replaceSpacesWith: "-"
+    allowedChars: "[a-z0-9-]"

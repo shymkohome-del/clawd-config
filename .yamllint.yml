@@ -1,0 +1,55 @@
+extends: default
+
+yaml-files:
+  - "**/*.yml"
+  - "**/*.yaml"
+
+ignore: |
+  node_modules/**
+  build/**
+  crypto_market/build/**
+  crypto_market/**/build/**
+  ios/**
+  macos/**
+  android/**
+  windows/**
+  linux/**
+  .git/**
+  .dart_tool/**
+  .idea/**
+  .vscode/**
+
+rules:
+  # GitHub Actions YAML does not require '---' document start
+  document-start: disable
+
+  # Allow common non-boolean words and do not check keys like 'on'
+  truthy: disable
+
+  # Lines often exceed 80 due to long URLs and commands
+  line-length:
+    max: 180
+    allow-non-breakable-words: true
+    allow-non-breakable-inline-mappings: true
+    level: warning
+
+  # Reduce noise for bracket spacing peculiarities in Actions syntax
+  brackets: disable
+
+  # Keep at most one consecutive blank line; disallow trailing blank lines
+  empty-lines:
+    max: 1
+    max-start: 0
+    max-end: 0
+
+  # No trailing spaces
+  trailing-spaces:
+    level: error
+
+  # Enforce 2-space indentation
+  indentation:
+    spaces: 2
+    indent-sequences: consistent
+    check-multi-line-strings: false
+
+

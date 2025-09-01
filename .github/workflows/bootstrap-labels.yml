@@ -1,0 +1,38 @@
+name: Bootstrap Labels
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Create/ensure required labels
+        env:
+          GH_TOKEN: ${{ secrets.REPO_ADMIN_TOKEN || secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          ensure() {
+            local name="$1" color="$2" desc="$3"
+            curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+              -d "$(jq -cn --arg name "$name" --arg color "$color" --arg desc "$desc" '{name:$name,color:$color,description:$desc}')" \
+              "${API}/repos/${OWNER}/${REPO}/labels" >/dev/null || true
+          }
+          ensure 'qa:ready' '0366d6' 'Ready for QA to review'
+          ensure 'qa:approved' '0e8a16' 'QA-approved for merge'
+          ensure 'qa:blocker' 'b60205' 'QA blocker due to CI failure or review'
+          ensure 'ci:validated' '0e8a16' 'All CI checks green'
+          ensure 'story' 'c5def5' 'Story PR'
+          ensure 'needs-rebase' 'd93f0b' 'Rebase onto develop required'
+          ensure 'merged-by-automation' '5319e7' 'Merged by automation'
+          ensure 'automerge:enabled' '0075ca' 'Auto-merge enabled via GraphQL'
+          ensure 'checks:red' 'b60205' 'Required checks failing/missing'

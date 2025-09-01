@@ -1,0 +1,15 @@
+{
+  "ref": "refs/heads/story/0.9.4-reliability-hardening",
+  "repository": {
+    "name": "crypto_market",
+    "full_name": "local/crypto_market",
+    "owner": { "name": "local" }
+  },
+  "head_commit": {
+    "id": "0000000000000000000000000000000000000000",
+    "message": "local test push"
+  }
+}
+
+
+

@@ -1,0 +1,45 @@
+name: QA Gate
+
+on:
+  pull_request:
+    types: [labeled, unlabeled]
+    branches: [ develop ]
+  # Only trigger on status checks or when explicitly requested
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  qa-approved:
+    name: QA Gate / qa-approved
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Only run this check when labels are actually changed or review is submitted
+    if: >
+      github.event_name == 'pull_request_review' ||
+      (github.event_name == 'pull_request' &&
+       (github.event.action == 'labeled' || github.event.action == 'unlabeled'))
+    steps:
+      - name: Check for qa:approved label
+        shell: bash
+        env:
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+          EVENT_ACTION: ${{ github.event.action }}
+        run: |
+          set -euo pipefail
+          echo "Event: ${{ github.event_name }}"
+          echo "Action: $EVENT_ACTION"
+          echo "Labels: $LABELS"
+
+          if [[ ",${LABELS}," == *",qa:approved,"* ]]; then
+            echo "✅ QA approved label present."
+            exit 0
+          else
+            echo "::error::Missing required QA approval label 'qa:approved'."
+            echo "Available labels: $LABELS"
+            echo "This PR cannot be merged without QA approval."
+            exit 1
+          fi

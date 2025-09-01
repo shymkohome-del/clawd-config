@@ -1,0 +1,7 @@
+# Protect workflows and scripts — require DevOps/Maintainers review
+.github/workflows/*    @maintainers @devops
+scripts/*              @maintainers @devops
+
+# Stories are co-owned by Maintainers/DevOps and the project lead
+docs/stories/*       @maintainers @devops @Vatalion
+

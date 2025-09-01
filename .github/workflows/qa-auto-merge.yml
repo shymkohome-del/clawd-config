@@ -1,0 +1,15 @@
+name: QA Auto Merge (Disabled - superseded by fallback)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/qa-auto-merge.yml
+
+jobs:
+  disabled:
+    runs-on: ubuntu-latest
+    steps:
+      - name: This workflow is disabled in favor of merge-on-green-fallback.yml
+        run: |
+          echo "qa-auto-merge.yml is disabled to avoid duplication. Use 'Merge on Green (Fallback)'."

@@ -1,0 +1,12 @@
+name: Legacy CI and Auto PR (disabled)
+on:
+  workflow_dispatch:
+
+jobs:
+  legacy_disabled:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deprecated workflow
+        run: |
+          echo "This workflow has been deprecated and disabled."
+          echo "PR creation is now handled via REST/GraphQL in 'Auto PR and Auto-merge on QA Done'."

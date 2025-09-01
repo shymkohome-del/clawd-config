@@ -1,0 +1,99 @@
+name: PR Lint
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+  push:
+    branches:
+      - 'story/**'
+      - 'feature/**'
+      - 'fix/**'
+      - 'chore/**'
+      - 'patch/**'
+
+jobs:
+  pr-lint:
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (for optional local checks)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Common setup
+        uses: ./.github/actions/common-setup
+      - name: Check branch when not a PR (push)
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          HEAD_REF="${GITHUB_REF_NAME}"
+          echo "Branch: $HEAD_REF"
+          if [[ "$HEAD_REF" =~ ^story/ ]]; then
+            if [[ ! "$HEAD_REF" =~ ^story/[0-9]+(\.[0-9]+)*-[a-z0-9-]+$ ]]; then
+              echo "::error::Branch name must match: story/<id>-<slug> (e.g., story/1.1-register-with-email-or-social)"
+              exit 1
+            fi
+          fi
+      - name: Validate PR has story reference and branch naming (story/* -> develop only)
+        if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'story/') && github.event.pull_request.base.ref == 'develop' }}
+        shell: bash
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          TITLE: ${{ github.event.pull_request.title }}
+          BODY: ${{ github.event.pull_request.body }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          echo "Branch: $HEAD_REF"
+          echo "Title: $TITLE"
+          BODY_LEN=$(printf '%s' "$BODY" | wc -c | tr -d '[:space:]')
+          echo "Body length: ${BODY_LEN}"
+
+          fail=0
+
+          # Only enforce story naming and story reference for story/* branches
+          if [[ "$HEAD_REF" =~ ^story/ ]]; then
+            if [[ ! "$HEAD_REF" =~ ^story/[0-9]+(\.[0-9]+)*-[a-z0-9-]+$ ]]; then
+              echo "::error::Branch name must match: story/<id>-<slug> (e.g., story/1.1-register-with-email-or-social)"
+              fail=1
+            fi
+
+            # Case-insensitive check allowing separators: space, hyphen, slash, or colon
+            TEXT=$(printf '%s' "$TITLE $BODY" | tr '[:upper:]' '[:lower:]')
+            if [[ ! "$TEXT" =~ story[[:space:]/:-]*[0-9]+(\.[0-9]+)* ]]; then
+              echo "::error::PR title or body must include a story id reference (e.g., story 1.1, story-1.1, story/1.1, or story: 1.1)"
+              fail=1
+            fi
+          fi
+
+          # Verify corresponding story file exists for story/* branches
+          if [[ "$HEAD_REF" =~ ^story/([0-9]+(\.[0-9]+)*)- ]]; then
+            STORY_ID="${BASH_REMATCH[1]}"
+            OWNER="${GITHUB_REPOSITORY%%/*}"
+            REPO="${GITHUB_REPOSITORY#*/}"
+            API="https://api.github.com"
+            # List stories directory at the PR HEAD commit
+            CONTENTS=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+              "${API}/repos/${OWNER}/${REPO}/contents/docs/stories?ref=${{ github.event.pull_request.head.sha }}")
+            MATCH=$(echo "$CONTENTS" | jq -r --arg id "$STORY_ID" '.[] | select(.type=="file") | .name | select(startswith($id + "."))' | head -n1 || true)
+            if [[ -z "${MATCH:-}" ]]; then
+              echo "::error::Missing docs/stories/${STORY_ID}.*.md for branch ${HEAD_REF}"
+              fail=1
+            fi
+          fi
+
+          # Keep lint simple; print reminder unconditionally.
+          echo "::notice::Reminder: Ensure the story's Status is updated appropriately."
+          exit $fail
+
+      - name: Enforce story PR targets develop (guard)
+        if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'story/') && github.event.pull_request.base.ref != 'develop' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::error::Story branches must open PRs to 'develop'. Current base: '${{ github.event.pull_request.base.ref }}'"
+          exit 1

@@ -1,0 +1,27 @@
+name: Auto PR Self-test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  matrix-tests:
+    permissions:
+      contents: write
+      pull-requests: write
+    secrets: inherit
+    strategy:
+      fail-fast: false
+      matrix:
+        case:
+          - name: feature branch
+            branch: feature/selftest
+          - name: story branch (no file)
+            branch: story/1.2-selftest-done
+          - name: story branch (no file)
+            branch: story/1.3-selftest-not-done
+    uses: ./.github/workflows/reusable-auto-pr.yml
+    with:
+      branch: ${{ matrix.case.branch }}
+      enable_auto_merge: false
+      auto_approve: false
+      dry_run: true

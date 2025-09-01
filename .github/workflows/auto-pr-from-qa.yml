@@ -1,0 +1,113 @@
+name: Auto PR and Auto-merge on QA Done
+
+on:
+  push:
+    branches:
+      - 'story/**'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Target branch to operate on (defaults to ref name)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: read
+  checks: read
+  statuses: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  workflow-lint:
+    name: Workflow Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Common setup
+        uses: ./.github/actions/common-setup
+      - name: Install actionlint (pinned)
+        run: |
+          set -euo pipefail
+          VERSION="1.7.1"
+          mkdir -p "$HOME/bin"
+          curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- "${VERSION}" "$HOME/bin"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+      - name: Run actionlint (YAML only)
+        run: |
+          set -euo pipefail
+          actionlint -shellcheck=
+      - name: Install yamllint (pinned)
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user yamllint==1.35.1
+      - name: Run yamllint on workflows
+        run: |
+          set -euo pipefail
+          ~/.local/bin/yamllint --strict .github/workflows
+
+  preflight-parse:
+    name: Preflight Parser
+    needs: [workflow-lint]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run preflight parser
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/preflight-parse.sh "${{ inputs.branch || github.ref_name }}"
+
+  open-pr-and-automerge-reusable:
+    needs: [workflow-lint, preflight-parse]
+    if: ${{ vars.AUTO_PR_ENABLED != 'false' }}
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      actions: read
+      checks: read
+      statuses: read
+    uses: ./.github/workflows/reusable-auto-pr.yml
+    with:
+      branch: ${{ inputs.branch || github.ref_name }}
+      enable_auto_merge: ${{ vars.AUTO_MERGE_ENABLED != 'false' }}
+      # Disable auto-approval by default; only enable when explicitly set to 'true'
+      auto_approve: ${{ vars.AUTO_APPROVE_ENABLED == 'true' }}
+      dry_run: false
+    secrets: inherit
+  simulate-open-pr-locally:
+    needs: [workflow-lint, preflight-parse]
+    if: ${{ vars.AUTO_PR_ENABLED != 'false' && github.repository == 'local/crypto_market' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simulate reusable auto-PR locally
+        run: |
+          set -euo pipefail
+          echo "::group::Local simulation"
+          echo "Simulating PR create/reuse and labeling (dry-run)"
+          echo "Branch: ${{ inputs.branch || github.ref_name }}"
+          echo "Story gating respected via preflight step"
+          echo "::endgroup::"
+  note-auto-pr-disabled:
+    needs: [workflow-lint, preflight-parse]
+    if: ${{ vars.AUTO_PR_ENABLED == 'false' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Flag note: AUTO_PR_ENABLED=false"
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "AUTO_PR_ENABLED=false: Open PR and auto-merge steps are disabled by repo variable. No PR will be created or modified by this workflow."

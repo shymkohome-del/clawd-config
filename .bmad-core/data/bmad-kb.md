@@ -533,9 +533,15 @@ Resulting Folder Structure:
 
 Stories progress through defined statuses:
 
-- **Draft** → **Approved** → **InProgress** → **Done**
+- **Draft** → **Approved** → **InProgress** → **Ready for Review** → **Done**
 
-Each status change requires user verification and approval before proceeding.
+Responsibilities:
+
+- SM sets Draft → Approved during story preparation.
+- Dev sets InProgress at start of implementation and Ready for Review when complete.
+- QA sets Done after acceptance passes; otherwise story remains Ready for Review.
+
+Each status change should be reflected in the story file and accompanied by brief notes in the Change Log when relevant (e.g., reasons for Blocked or Decision Needed).
 
 ### Workflow Types
 

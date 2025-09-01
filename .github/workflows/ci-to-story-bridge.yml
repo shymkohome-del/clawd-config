@@ -1,0 +1,111 @@
+name: CI Failure → Story QA Results Bridge
+
+on:
+  workflow_run:
+    workflows: ["Flutter CI", "PR Lint", "Workflow Lint"]
+    types: ["completed"]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+
+jobs:
+  bridge-failure:
+    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Resolve PR for workflow_run
+        id: find_pr
+        env:
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          BRANCH='${{ github.event.workflow_run.head_branch }}'
+          API="https://api.github.com"
+          PR_NUMBER=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+          if [[ -z "${PR_NUMBER}" ]]; then
+            echo "No PR open for ${BRANCH}. Exiting."
+            exit 0
+          fi
+          echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+
+      - name: Derive story metadata from branch
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          BRANCH='${{ github.event.workflow_run.head_branch }}'
+          if [[ "$BRANCH" =~ ^story/([0-9]+(\.[0-9]+)*)- ]]; then
+            echo "is_story=true" >> "$GITHUB_OUTPUT"
+            echo "story_id=${BASH_REMATCH[1]}" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_story=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Append failure summary to story file and label PR
+        if: steps.meta.outputs.is_story == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          STORY_ID='${{ steps.meta.outputs.story_id }}'
+          BRANCH='${{ github.event.workflow_run.head_branch }}'
+          RUN_URL='${{ github.event.workflow_run.html_url }}'
+          NAME='${{ github.event.workflow_run.name }}'
+          CONC='${{ github.event.workflow_run.conclusion }}'
+          # Find story file path at HEAD of branch
+          CONTENTS=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            "${API}/repos/${OWNER}/${REPO}/contents/docs/stories?ref=${BRANCH}")
+          STORY_NAME=$(echo "$CONTENTS" | jq -r --arg id "$STORY_ID" '.[] | select(.type=="file") | .name | select(startswith($id + "."))' | head -n1 || true)
+          if [[ -z "${STORY_NAME:-}" ]]; then
+            echo "Story file for ${STORY_ID} not found at ${BRANCH}."
+            exit 0
+          fi
+          STORY_PATH="docs/stories/${STORY_NAME}"
+          # Get current file content and sha
+          FILE_RESP=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            "${API}/repos/${OWNER}/${REPO}/contents/${STORY_PATH}?ref=${BRANCH}")
+          SHA=$(echo "$FILE_RESP" | jq -r '.sha')
+          CONTENT=$(echo "$FILE_RESP" | jq -r '.content' | tr -d '\n' | base64 -d)
+          NOW="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          APPEND=$'\n\n## QA Results\n\n- '"${NOW}"$' — Workflow '"${NAME}"$' failed with conclusion: '"${CONC}"$'. [View logs]('"${RUN_URL}"$').\n'
+          if printf '%s' "$CONTENT" | grep -q '^## QA Results'; then
+            NEW_CONTENT=$(awk -v add="$APPEND" 'BEGIN{printed=0} {print} END{if(!printed)print add}' <(printf '%s' "$CONTENT"))
+          else
+            NEW_CONTENT=$(printf '%s%s' "$CONTENT" "$APPEND")
+          fi
+          NEW_B64=$(printf '%s' "$NEW_CONTENT" | base64 -w0)
+          COMMIT_MSG="story ${STORY_ID}: CI failure noted in QA Results"
+          # Update file via Contents API on the branch
+          curl -sS -X PUT \
+            -H "authorization: Bearer ${GH_TOKEN}" \
+            -H "accept: application/vnd.github+json" \
+            -H "content-type: application/json" \
+            -d "$(jq -cn \
+                  --arg message "$COMMIT_MSG" \
+                  --arg content "$NEW_B64" \
+                  --arg sha "$SHA" \
+                  --arg branch "$BRANCH" \
+                  '{message:$message, content:$content, sha:$sha, branch:$branch}')" \
+            "${API}/repos/${OWNER}/${REPO}/contents/${STORY_PATH}" | jq '.' || true
+
+          # Apply qa:blocker label to PR
+          PR='${{ steps.find_pr.outputs.pr_number }}'
+          curl -sS -X POST \
+            -H "authorization: Bearer ${GH_TOKEN}" \
+            -H "accept: application/vnd.github+json" \
+            -H "content-type: application/json" \
+            -d '{"name":"qa:blocker","color":"b60205","description":"QA blocker due to CI failure"}' \
+            "${API}/repos/${OWNER}/${REPO}/labels" >/dev/null || true
+          curl -sS -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+            -d '{"labels":["qa:blocker"]}' "${API}/repos/${OWNER}/${REPO}/issues/${PR}/labels" >/dev/null || true

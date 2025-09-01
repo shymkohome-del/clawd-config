@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Ensure we're inside the repo root
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT"
+
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo "[pre-push] branch: $CURRENT_BRANCH"
+
+# Ensure we are up-to-date with origin/develop to avoid merge conflicts later
+git fetch origin --prune >/dev/null 2>&1 || true
+if [[ -z "${ALLOW_PUSH_BEHIND:-}" ]] && git show-ref --verify --quiet refs/remotes/origin/develop; then
+  behind_ahead=$(git rev-list --left-right --count "HEAD...origin/develop" 2>/dev/null || echo "0 0")
+  ahead=$(echo "$behind_ahead" | awk '{print $1}')
+  behind=$(echo "$behind_ahead" | awk '{print $2}')
+  if [[ "$behind" -gt 0 ]]; then
+    echo "[pre-push] ERROR: Your branch is behind origin/develop by $behind commit(s) (ahead: $ahead)." >&2
+    echo "[pre-push] To prevent painful auto-merge conflicts, rebase first:" >&2
+    echo "[pre-push]   git fetch origin && git rebase --autostash origin/develop" >&2
+    echo "[pre-push] Or run the background watcher: scripts/story-flow.sh watch-rebase" >&2
+    echo "[pre-push] Set ALLOW_PUSH_BEHIND=true to bypass (not recommended)." >&2
+    exit 1
+  fi
+fi
+
+# Enforce story branch naming for story work
+if [[ "$CURRENT_BRANCH" =~ ^story/ ]]; then
+  if [[ ! "$CURRENT_BRANCH" =~ ^story/[0-9]+(\.[0-9]+)*-[a-z0-9-]+$ ]]; then
+    echo "[pre-push] ERROR: Branch name must match story/<id>-<slug> (e.g., story/1.1-register-with-email-or-social)" >&2
+    exit 1
+  fi
+fi
+
+# Local quality gates for Flutter project
+# Locate Flutter app directory (look for pubspec.yaml with flutter)
+APP_DIR=""
+for cand in "crypto_market/crypto_market" "." "crypto_market"; do
+  if [[ -f "$cand/pubspec.yaml" ]] && grep -q "^environment:" "$cand/pubspec.yaml" >/dev/null 2>&1; then
+    APP_DIR="$cand"
+    break
+  fi
+done
+
+if [[ -n "$APP_DIR" ]]; then
+  pushd "$APP_DIR" >/dev/null
+  echo "[pre-push] Running dart format check..."
+  dart format --output=none --set-exit-if-changed .
+
+  echo "[pre-push] Running flutter analyze..."
+  flutter analyze --fatal-infos --fatal-warnings
+
+  echo "[pre-push] Running flutter tests..."
+  flutter test --no-pub
+  popd >/dev/null
+else
+  echo "[pre-push] WARN: Could not locate Flutter app directory; skipping Flutter gates."
+fi
+
+echo "[pre-push] OK"
+
+# Full local validation (CI parity)
+if [[ -x scripts/dev-validate.sh ]]; then
+  # Run with RUN_ACT=auto to execute fast local workflow simulations when available
+  RUN_ACT=auto scripts/dev-validate.sh
+else
+  echo "[pre-push] WARN: scripts/dev-validate.sh not found; consider running it manually."
+fi
+
+

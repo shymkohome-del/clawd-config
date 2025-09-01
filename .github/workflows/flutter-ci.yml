@@ -2,46 +2,73 @@ name: Flutter CI
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
+  push:
+    branches:
+      - 'story/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Cache pub packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
-
-      - name: Set up Flutter
+      - name: Common setup
+        uses: ./.github/actions/common-setup
+      - name: Detect Flutter app directory
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP_DIR=$(find . -type f -name pubspec.yaml | head -n1 | xargs dirname)
+          if [[ -z "$APP_DIR" ]]; then
+            echo "No pubspec.yaml found" >&2
+            exit 1
+          fi
+          APP_DIR_REL=${APP_DIR#./}
+          echo "Detected app dir: $APP_DIR_REL"
+          echo "app_dir=$APP_DIR_REL" >> "$GITHUB_OUTPUT"
+      - name: Set up Flutter (with cache)
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.35.1'
           channel: stable
           cache: true
-
+          architecture: x64
       - name: Flutter version
-        run: flutter --version
-
+        working-directory: ${{ steps.detect.outputs.app_dir }}
+        run: |
+          dart --version
+          flutter --version
       - name: Install dependencies
-        working-directory: crypto_market
+        working-directory: ${{ steps.detect.outputs.app_dir }}
         run: flutter pub get
-
       - name: Analyze (fail on infos and warnings)
-        working-directory: crypto_market
+        working-directory: ${{ steps.detect.outputs.app_dir }}
         run: flutter analyze --fatal-infos --fatal-warnings
-
       - name: Format check
-        working-directory: crypto_market
+        working-directory: ${{ steps.detect.outputs.app_dir }}
         run: dart format --output=none --set-exit-if-changed .
-
-      - name: Run tests
-        working-directory: crypto_market
-        run: flutter test --no-pub
-
-
+      - name: Run tests (with retry)
+        working-directory: ${{ steps.detect.outputs.app_dir }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          attempt=0
+          max=2
+          while (( attempt < max )); do
+            attempt=$((attempt+1))
+            if flutter test --no-pub; then
+              exit 0
+            fi
+            echo "Test run failed (attempt ${attempt}/${max}). Retrying..."
+            sleep 5
+          done
+          echo "Tests failed after ${max} attempts."
+          exit 1

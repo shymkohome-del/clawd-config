@@ -1,0 +1,38 @@
+name: Enable Auto-merge (Repo Setting)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type 'enable' to proceed"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  enable:
+    if: ${{ github.event.inputs.confirm == 'enable' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Common setup
+        uses: ./.github/actions/common-setup
+      - name: Enable repo allow_auto_merge via API (non-local only)
+        env:
+          GH_TOKEN: ${{ secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [[ "${CI_LOCAL:-}" == "true" ]]; then
+            echo "CI_LOCAL=true: Skipping enable of allow_auto_merge."
+            exit 0
+          fi
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          PATCH='{"allow_auto_merge":true}'
+          echo "Attempting to enable allow_auto_merge for ${OWNER}/${REPO}..."
+          curl -sS -i -X PATCH -H "authorization: Bearer ${GH_TOKEN}" -H 'accept: application/vnd.github+json' -H 'content-type: application/json' \
+            -d "$PATCH" -w '\nHTTPSTATUS:%{http_code}' "${API}/repos/${OWNER}/${REPO}" | sed -n '$p'
