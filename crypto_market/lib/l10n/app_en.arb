@@ -54,5 +54,50 @@
   "confirmUpdateNo": "Cancel",
   "saveChanges": "Save Changes",
   "editSuccess": "Listing updated successfully",
-  "editFailure": "Failed to update listing"
+  "editFailure": "Failed to update listing",
+  "ok": "OK",
+  "errorTitleAuthentication": "Authentication Error",
+  "errorTitleConnection": "Connection Error",
+  "errorTitleInvalidInput": "Invalid Input",
+  "errorTitleOperation": "Operation Error",
+  "errorTitleGeneric": "Error",
+  "errorAuthInvalidCredentials": "Invalid email or password",
+  "errorAuthUserNotFound": "User not found",
+  "errorAuthEmailExists": "An account with this email already exists",
+  "errorAuthWeakPassword": "Password is too weak",
+  "errorAuthAccountLocked": "Account is temporarily locked",
+  "errorAuthSessionExpired": "Your session has expired. Please log in again",
+  "errorAuthInvalidToken": "Invalid authentication token",
+  "errorAuthPrincipalMismatch": "Principal mismatch in ICP authentication",
+  "errorAuthRegistrationFailed": "Registration failed. Please try again",
+  "errorAuthLoginFailed": "Login failed",
+  "errorAuthInsufficientPrivileges": "Insufficient privileges to perform this action",
+  "errorNetworkConnectionTimeout": "Connection timeout. Please check your internet connection",
+  "errorNetworkNoInternet": "No internet connection available",
+  "errorNetworkServerError": "Server error occurred",
+  "errorNetworkCanisterUnavailable": "ICP canister is currently unavailable",
+  "errorNetworkRateLimitExceeded": "Too many requests. Please wait and try again",
+  "errorNetworkInvalidResponse": "Invalid response from server",
+  "errorNetworkRequestFailed": "Request failed",
+  "errorValidationRequired": "{field} is required",
+  "@errorValidationRequired": {
+    "placeholders": {"field": {}}
+  },
+  "errorValidationFormat": "{field} format is invalid",
+  "@errorValidationFormat": {
+    "placeholders": {"field": {}}
+  },
+  "errorValidationLength": "{field} length is invalid",
+  "@errorValidationLength": {
+    "placeholders": {"field": {}}
+  },
+  "errorValidationRange": "{field} is out of range",
+  "@errorValidationRange": {
+    "placeholders": {"field": {}}
+  },
+  "errorBusinessInsufficientBalance": "Insufficient balance for this transaction",
+  "errorBusinessMarketClosed": "Market is currently closed",
+  "errorBusinessInvalidOperation": "This operation is not allowed",
+  "errorBusinessRateLimitExceeded": "Rate limit exceeded. Please try again later",
+  "successGeneric": "Operation completed successfully"
 }
