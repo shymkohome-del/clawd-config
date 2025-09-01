@@ -23,8 +23,7 @@ fi
 
 echo "Verifying Node.js..."
 if command -v node >/dev/null 2>&1; then
-  node_version=$(node --version)
-  node_major=$(echo "${node_version#v}" | cut -d. -f1)
+  node_major=$(echo "$node_version" | grep -oE '[0-9]+' | head -1)
   echo "Node ${node_version}"
   if (( node_major < 18 )); then
     echo "❌ Node version must be >= 18"
