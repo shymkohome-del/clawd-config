@@ -152,6 +152,7 @@ Chat shortcuts (for fast persona actions)
   - Derive `<id>` and `<slug>` from the file name `docs/stories/<id>.<slug>.md`.
   - Slug rules: lowercase, spaces→`-`, allowed `[a-z0-9-]` (see `.bmad-core/core-config.yaml`).
   - If only `<id>` is provided, auto‑locate `docs/stories/<id>.*.md` (prefer longest match).
+  - Helper: `scripts/story-from-file.sh` enforces path and naming: file under `docs/stories/`, `.md` extension, `<id>` as dotted numbers (e.g., `0.9.10`), `<slug>` as lowercase `[a-z0-9-]`. It splits on the last dot and outputs `story/<id>-<slug>`; exits non‑zero on invalid input.
 - Expected behavior:
   - `dev *develop [...]` → switch/create `story/<id>-<slug>`, set Status: InProgress, plan scope, implement, then run local gates in `crypto_market`.
   - `qa *review [...]` → read ACs, run local gates, update `## QA Results`, set Status: Done or InProgress with reasons.
