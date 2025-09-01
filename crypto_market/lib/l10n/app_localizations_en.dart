@@ -173,4 +173,121 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editFailure => 'Failed to update listing';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get errorTitleAuthentication => 'Authentication Error';
+
+  @override
+  String get errorTitleConnection => 'Connection Error';
+
+  @override
+  String get errorTitleInvalidInput => 'Invalid Input';
+
+  @override
+  String get errorTitleOperation => 'Operation Error';
+
+  @override
+  String get errorTitleGeneric => 'Error';
+
+  @override
+  String get errorAuthInvalidCredentials => 'Invalid email or password';
+
+  @override
+  String get errorAuthUserNotFound => 'User not found';
+
+  @override
+  String get errorAuthEmailExists =>
+      'An account with this email already exists';
+
+  @override
+  String get errorAuthWeakPassword => 'Password is too weak';
+
+  @override
+  String get errorAuthAccountLocked => 'Account is temporarily locked';
+
+  @override
+  String get errorAuthSessionExpired =>
+      'Your session has expired. Please log in again';
+
+  @override
+  String get errorAuthInvalidToken => 'Invalid authentication token';
+
+  @override
+  String get errorAuthPrincipalMismatch =>
+      'Principal mismatch in ICP authentication';
+
+  @override
+  String get errorAuthRegistrationFailed =>
+      'Registration failed. Please try again';
+
+  @override
+  String get errorAuthLoginFailed => 'Login failed';
+
+  @override
+  String get errorAuthInsufficientPrivileges =>
+      'Insufficient privileges to perform this action';
+
+  @override
+  String get errorNetworkConnectionTimeout =>
+      'Connection timeout. Please check your internet connection';
+
+  @override
+  String get errorNetworkNoInternet => 'No internet connection available';
+
+  @override
+  String get errorNetworkServerError => 'Server error occurred';
+
+  @override
+  String get errorNetworkCanisterUnavailable =>
+      'ICP canister is currently unavailable';
+
+  @override
+  String get errorNetworkRateLimitExceeded =>
+      'Too many requests. Please wait and try again';
+
+  @override
+  String get errorNetworkInvalidResponse => 'Invalid response from server';
+
+  @override
+  String get errorNetworkRequestFailed => 'Request failed';
+
+  @override
+  String errorValidationRequired(Object field) {
+    return '$field is required';
+  }
+
+  @override
+  String errorValidationFormat(Object field) {
+    return '$field format is invalid';
+  }
+
+  @override
+  String errorValidationLength(Object field) {
+    return '$field length is invalid';
+  }
+
+  @override
+  String errorValidationRange(Object field) {
+    return '$field is out of range';
+  }
+
+  @override
+  String get errorBusinessInsufficientBalance =>
+      'Insufficient balance for this transaction';
+
+  @override
+  String get errorBusinessMarketClosed => 'Market is currently closed';
+
+  @override
+  String get errorBusinessInvalidOperation => 'This operation is not allowed';
+
+  @override
+  String get errorBusinessRateLimitExceeded =>
+      'Rate limit exceeded. Please try again later';
+
+  @override
+  String get successGeneric => 'Operation completed successfully';
 }
