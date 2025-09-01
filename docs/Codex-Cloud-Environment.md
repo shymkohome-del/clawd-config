@@ -1,18 +1,24 @@
 # OpenAI Codex Cloud Environment — Setup Guide for crypto_market
 
-This document explains how to configure an OpenAI Codex Cloud Environment so Codex agents can run Flutter/Dart commands for the `crypto_market` project without "command not found" errors.
+This document explains how to configure an OpenAI Codex Cloud Environment so Codex agents can run Flutter/Dart and optional Motoko/Rust commands for the `crypto_market` project without "command not found" errors.
 
 ## TL;DR
 - OpenAI Codex Cloud runs your code in the `universal` container which may not include Flutter/Dart by default
 - Add our setup script to the Codex Environment "Setup Script" field to install Flutter SDK
+- Optional toggles enable extra language toolchains:
+  - `CODEX_SETUP_MOTOKO=true` installs DFX/Motoko
+  - `CODEX_SETUP_RUST=true` installs Rust toolchain
+- Node.js (>=18) is expected for repo tooling
 - After setup, agents can run `dart format`, `flutter analyze`, and `flutter test` in the Codex environment
-- Use the ready-to-copy script from [`scripts/codex_setup.sh`](../scripts/codex_setup.sh)
+- Use the ready-to-copy script from [`scripts/codex_setup.sh`](../scripts/codex_setup.sh) and verify with [`scripts/codex_verify.sh`](../scripts/codex_verify.sh)
 
 ## Why This Is Needed
 OpenAI Codex Cloud Environments run in isolated containers using the `universal` base image. While this image includes many common development tools, Flutter/Dart tooling isn't guaranteed to be present or may be an incompatible version. 
 
 Our setup script ensures:
 - Flutter SDK 3.35.1 (matching our CI) is installed
+- Node.js and npm are available (>=18)
+- Optional DFX/Motoko and Rust toolchains can be installed via environment toggles
 - Development tools work consistently
 - Project dependencies are available
 - Agent can immediately start development work
@@ -34,19 +40,23 @@ Our setup script ensures:
 
 ### 2. Add Setup Script
 1. In the "Setup Script" field, copy and paste the entire contents of [`scripts/codex_setup.sh`](../scripts/codex_setup.sh)
-2. The script is idempotent and will skip work when Flutter is already installed
-3. Save the environment configuration
+2. Set optional environment variables in the config to install additional tooling:
+   - `CODEX_SETUP_MOTOKO=true` for DFX/Motoko (`dfx` ≥0.15.x)
+   - `CODEX_SETUP_RUST=true` for Rust (`rustc`/`cargo`)
+3. The script is idempotent and will skip work when tools are already installed
+4. Save the environment configuration
 
 ### 3. Test the Environment
 1. Start a Codex agent session for the `crypto_market` repository
 2. The setup script runs automatically before agent execution
 3. Look for "=== Codex Cloud Environment Ready ===" in the output
-4. Agent can now use Flutter commands immediately
+4. Run [`scripts/codex_verify.sh`](../scripts/codex_verify.sh) to confirm versions
+5. Agent can now use Flutter commands immediately
 
 ## Environment Caching
 - Codex caches container state for up to 12 hours after setup
 - Setup script only runs once per cache period
-- Use "Reset cache" button if you update the setup script
+- Use "Reset cache" if you update the setup script or change any `CODEX_SETUP_*` toggles
 - Cached environments are shared across team members
 
 ---
@@ -129,6 +139,12 @@ flutter --version
 
 Verification after setup
 - Check the setup logs for Flutter and Dart version output.
+- Run the verification script:
+
+```bash
+scripts/codex_verify.sh
+```
+
 - Start a session and run these commands (agent or interactive) to validate:
 
 ```bash
@@ -154,6 +170,7 @@ Quick checklist for applying this to crypto_market
 - Add the setup script to the Codex Cloud Environment settings.
 - Pin a Flutter version to ensure reproducible tooling.
 - Update `PROJECT_DIR` if the environment mounts the repo at a different path.
+- Optional: set `CODEX_SETUP_MOTOKO=true` or `CODEX_SETUP_RUST=true` to install additional toolchains.
 - Optionally add `flutter pub get` to the setup script to speed first-run tasks.
 
 After following this guide
