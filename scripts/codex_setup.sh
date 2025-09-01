@@ -10,6 +10,9 @@ echo "=== Codex Cloud Environment Setup for crypto_market ==="
 # === Configuration ===
 FLUTTER_VERSION="3.35.1"         # Pin to match CI Flutter version
 FLUTTER_SDK_DIR="$HOME/flutter"
+# Optional language support toggles (keep false for fast default setup)
+CODEX_SETUP_MOTOKO="${CODEX_SETUP_MOTOKO:-false}"
+CODEX_SETUP_RUST="${CODEX_SETUP_RUST:-false}"
 # Codex Cloud mounts the repo to current directory, not a fixed path
 PROJECT_DIR="$(pwd)"
 
@@ -21,6 +24,18 @@ elif [[ ! -f "pubspec.yaml" ]]; then
 fi
 
 echo "Project directory: $PROJECT_DIR"
+
+# Verify Node.js/NPM availability (required for tooling)
+if command -v node >/dev/null 2>&1; then
+  echo "Node: $(node --version)"
+else
+  echo "⚠ Node.js not found (expected ≥ v18)"
+fi
+if command -v npm >/dev/null 2>&1; then
+  echo "npm: $(npm --version)"
+else
+  echo "⚠ npm not found"
+fi
 
 # === Optional system deps (uncomment if needed) ===
 # if command -v apt-get >/dev/null 2>&1; then
@@ -51,6 +66,48 @@ echo "Verifying Flutter installation..."
 flutter --version || { echo "❌ Flutter not available on PATH"; exit 1; }
 if command -v dart >/dev/null 2>&1; then
   echo "✓ Dart: $(dart --version)"
+fi
+
+# === Optional: Motoko/DFX setup ===
+if [[ "$CODEX_SETUP_MOTOKO" == "true" ]]; then
+  DFX_BIN="$HOME/.local/share/dfx/bin"
+  if ! command -v dfx >/dev/null 2>&1; then
+    echo "Installing DFX (includes Motoko)..."
+    DFX_VERSION="${DFX_VERSION:-0.15.8}"
+    curl -fsSL https://internetcomputer.org/install.sh | DFX_VERSION="$DFX_VERSION" sh -s -- >/tmp/dfx-install.log 2>&1 || { echo "❌ DFX install failed"; cat /tmp/dfx-install.log; exit 1; }
+  else
+    echo "✓ DFX already installed: $(dfx --version)"
+  fi
+  if ! grep -q "$DFX_BIN" "$SHELL_RC" 2>/dev/null; then
+    echo 'export PATH="$HOME/.local/share/dfx/bin:$PATH"' >> "$SHELL_RC"
+  fi
+  export PATH="$DFX_BIN:$PATH"
+  if command -v dfx >/dev/null 2>&1; then
+    echo "✓ DFX: $(dfx --version)"
+  fi
+  if command -v moc >/dev/null 2>&1; then
+    echo "✓ Motoko: $(moc --version)"
+  fi
+fi
+
+# === Optional: Rust toolchain setup ===
+if [[ "$CODEX_SETUP_RUST" == "true" ]]; then
+  if ! command -v rustc >/dev/null 2>&1; then
+    echo "Installing Rust toolchain..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path >/tmp/rust-install.log 2>&1 || { echo "❌ Rust install failed"; cat /tmp/rust-install.log; exit 1; }
+  else
+    echo "✓ Rust already installed: $(rustc --version)"
+  fi
+  if ! grep -q '.cargo/bin' "$SHELL_RC" 2>/dev/null; then
+    echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> "$SHELL_RC"
+  fi
+  export PATH="$HOME/.cargo/bin:$PATH"
+  if command -v rustc >/dev/null 2>&1; then
+    echo "✓ Rust: $(rustc --version)"
+  fi
+  if command -v cargo >/dev/null 2>&1; then
+    echo "✓ Cargo: $(cargo --version)"
+  fi
 fi
 
 # Run Flutter doctor for environment check
@@ -99,5 +156,24 @@ echo ""
 echo "=== Codex Cloud Environment Ready ==="
 echo "Flutter: $(flutter --version | head -n1)"
 echo "Dart: $(dart --version)"
+if command -v node >/dev/null 2>&1; then
+  echo "Node: $(node --version)"
+fi
+if [[ "$CODEX_SETUP_MOTOKO" == "true" ]]; then
+  if command -v dfx >/dev/null 2>&1; then
+    echo "DFX: $(dfx --version)"
+  fi
+  if command -v moc >/dev/null 2>&1; then
+    echo "Motoko: $(moc --version)"
+  fi
+fi
+if [[ "$CODEX_SETUP_RUST" == "true" ]]; then
+  if command -v rustc >/dev/null 2>&1; then
+    echo "Rust: $(rustc --version)"
+  fi
+  if command -v cargo >/dev/null 2>&1; then
+    echo "Cargo: $(cargo --version)"
+  fi
+fi
 echo "Project: $PROJECT_DIR"
 echo "Ready for agent development!"

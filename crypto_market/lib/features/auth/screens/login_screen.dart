@@ -100,8 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
             logger.logInfo('User authenticated', tag: 'LoginScreen');
             context.go('/home');
           } else if (state is AuthFailure) {
-            logger.logWarn('Login failed: ${state.error}',
-                tag: 'LoginScreen');
+            logger.logWarn('Login failed: ${state.error}', tag: 'LoginScreen');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(_getErrorMessage(state.error)),
