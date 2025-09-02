@@ -19,8 +19,7 @@ jobs:
     env:
       OWNER: ${{ github.repository_owner }}
       REPO: ${{ github.event.repository.name || github.repository }}
-      REQUIRED_CONTEXTS_MAIN: '["Main Release Gate / main-release-gate","Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
-      REQUIRED_CONTEXTS_DEVELOP: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
+      REQUIRED_CONTEXTS_BASE: '"Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,6 +27,12 @@ jobs:
           fetch-depth: 0
       - name: Common setup
         uses: ./.github/actions/common-setup
+      - name: Set required contexts
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "REQUIRED_CONTEXTS_MAIN=$(jq -nc --argjson base '[${REQUIRED_CONTEXTS_BASE}]' '$base + [\"Main Release Gate / main-release-gate\"]')" >> "$GITHUB_ENV"
+          echo "REQUIRED_CONTEXTS_DEVELOP=[${REQUIRED_CONTEXTS_BASE}]" >> "$GITHUB_ENV"
       - name: Show context
         shell: bash
         run: |
@@ -89,7 +94,6 @@ jobs:
           else
             REPO_NAME="$REPO"
           fi
-
 
           enforce_for_branch() {
             local BRANCH="$1"

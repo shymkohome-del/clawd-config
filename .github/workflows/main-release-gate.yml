@@ -7,30 +7,30 @@ on:
 permissions:
   contents: read
   pull-requests: read
+  issues: read
 
 jobs:
-  main-release-gate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Evaluate release conditions
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BASE_REF: ${{ github.base_ref }}
-          HEAD_REF: ${{ github.head_ref }}
-          PR_NUMBER: ${{ github.event.number }}
-          REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
+    main-release-gate:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Evaluate release conditions
+          env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            BASE_REF: ${{ github.base_ref }}
+            HEAD_REF: ${{ github.head_ref }}
+            PR_NUMBER: ${{ github.event.number }}
+            REPO: ${{ github.repository }}
+          run: |
+            set -euo pipefail
 
-          if [[ "$BASE_REF" != "main" || "$HEAD_REF" != "develop" ]]; then
-            echo "wrong-head" | tee "$GITHUB_STEP_SUMMARY"
-            exit 1
-          fi
+            if [[ "$BASE_REF" != "main" || "$HEAD_REF" != "develop" ]]; then
+              echo "wrong-head" | tee "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
 
-          if ! gh api repos/$REPO/issues/$PR_NUMBER/labels --jq '.[].name' | grep -qx "release:approved"; then
-            echo "missing-label" | tee "$GITHUB_STEP_SUMMARY"
-            exit 1
-          fi
+            if ! gh api repos/$REPO/issues/$PR_NUMBER/labels --jq '.[].name' | grep -qx "release:approved"; then
+              echo "missing-label" | tee "$GITHUB_STEP_SUMMARY"
+              exit 1
+            fi
 
-          echo "ok" | tee "$GITHUB_STEP_SUMMARY"
-
+            echo "ok" | tee "$GITHUB_STEP_SUMMARY"
