@@ -89,7 +89,6 @@ jobs:
           else
             REPO_NAME="$REPO"
           fi
-
           enforce_for_branch() {
             local BRANCH="$1"
             local REQUIRED_CONTEXTS_JSON="$2"
