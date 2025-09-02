@@ -27,12 +27,13 @@ class AuthCubit extends Cubit<AuthState> {
       username: username,
     );
     if (result.isOk) {
-      logger.logDebug('Registration success for ${result.ok.email}',
-          tag: 'AuthCubit');
+      logger.logDebug(
+        'Registration success for ${result.ok.email}',
+        tag: 'AuthCubit',
+      );
       emit(AuthState.success(result.ok));
     } else {
-      logger.logWarn('Registration failed: ${result.err}',
-          tag: 'AuthCubit');
+      logger.logWarn('Registration failed: ${result.err}', tag: 'AuthCubit');
       emit(AuthState.failure(result.err));
     }
   }
@@ -49,8 +50,7 @@ class AuthCubit extends Cubit<AuthState> {
       password: password,
     );
     if (result.isOk) {
-      logger.logInfo('Login success for ${result.ok.email}',
-          tag: 'AuthCubit');
+      logger.logInfo('Login success for ${result.ok.email}', tag: 'AuthCubit');
       emit(AuthState.success(result.ok));
     } else {
       logger.logWarn('Login failed: ${result.err}', tag: 'AuthCubit');
@@ -70,12 +70,13 @@ class AuthCubit extends Cubit<AuthState> {
       token: token,
     );
     if (result.isOk) {
-      logger.logInfo('OAuth login success for ${result.ok.email}',
-          tag: 'AuthCubit');
+      logger.logInfo(
+        'OAuth login success for ${result.ok.email}',
+        tag: 'AuthCubit',
+      );
       emit(AuthState.success(result.ok));
     } else {
-      logger.logWarn('OAuth login failed: ${result.err}',
-          tag: 'AuthCubit');
+      logger.logWarn('OAuth login failed: ${result.err}', tag: 'AuthCubit');
       emit(AuthState.failure(result.err));
     }
   }

@@ -33,4 +33,3 @@ jobs:
           fi
 
           echo "ok" | tee "$GITHUB_STEP_SUMMARY"
-
