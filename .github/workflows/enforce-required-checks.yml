@@ -143,7 +143,7 @@ jobs:
   report-pr-required-checks:
     name: Report PR required checks
     needs: [enforce]
-    if: vars.COPILOT_REVIEW_ENABLED == 'false'
+    if: vars.COPILOT_REVIEW_ENABLED != 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
