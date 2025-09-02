@@ -113,6 +113,8 @@ Codex Cloud Environment Setup
   - Navigate to app: `cd crypto_market && flutter pub get`
   - Test gates work: `dart format`, `flutter analyze`, `flutter test --no-pub`
 - Setup script integration: `scripts/codex_setup.sh` for Codex Environment Setup Script field
+- Toggles: set `CODEX_SETUP_MOTOKO=true` or `CODEX_SETUP_RUST=true` in environment config for optional DFX/Motoko or Rust installs
+- Verification: run `scripts/codex_verify.sh` to confirm Flutter/Dart, Node.js, and optional tools
 - **FAIL‑FAST**: If Flutter setup fails in Codex Cloud, halt with clear setup instructions
 
 Guardrails (must follow)
