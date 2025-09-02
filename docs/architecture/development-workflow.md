@@ -51,6 +51,19 @@ Branch protection should require the above checks on `develop` and `main`. Use `
 - If GraphQL auto-merge is disabled at the repo level, the fallback workflow merges on green with squash and deletes the source branch
 - QA approval allowlist is managed via repo variable `QA_APPROVERS` (comma/space separated GitHub usernames) and enforced by `label-guard.yml`
 
+## Release Process (develop → main)
+
+1. Ensure `develop` is up to date and all CI checks are green.
+2. Open a pull request with base `main` and head `develop` (see chat shortcut below).
+3. Apply the `release:approved` label to the PR.
+4. The `main-release-gate` check verifies branch and label; it reports `wrong-head`, `missing-label`, or `ok`.
+5. When all required checks including `Main Release Gate / main-release-gate` pass, squash merge to `main` is permitted.
+
+**Chat shortcuts**
+
+- `dev *open-pr --base main --head develop`
+- `dev *label release:approved`
+
 ## **Error Taxonomy**
 
 - `status-not-done`: story file exists but status is not Done

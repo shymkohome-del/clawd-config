@@ -139,6 +139,7 @@ Related references
 - CI gates: `.github/workflows/flutter-ci.yml`
 - Dev ↔ QA flow: `docs/dev-qa-status-flow.md`
 - Development workflow overview: `docs/architecture/development-workflow.md`
+- Release process: `docs/architecture/development-workflow.md#release-process-develop-→-main`
 - Story checklists: `.bmad-core/checklists/story-git-init-checklist.md`, `.bmad-core/checklists/story-dod-checklist.md`
 - Multi‑agent worktrees (optional, advanced): `docs/READY-TO-USE-MULTI-AGENT-SYSTEM.md`
 
@@ -163,6 +164,8 @@ Chat shortcuts (for fast persona actions)
   - `dev *develop [1.2.profile-and-reputation.md](docs/stories/1.2.profile-and-reputation.md)`
   - `qa *review [1.2.profile-and-reputation.md](docs/stories/1.2.profile-and-reputation.md)`
   - `dev *open-pr [3.1.initiate-swap-htlc.md](docs/stories/3.1.initiate-swap-htlc.md)`
+  - `dev *open-pr --base main --head develop` (open release PR)
+  - `dev *label release:approved` (apply release label)
   - `dev *status [0.5.icp-service-layer-bootstrap.md](docs/stories/0.5.icp-service-layer-bootstrap.md)`
 
 Notes
