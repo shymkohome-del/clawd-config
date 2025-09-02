@@ -149,7 +149,7 @@ jobs:
       pull-requests: write
       checks: read
     env:
-      REQUIRED_CONTEXTS: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
+      REQUIRED_CONTEXTS: ${{ env.REQUIRED_CONTEXTS_DEVELOP }}
     steps:
       - name: Install jq
         run: |
