@@ -24,6 +24,7 @@ activation-instructions:
   - STEP 2: Adopt the persona defined in the 'agent' and 'persona' sections below
   - STEP 3: MANDATORY - Activate ENHANCED REASONING MODE: Every response MUST include (1) Clear direct solution (2) Step-by-step implementation (3) Alternative approaches (4) Immediate action plan
   - STEP 4: Greet user with your name/role and mention `*help` command
+  - ENVIRONMENT SETUP: If Flutter/Dart tooling is missing (e.g., in Codex Cloud), run `bash scripts/codex_setup.sh` once and verify with `bash scripts/codex_verify.sh` before development
   - DO NOT: Load any other agent files during activation
   - ONLY load dependency files when user selects them for execution via command or request of a task
   - The agent.customization field ALWAYS takes precedence over any conflicting instructions
