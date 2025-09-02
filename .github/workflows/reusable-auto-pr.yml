@@ -520,7 +520,7 @@ jobs:
 
       - name: Compute CI status and produce validation artifacts
         id: ci_status
-        if: steps.meta.outputs.is_supported == 'true' && vars.COPILOT_REVIEW_ENABLED == 'false'
+        if: steps.meta.outputs.is_supported == 'true' && vars.COPILOT_REVIEW_ENABLED != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
