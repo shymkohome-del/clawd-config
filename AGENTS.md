@@ -87,9 +87,11 @@ Branching, commits, PRs
   - Conventional Commits. Story example: `feat(story-<id>): <title>`
   - Commit message must reference the story id on `story/*` branches.
 - PRs:
-  - Base: `develop`. Include validation summary and story reference (e.g., `story <id>`).
+  - Base: `develop`. Include story reference (e.g., `story <id>`); validation block injection is retired.
+  - GitHub Copilot Review posts a summary and suggestions by default.
   - Required checks: Workflow Lint, PR Lint, Flutter CI, QA Gate (see `docs/architecture/development-workflow.md`).
   - Auto‑merge requires `qa:approved`. Actions using `actions/github-script` are banned.
+  - Repo variable `COPILOT_REVIEW_ENABLED` (default `true`) controls legacy comment/approval steps.
 
 Environment activation & commands
 - From repo root, recommended (human):

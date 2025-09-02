@@ -5,6 +5,7 @@
 ### Summary
 
 - What changed and why?
+- GitHub Copilot Review will provide an AI summary and suggestions.
 
 ### Story
 
