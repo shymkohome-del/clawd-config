@@ -427,6 +427,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to update listing'**
   String get editFailure;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @errorTitleAuthentication.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication Error'**
+  String get errorTitleAuthentication;
+
+  /// No description provided for @errorTitleConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Error'**
+  String get errorTitleConnection;
+
+  /// No description provided for @errorTitleInvalidInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Input'**
+  String get errorTitleInvalidInput;
+
+  /// No description provided for @errorTitleOperation.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation Error'**
+  String get errorTitleOperation;
+
+  /// No description provided for @errorTitleGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get errorTitleGeneric;
+
+  /// No description provided for @errorAuthInvalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email or password'**
+  String get errorAuthInvalidCredentials;
+
+  /// No description provided for @errorAuthUserNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'User not found'**
+  String get errorAuthUserNotFound;
+
+  /// No description provided for @errorAuthEmailExists.
+  ///
+  /// In en, this message translates to:
+  /// **'An account with this email already exists'**
+  String get errorAuthEmailExists;
+
+  /// No description provided for @errorAuthWeakPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is too weak'**
+  String get errorAuthWeakPassword;
+
+  /// No description provided for @errorAuthAccountLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Account is temporarily locked'**
+  String get errorAuthAccountLocked;
+
+  /// No description provided for @errorAuthSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please log in again'**
+  String get errorAuthSessionExpired;
+
+  /// No description provided for @errorAuthInvalidToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid authentication token'**
+  String get errorAuthInvalidToken;
+
+  /// No description provided for @errorAuthPrincipalMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Principal mismatch in ICP authentication'**
+  String get errorAuthPrincipalMismatch;
+
+  /// No description provided for @errorAuthRegistrationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration failed. Please try again'**
+  String get errorAuthRegistrationFailed;
+
+  /// No description provided for @errorAuthLoginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed'**
+  String get errorAuthLoginFailed;
+
+  /// No description provided for @errorAuthInsufficientPrivileges.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient privileges to perform this action'**
+  String get errorAuthInsufficientPrivileges;
+
+  /// No description provided for @errorNetworkConnectionTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection timeout. Please check your internet connection'**
+  String get errorNetworkConnectionTimeout;
+
+  /// No description provided for @errorNetworkNoInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection available'**
+  String get errorNetworkNoInternet;
+
+  /// No description provided for @errorNetworkServerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error occurred'**
+  String get errorNetworkServerError;
+
+  /// No description provided for @errorNetworkCanisterUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'ICP canister is currently unavailable'**
+  String get errorNetworkCanisterUnavailable;
+
+  /// No description provided for @errorNetworkRateLimitExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests. Please wait and try again'**
+  String get errorNetworkRateLimitExceeded;
+
+  /// No description provided for @errorNetworkInvalidResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid response from server'**
+  String get errorNetworkInvalidResponse;
+
+  /// No description provided for @errorNetworkRequestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Request failed'**
+  String get errorNetworkRequestFailed;
+
+  /// No description provided for @errorValidationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'{field} is required'**
+  String errorValidationRequired(Object field);
+
+  /// No description provided for @errorValidationFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{field} format is invalid'**
+  String errorValidationFormat(Object field);
+
+  /// No description provided for @errorValidationLength.
+  ///
+  /// In en, this message translates to:
+  /// **'{field} length is invalid'**
+  String errorValidationLength(Object field);
+
+  /// No description provided for @errorValidationRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{field} is out of range'**
+  String errorValidationRange(Object field);
+
+  /// No description provided for @errorBusinessInsufficientBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance for this transaction'**
+  String get errorBusinessInsufficientBalance;
+
+  /// No description provided for @errorBusinessMarketClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Market is currently closed'**
+  String get errorBusinessMarketClosed;
+
+  /// No description provided for @errorBusinessInvalidOperation.
+  ///
+  /// In en, this message translates to:
+  /// **'This operation is not allowed'**
+  String get errorBusinessInvalidOperation;
+
+  /// No description provided for @errorBusinessRateLimitExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate limit exceeded. Please try again later'**
+  String get errorBusinessRateLimitExceeded;
+
+  /// No description provided for @successGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Operation completed successfully'**
+  String get successGeneric;
 }
 
 class _AppLocalizationsDelegate

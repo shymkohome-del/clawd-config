@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crypto_market/core/blockchain/errors.dart';
+import 'package:crypto_market/core/logger/logger.dart';
 import 'package:crypto_market/features/auth/cubit/auth_cubit.dart';
 import 'package:crypto_market/l10n/app_localizations.dart';
 
@@ -49,6 +50,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleLogin() {
     if (_formKey.currentState?.validate() == true) {
+      logger.logDebug(
+        'Login pressed for ${_emailController.text.trim()}',
+        tag: 'LoginScreen',
+      );
       context.read<AuthCubit>().loginWithEmailPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -59,6 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleOAuth(String provider) {
     // In a real implementation, this would integrate with OAuth providers
     // For demo purposes, we'll simulate with a mock token
+    logger.logDebug('OAuth login pressed for $provider', tag: 'LoginScreen');
     final mockToken =
         '${provider}_mock_token_${DateTime.now().millisecondsSinceEpoch}';
     context.read<AuthCubit>().loginWithOAuth(
@@ -91,8 +97,10 @@ class _LoginScreenState extends State<LoginScreen> {
         listener: (context, state) {
           if (state is AuthSuccess) {
             // Navigate to home screen on successful login
+            logger.logInfo('User authenticated', tag: 'LoginScreen');
             context.go('/home');
           } else if (state is AuthFailure) {
+            logger.logWarn('Login failed: ${state.error}', tag: 'LoginScreen');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(_getErrorMessage(state.error)),

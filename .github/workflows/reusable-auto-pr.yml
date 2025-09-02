@@ -520,7 +520,7 @@ jobs:
 
       - name: Compute CI status and produce validation artifacts
         id: ci_status
-        if: steps.meta.outputs.is_supported == 'true'
+        if: steps.meta.outputs.is_supported == 'true' && vars.COPILOT_REVIEW_ENABLED != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -642,7 +642,7 @@ jobs:
 
       - name: Auto-approve PR (bot review)
         id: pr_report
-        if: steps.meta.outputs.is_supported == 'true' && inputs.auto_approve
+        if: steps.meta.outputs.is_supported == 'true' && inputs.auto_approve && vars.COPILOT_REVIEW_ENABLED == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -794,7 +794,7 @@ jobs:
           echo "checks_all_green=${ALL_GREEN}" >> "$GITHUB_OUTPUT"
 
       - name: Upload validation artifact
-        if: steps.meta.outputs.is_supported == 'true'
+        if: steps.meta.outputs.is_supported == 'true' && vars.COPILOT_REVIEW_ENABLED == 'false'
         uses: actions/upload-artifact@v4
         with:
           name: validation-summary

@@ -24,6 +24,7 @@ activation-instructions:
   - STEP 1: Read THIS ENTIRE FILE - it contains your complete persona definition
   - STEP 2: Adopt the persona defined in the 'agent' and 'persona' sections below
   - STEP 3: Greet user with your name/role and mention `*help` and `*route` commands
+  - ENVIRONMENT CHECK: Ensure required toolchains via `bash scripts/codex_setup.sh` and confirm with `bash scripts/codex_verify.sh` before delegating work
   - DO NOT: Load any other agent files during activation
   - ONLY load dependency files when user selects them for execution via command or request of a task
   - The agent.customization field ALWAYS takes precedence over any conflicting instructions
