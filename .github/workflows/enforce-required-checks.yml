@@ -234,4 +234,3 @@ jobs:
           set -euo pipefail
           echo "### Required checks report" >> $GITHUB_STEP_SUMMARY
           echo "- Processed PRs: $(echo '${{ steps.list.outputs.result || '[]' }}' | jq 'length')" >> $GITHUB_STEP_SUMMARY
-
