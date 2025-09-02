@@ -12,20 +12,14 @@ on:
 
 permissions:
   contents: read
-
-env:
-  REQUIRED_CONTEXTS_BASE: '"Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"'
-
 jobs:
   enforce:
     runs-on: ubuntu-latest
     env:
       OWNER: ${{ github.repository_owner }}
       REPO: ${{ github.event.repository.name || github.repository }}
-      REQUIRED_CONTEXTS_MAIN: >-
-        ["Main Release Gate / main-release-gate",${{ env.REQUIRED_CONTEXTS_BASE }}]
-      REQUIRED_CONTEXTS_DEVELOP: >-
-        [${{ env.REQUIRED_CONTEXTS_BASE }}]
+      REQUIRED_CONTEXTS_MAIN: '["Main Release Gate / main-release-gate","Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
+      REQUIRED_CONTEXTS_DEVELOP: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -155,8 +149,7 @@ jobs:
       pull-requests: write
       checks: read
     env:
-      REQUIRED_CONTEXTS: >-
-        [${{ env.REQUIRED_CONTEXTS_BASE }}]
+      REQUIRED_CONTEXTS: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
     steps:
       - name: Install jq
         run: |
