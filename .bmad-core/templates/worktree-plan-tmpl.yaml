@@ -1,0 +1,219 @@
+template:
+  id: worktree-plan-template-v1
+  name: Git Worktree Development Plan
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/worktree-plan-{{plan_id}}.md
+    title: "Git Worktree Development Plan: {{plan_title}}"
+
+workflow:
+  mode: interactive
+  elicitation: structured
+
+sections:
+  - id: executive-summary
+    title: Executive Summary
+    type: structured-text
+    template: |
+      ## Overview
+      This plan enables parallel development of {{story_count}} user stories using Git worktrees to maximize development velocity while minimizing merge conflicts.
+      
+      ## Benefits
+      - **Development Velocity**: {{velocity_improvement}}
+      - **Conflict Reduction**: {{conflict_reduction_strategy}}
+      - **Resource Utilization**: {{resource_optimization}}
+      
+      ## Timeline
+      - **Setup Phase**: {{setup_duration}}
+      - **Parallel Development**: {{development_duration}}
+      - **Integration Phase**: {{integration_duration}}
+    instruction: Provide high-level overview of the worktree development strategy
+    owner: scrum-master
+
+  - id: worktree-setup
+    title: Worktree Setup Commands
+    type: code-block
+    language: bash
+    template: |
+      #!/bin/bash
+      # Git Worktree Setup for Parallel Development
+      
+      # Ensure we're on main branch
+      git checkout main
+      git pull origin main
+      
+      # Create worktrees for parallel stories
+      {{worktree_creation_commands}}
+      
+      # Verify worktree setup
+      git worktree list
+    instruction: Provide ready-to-execute commands for setting up all required worktrees
+    owner: scrum-master
+
+  - id: development-environment
+    title: Development Environment Configuration
+    type: structured-text
+    template: |
+      ## IDE Configuration
+      For each worktree, configure your IDE:
+      {{ide_configuration_steps}}
+      
+      ## Environment Variables
+      Each worktree should have:
+      {{environment_variables}}
+      
+      ## Build Tool Setup
+      {{build_tool_configuration}}
+      
+      ## Dependency Management
+      {{dependency_setup_instructions}}
+    instruction: Define environment setup requirements for each worktree
+    owner: scrum-master
+
+  - id: parallel-workflow
+    title: Parallel Development Workflow
+    type: structured-text
+    template: |
+      ## Daily Development Cycle
+      
+      ### 1. Morning Sync (All Developers)
+      {{morning_sync_procedure}}
+      
+      ### 2. Development Work (Individual Worktrees)  
+      {{development_workflow_steps}}
+      
+      ### 3. End-of-Day Coordination
+      {{end_of_day_coordination}}
+      
+      ## Branch Synchronization
+      {{branch_sync_strategy}}
+      
+      ## Conflict Prevention
+      {{conflict_prevention_measures}}
+    instruction: Define the day-to-day workflow for parallel development
+    owner: scrum-master
+
+  - id: integration-strategy
+    title: Integration and Merge Strategy
+    type: structured-text
+    template: |
+      ## Merge Sequence
+      {{merge_order_and_rationale}}
+      
+      ## Pre-Merge Validation
+      Each story must pass:
+      {{pre_merge_validation_checklist}}
+      
+      ## Integration Testing
+      {{integration_testing_strategy}}
+      
+      ## Merge Commands
+      ```bash
+      {{integration_merge_commands}}
+      ```
+      
+      ## Post-Merge Verification
+      {{post_merge_validation_steps}}
+    instruction: Define how parallel work will be integrated back to main branch
+    owner: scrum-master
+
+  - id: quality-assurance
+    title: Quality Assurance Procedures
+    type: structured-text
+    template: |
+      ## Individual Story QA
+      {{individual_story_qa_requirements}}
+      
+      ## Cross-Story QA
+      {{cross_story_qa_procedures}}
+      
+      ## Integration QA
+      {{integration_qa_strategy}}
+      
+      ## Quality Gates
+      {{quality_gate_definitions}}
+      
+      ## Automated Testing
+      {{automated_testing_configuration}}
+    instruction: Define QA procedures for parallel development
+    owner: scrum-master
+
+  - id: communication-protocols
+    title: Team Communication Protocols
+    type: structured-text
+    template: |
+      ## Regular Touchpoints
+      {{communication_schedule}}
+      
+      ## Coordination Channels
+      {{communication_channels}}
+      
+      ## Decision-Making Process
+      {{decision_making_procedures}}
+      
+      ## Conflict Resolution
+      {{conflict_resolution_protocols}}
+      
+      ## Progress Reporting
+      {{progress_tracking_methods}}
+    instruction: Define communication requirements for coordinated parallel development
+    owner: scrum-master
+
+  - id: risk-management
+    title: Risk Management and Contingencies
+    type: structured-text
+    template: |
+      ## Identified Risks
+      {{risk_assessment_matrix}}
+      
+      ## Mitigation Strategies
+      {{risk_mitigation_procedures}}
+      
+      ## Contingency Plans
+      {{contingency_procedures}}
+      
+      ## Escalation Procedures
+      {{escalation_protocols}}
+      
+      ## Recovery Procedures
+      {{recovery_and_rollback_plans}}
+    instruction: Define risk management for parallel development
+    owner: scrum-master
+
+  - id: monitoring-metrics
+    title: Success Metrics and Monitoring
+    type: structured-text
+    template: |
+      ## Key Performance Indicators
+      {{success_metrics}}
+      
+      ## Progress Tracking
+      {{progress_monitoring_methods}}
+      
+      ## Quality Metrics
+      {{quality_measurement_criteria}}
+      
+      ## Velocity Metrics
+      {{velocity_tracking_procedures}}
+      
+      ## Lessons Learned Capture
+      {{lessons_learned_documentation}}
+    instruction: Define how to measure success and capture learnings
+    owner: scrum-master
+
+  - id: cleanup-procedures
+    title: Worktree Cleanup and Maintenance
+    type: code-block
+    language: bash
+    template: |
+      #!/bin/bash
+      # Worktree Cleanup After Integration
+      
+      {{worktree_cleanup_commands}}
+      
+      # Verify cleanup
+      git worktree list
+      git branch -a
+    instruction: Provide commands for cleaning up worktrees after integration
+    owner: scrum-master

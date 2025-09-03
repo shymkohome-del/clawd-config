@@ -12,7 +12,7 @@ To identify the next logical story based on project progress and epic definition
 - If the file does not exist, HALT and inform the user: "core-config.yaml not found. This file is required for story creation. You can either: 1) Copy it from GITHUB bmad-core/core-config.yaml and configure it for your project OR 2) Run the BMad installer against your project to upgrade and add the file automatically. Please add and configure core-config.yaml before proceeding."
 - Extract key configurations: `devStoryLocation`, `prd.*`, `architecture.*`, `workflow.*`
 
-### 1. Identify Next Story for Preparation
+### 1. Identify Next Story for Preparation with Parallelism Analysis
 
 #### 1.1 Locate Epic Files and Review Existing Stories
 
@@ -24,6 +24,19 @@ To identify the next logical story based on project progress and epic definition
   - If epic is complete, prompt user: "Epic {epicNum} Complete: All stories in Epic {epicNum} have been completed. Would you like to: 1) Begin Epic {epicNum + 1} with story 1 2) Select a specific story to work on 3) Cancel story creation"
   - **CRITICAL**: NEVER automatically skip to another epic. User MUST explicitly instruct which story to create.
 - **If no story files exist:** The next story is ALWAYS 1.1 (first story of first epic)
+
+#### 1.2 Parallelism Opportunity Assessment
+
+Before creating a single story, analyze if it can be split for parallel development:
+- **Story Complexity Analysis**: Evaluate if the story is large enough to split into parallel components
+- **Module Boundary Analysis**: Identify if story spans multiple independent modules/components
+- **Dependency Analysis**: Check if story can be divided without creating inter-story dependencies
+- **Architecture Alignment**: Review if splitting aligns with project architecture boundaries
+
+**If story can be parallelized:**
+- Inform user: "PARALLELISM OPPORTUNITY: Story {epicNum}.{storyNum} can be split into {N} parallel stories. This would enable simultaneous development using Git worktrees. Would you like to: 1) Create parallel story set 2) Create single story 3) Review splitting recommendations first"
+- If user selects parallel approach, redirect to `create-parallel-story-set.md` task
+
 - Announce the identified story to the user: "Identified next story for preparation: {epicNum}.{storyNum} - {Story Title}"
 
 ### 2. Gather Story Requirements and Previous Story Context
@@ -94,6 +107,13 @@ ALWAYS cite source documents: `[Source: architecture/{filename}.md#{section}]`
   - Each task must reference relevant architecture documentation
   - Include unit testing as explicit subtasks based on the Testing Strategy
   - Link tasks to ACs where applicable (e.g., `Task 1 (AC: 1, 3)`)
+  - **PARALLELISM CONSIDERATION**: If tasks can be done in parallel, structure them as parallel task groups with clear module boundaries
+- **`Parallelism Metadata` section (NEW):**
+  - **Module Boundaries**: Exact files/folders this story will modify
+  - **Parallel-Safe Indicator**: true/false based on independence analysis
+  - **Git Worktree Branch Name**: Suggested branch name for worktree development
+  - **Conflict Risk Assessment**: Areas where merge conflicts might occur
+  - **Integration Dependencies**: Other stories this depends on or that depend on this
 - Add notes on project structure alignment or discrepancies found in Step 4
 
 ### 6. Story Draft Completion and Review
