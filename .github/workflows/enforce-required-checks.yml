@@ -1,5 +1,8 @@
 name: Enforce Required Checks (Workflow Lint)
 
+env:
+  REQUIRED_CONTEXTS_BASE: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
+
 on:
   workflow_dispatch:
   push:
@@ -12,20 +15,12 @@ on:
 
 permissions:
   contents: read
-
-env:
-  REQUIRED_CONTEXTS_BASE: '"Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"'
-
 jobs:
   enforce:
     runs-on: ubuntu-latest
     env:
       OWNER: ${{ github.repository_owner }}
       REPO: ${{ github.event.repository.name || github.repository }}
-      REQUIRED_CONTEXTS_MAIN: >-
-        ["Main Release Gate / main-release-gate",${{ env.REQUIRED_CONTEXTS_BASE }}]
-      REQUIRED_CONTEXTS_DEVELOP: >-
-        [${{ env.REQUIRED_CONTEXTS_BASE }}]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,8 +34,9 @@ jobs:
           set -euo pipefail
           echo "Repo: ${GITHUB_REPOSITORY}"
           echo "Owner: ${OWNER}"
+          REQUIRED_CONTEXTS_MAIN=$(jq -nc --argjson base "$REQUIRED_CONTEXTS_BASE" '$base + ["Main Release Gate / main-release-gate"]')
           echo "Required contexts (main): ${REQUIRED_CONTEXTS_MAIN}"
-          echo "Required contexts (develop): ${REQUIRED_CONTEXTS_DEVELOP}"
+          echo "Required contexts (develop): ${REQUIRED_CONTEXTS_BASE}"
 
       - name: Install jq
         run: |
@@ -136,8 +132,9 @@ jobs:
             echo "✓ Required contexts enforced on $BRANCH"
           }
 
+          REQUIRED_CONTEXTS_MAIN=$(jq -nc --argjson base "$REQUIRED_CONTEXTS_BASE" '$base + ["Main Release Gate / main-release-gate"]')
           enforce_for_branch main "$REQUIRED_CONTEXTS_MAIN" || true
-          enforce_for_branch develop "$REQUIRED_CONTEXTS_DEVELOP" || true
+          enforce_for_branch develop "$REQUIRED_CONTEXTS_BASE" || true
 
       - name: Summary
         if: always()
@@ -154,9 +151,6 @@ jobs:
       contents: read
       pull-requests: write
       checks: read
-    env:
-      REQUIRED_CONTEXTS: >-
-        [${{ env.REQUIRED_CONTEXTS_BASE }}]
     steps:
       - name: Install jq
         run: |
@@ -196,7 +190,7 @@ jobs:
           API="https://api.github.com"
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
-          REQUIRED_CONTEXTS_JSON='${REQUIRED_CONTEXTS}'
+          REQUIRED_CONTEXTS_JSON="$REQUIRED_CONTEXTS_BASE"
           echo "$PRS_JSON" | jq -r '.[] | @base64' | while read -r row; do
             _jq() { echo "$row" | base64 --decode | jq -r "$1"; }
             PR=$(_jq '.number'); SHA=$(_jq '.sha')
