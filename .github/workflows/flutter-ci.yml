@@ -64,7 +64,15 @@ jobs:
           max=2
           while (( attempt < max )); do
             attempt=$((attempt+1))
+<<<<<<< ours
+<<<<<<< ours
             if flutter test --no-pub; then
+=======
+            if flutter test --no-pub --reporter expanded; then
+>>>>>>> theirs
+=======
+            if flutter test --reporter expanded --no-pub; then
+>>>>>>> theirs
               exit 0
             fi
             echo "Test run failed (attempt ${attempt}/${max}). Retrying..."

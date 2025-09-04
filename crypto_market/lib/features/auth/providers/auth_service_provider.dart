@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:crypto_market/core/blockchain/icp_service.dart';
 import 'package:crypto_market/core/blockchain/errors.dart';
+import 'package:crypto_market/core/logger/logger.dart';
+import 'package:crypto_market/core/auth/auth_guard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Abstraction for auth-related operations to enable mocking in tests.
@@ -97,29 +99,53 @@ class AuthServiceProvider implements AuthService {
   @override
   Future<User?> getCurrentUser() async {
     final prefs = await SharedPreferences.getInstance();
-    final userJson = prefs.getString('current_user');
-    if (userJson != null) {
+    final sessionJson = prefs.getString('current_user');
+    if (sessionJson != null) {
       try {
-        final userMap = jsonDecode(userJson) as Map<String, dynamic>;
-        return User(
+
+        final data = jsonDecode(sessionJson) as Map<String, dynamic>;
+        final expiry = data['expiry'] as int?;
+        if (expiry != null &&
+            DateTime.now().millisecondsSinceEpoch > expiry) {
+          logger.logWarn('Stored session expired', tag: 'AuthService');
+          await prefs.remove('current_user');
+          return null;
+        }
+        final userMap = data['user'] as Map<String, dynamic>;
+        final user = User(
           id: userMap['id'] as String,
           email: userMap['email'] as String,
           username: userMap['username'] as String,
           authProvider: userMap['authProvider'] as String,
           createdAtMillis: userMap['createdAt'] as int,
+       );
+        logger.logDebug(
+          'Session restored for ${user.email}',
+          tag: 'AuthService',
         );
+        return user;
       } catch (e) {
-        // If parsing fails, clear the corrupted data
+        logger.logWarn(
+          'Failed to parse stored session: $e',
+          tag: 'AuthService',
+        );
         await prefs.remove('current_user');
-        return null;
       }
+    } else {
+      logger.logDebug('No stored session found', tag: 'AuthService');
     }
     return null;
   }
 
   Future<void> _saveCurrentUser(User user) async {
     final prefs = await SharedPreferences.getInstance();
-    final userJson = jsonEncode(user.toJson());
-    await prefs.setString('current_user', userJson);
+    logger.logDebug('Persisting session for ${user.email}', tag: 'AuthService');
+    final sessionData = {
+      'user': user.toJson(),
+      'expiry': DateTime.now()
+          .add(SecurityPolicy.sessionTimeout)
+          .millisecondsSinceEpoch,
+    };
+    await prefs.setString('current_user', jsonEncode(sessionData));
   }
 }

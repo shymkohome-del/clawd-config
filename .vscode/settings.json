@@ -9,4 +9,5 @@
     "cursor-workspace": true
   },
   "github.copilot.chat.agent.autoFix": true,
+  "chatgpt.openOnStartup": true,
 }

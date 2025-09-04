@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto_market/core/blockchain/errors.dart';
 import 'package:crypto_market/core/blockchain/icp_service.dart';
+import 'package:crypto_market/core/auth/auth_guard.dart';
 import 'package:crypto_market/features/auth/providers/auth_service_provider.dart';
+
 
 class MockICPService extends Mock implements ICPService {}
 
@@ -51,6 +54,32 @@ void main() {
         // Verify user is saved in storage
         final savedUser = await authService.getCurrentUser();
         expect(savedUser, equals(testUser));
+      });
+
+      test('should store session with expiry', () async {
+        when(
+          () => mockICPService.loginWithEmailPassword(
+            email: 'test@example.com',
+            password: 'password123',
+          ),
+        ).thenAnswer((_) async => Result.ok(testUser));
+
+        final before = DateTime.now().millisecondsSinceEpoch;
+        await authService.loginWithEmailPassword(
+          email: 'test@example.com',
+          password: 'password123',
+        );
+
+        final prefs = await SharedPreferences.getInstance();
+        final data =
+            jsonDecode(prefs.getString('current_user')!) as Map<String, dynamic>;
+        final expiry = data['expiry'] as int;
+        final minExpected =
+            before + SecurityPolicy.sessionTimeout.inMilliseconds;
+        final maxExpected = DateTime.now().millisecondsSinceEpoch +
+            SecurityPolicy.sessionTimeout.inMilliseconds;
+        expect(expiry, greaterThanOrEqualTo(minExpected));
+        expect(expiry, lessThanOrEqualTo(maxExpected));
       });
 
       test('should not save user when login fails', () async {
@@ -219,6 +248,32 @@ void main() {
           expect(prefs.getString('current_user'), isNull);
         },
       );
+
+      test('should return null and clear expired session', () async {
+        when(
+          () => mockICPService.loginWithEmailPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          ),
+        ).thenAnswer((_) async => Result.ok(testUser));
+
+        await authService.loginWithEmailPassword(
+          email: 'test@example.com',
+          password: 'password123',
+        );
+
+        final prefs = await SharedPreferences.getInstance();
+        final data =
+            jsonDecode(prefs.getString('current_user')!) as Map<String, dynamic>;
+        data['expiry'] = DateTime.now()
+            .subtract(const Duration(hours: 1))
+            .millisecondsSinceEpoch;
+        await prefs.setString('current_user', jsonEncode(data));
+
+        final user = await authService.getCurrentUser();
+        expect(user, isNull);
+        expect(prefs.getString('current_user'), isNull);
+      });
     });
   });
 }

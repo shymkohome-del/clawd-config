@@ -10,9 +10,11 @@ import 'package:crypto_market/features/auth/cubit/profile_cubit.dart';
 import 'package:crypto_market/features/auth/providers/user_service_provider.dart';
 import 'package:crypto_market/core/i18n/locale_controller.dart';
 import 'package:crypto_market/core/routing/app_router.dart';
+import 'package:crypto_market/core/logger/logger.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await logger.initialize(minLevel: LogLevel.debug, enableFileLogging: true);
   try {
     final config = AppConfig.load();
     final icpService = ICPService.fromConfig(config);
