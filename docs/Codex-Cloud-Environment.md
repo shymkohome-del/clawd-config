@@ -59,7 +59,85 @@ Our setup script ensures:
 - Use "Reset cache" if you update the setup script or change any `CODEX_SETUP_*` toggles
 - Cached environments are shared across team members
 
-## Verification after Setup
+---
+
+Idempotent Setup Script (Linux-compatible, bash)
+Replace `FLUTTER_VERSION` and `PROJECT_DIR` if needed. This script is intentionally conservative so it works in many Codex containers.
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+# === Configuration ===
+FLUTTER_VERSION="3.32.2"         # Choose a stable version you want to pin
+FLUTTER_SDK_DIR="$HOME/flutter"  # Installation target
+PROJECT_DIR="/workspace/crypto_market"  # Typical repo path in Codex; adjust if different
+
+# === Optional: install system packages if missing ===
+# Uncomment and adapt if the container lacks curl/xz/git
+# if command -v apt-get >/dev/null 2>&1; then
+#   apt-get update -y && apt-get install -y curl xz-utils git ca-certificates
+# fi
+
+# === Download & extract Flutter SDK if not present ===
+if [[ ! -d "$FLUTTER_SDK_DIR" ]]; then
+  echo "Installing Flutter ${FLUTTER_VERSION} to ${FLUTTER_SDK_DIR}..."
+  FLUTTER_TARBALL_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
+  mkdir -p "$HOME"
+  curl -sL "$FLUTTER_TARBALL_URL" | tar -xJ -C "$HOME"
+else
+  echo "Flutter SDK already present at ${FLUTTER_SDK_DIR}"
+fi
+
+# === Ensure PATH for this session and persist to shell startup ===
+SHELL_RC="$HOME/.bashrc"
+if ! grep -q 'flutter/bin' "$SHELL_RC" 2>/dev/null; then
+  echo 'export PATH="$HOME/flutter/bin:$PATH"' >> "$SHELL_RC"
+fi
+export PATH="$HOME/flutter/bin:$PATH"
+
+# === Verify installation ===
+flutter --version || { echo "Flutter not available on PATH"; exit 1; }
+if command -v dart >/dev/null 2>&1; then
+  dart --version || true
+fi
+
+# === Precache a minimal set of artifacts (optional, faster later) ===
+# Keep this minimal to avoid long setup times; remove flags if you need other platforms
+flutter precache --linux --no-web --no-ios --no-android --no-windows --no-macos || true
+
+# === Optional: work with project (install dependencies) ===
+if [[ -d "$PROJECT_DIR" ]]; then
+  cd "$PROJECT_DIR"
+  echo "Running flutter pub get in ${PROJECT_DIR}..."
+  flutter pub get || true
+
+  # Optional quick checks (uncomment as you want the agent to run them at setup time)
+  # dart format --output=none --set-exit-if-changed .
+  # flutter analyze --fatal-infos --fatal-warnings
+  # flutter test --no-pub
+fi
+
+echo "Codex environment setup finished." 
+
+```
+
+Alternative: install via git clone (if preferred)
+
+```bash
+FLUTTER_SDK_DIR="$HOME/flutter"
+if [[ ! -d "$FLUTTER_SDK_DIR" ]]; then
+  git clone https://github.com/flutter/flutter.git -b stable "$FLUTTER_SDK_DIR"
+  (cd "$FLUTTER_SDK_DIR" && git fetch --tags && git checkout ${FLUTTER_VERSION})
+fi
+if ! grep -q 'flutter/bin' "$HOME/.bashrc" 2>/dev/null; then
+  echo 'export PATH="$HOME/flutter/bin:$PATH"' >> "$HOME/.bashrc"
+fi
+export PATH="$HOME/flutter/bin:$PATH"
+flutter --version
+```
+
+Verification after setup
 - Check the setup logs for Flutter and Dart version output.
 - Run the verification script:
 
@@ -67,7 +145,7 @@ Our setup script ensures:
 scripts/codex_verify.sh
 ```
 
-- Start a session and run these commands to validate:
+- Start a session and run these commands (agent or interactive) to validate:
 
 ```bash
 dart format --output=none --set-exit-if-changed .
@@ -75,9 +153,28 @@ flutter analyze --fatal-infos --fatal-warnings
 flutter test --no-pub
 ```
 
-If any command is missing, ensure `$HOME/flutter/bin` is on your PATH and rerun the setup script.
+If any of these return "command not found", confirm that `$HOME/flutter/bin` exists and is present in `$SHELL_RC` for the login shell used by Codex.
 
-## Troubleshooting
-- "flutter: command not found" — confirm the SDK installed and PATH includes `$HOME/flutter/bin`.
-- Slow setup — pin a specific Flutter version and reduce precache flags.
-- Repo not found — verify `PROJECT_DIR` and reset the Codex cache after changes.
+Tips & limitations
+- First run downloads the SDK and may be slow. Later runs are faster due to caching.
+- Network access: typically allowed during setup; tests should be runnable without external network after setup.
+- Emulators/simulators are not available in Codex environments — unit/widget tests are OK, integration that requires devices is not.
+- Avoid heavy precache steps in setup if setup time causes environment timeouts. Prefer running heavier caching on demand.
+
+Troubleshooting
+- "flutter: command not found" — check PATH and ensure `$HOME/flutter/bin` exists.
+- Slow setup — pin a Flutter version and reduce precache flags.
+- Repo not found — verify `PROJECT_DIR` (usual path is `/workspace/<repo-name>`).
+
+Quick checklist for applying this to crypto_market
+- Add the setup script to the Codex Cloud Environment settings.
+- Pin a Flutter version to ensure reproducible tooling.
+- Update `PROJECT_DIR` if the environment mounts the repo at a different path.
+- Optional: set `CODEX_SETUP_MOTOKO=true` or `CODEX_SETUP_RUST=true` to install additional toolchains.
+- Optionally add `flutter pub get` to the setup script to speed first-run tasks.
+
+After following this guide
+Codex agents will be able to run `dart format`, `flutter analyze`, and `flutter test` inside the cloud environment for the `crypto_market` project.
+
+---
+If you'd like, I can also add a short example `docs/stories/0.12.codex-cloud-environments.md` pointer (done in the user story) and create a guarded `setup` script file under `scripts/` so you can copy it easily into the Codex UI.
