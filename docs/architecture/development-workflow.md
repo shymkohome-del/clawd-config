@@ -66,7 +66,6 @@
 - Review story ACs; update `QA Results` and set `Status: Done` only when all ACs pass.
 - A push with `Status: Done` on `story/*` triggers auto‑PR. Labels `automerge-candidate` and `automerge-ok` allow enablement; required checks must pass.
 - If any AC fails/partial: set `Status: InProgress` and add a brief reason in the story `Change Log` (returns ownership to Dev).
-- After push, wait for merge: `scripts/watch-pr.sh <branch>` (exits 0 on merge, 2 when `needs-rebase`).
 
 ### Feature flags (repo variables)
 
