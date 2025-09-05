@@ -1,5 +1,53 @@
 {
   "dependencies": {
     "bmad-method": "^4.35.3"
+  },
+  "devDependencies": {
+    "eslint": "^9.9.0",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-n": "^17.10.3",
+    "eslint-plugin-promise": "^6.1.1",
+    "prettier": "^3.3.3"
+  },
+  "scripts": {
+    "lint:scripts": "eslint --ext .js,.mjs,.cjs scripts",
+    "format": "prettier --write \"**/*.{md,json,yml,yaml}\""
+  },
+  "eslintIgnore": [
+    "**/node_modules/**",
+    "**/build/**",
+    "**/coverage/**"
+  ],
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "es2022": true,
+      "node": true
+    },
+    "overrides": [
+      {
+        "files": [
+          "scripts/**/*.js",
+          "scripts/**/*.mjs",
+          "scripts/**/*.cjs"
+        ],
+        "extends": [
+          "standard"
+        ],
+        "rules": {
+          "no-console": "off",
+          "prefer-const": "error",
+          "no-var": "error"
+        }
+      }
+    ]
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": true,
+    "printWidth": 100
   }
 }

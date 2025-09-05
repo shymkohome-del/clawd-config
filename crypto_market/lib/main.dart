@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:crypto_market/l10n/app_localizations.dart';
 import 'package:crypto_market/core/config/app_config.dart';
+import 'package:crypto_market/core/config/development_config.dart';
 import 'package:crypto_market/core/blockchain/icp_service.dart';
 import 'package:crypto_market/features/auth/providers/auth_service_provider.dart';
 import 'package:crypto_market/features/market/providers/market_service_provider.dart';
@@ -18,7 +20,8 @@ Future<void> main() async {
   await Firebase.initializeApp();
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   try {
-    final config = AppConfig.load();
+    // Load configuration with development defaults in debug mode
+    final config = kDebugMode ? DevelopmentConfig.load() : AppConfig.load();
     final icpService = ICPService.fromConfig(config);
     runApp(
       MultiRepositoryProvider(
@@ -90,9 +93,11 @@ class ConfigErrorApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context).configErrorTitle),
+          title: const Text('Configuration Error'),
         ),
         body: Center(child: Text(message)),
       ),

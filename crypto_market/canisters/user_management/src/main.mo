@@ -45,7 +45,7 @@ actor UserManagement {
     switch (Text.split(email, #char '@')) {
       case (iter) {
         let parts = Iter.toArray(iter);
-        if (Array.size(parts) != 2) return false;
+        if (parts.size() != 2) return false;
         let domain = parts[1];
         return Text.contains(domain, #char '.');
       };
@@ -59,9 +59,9 @@ actor UserManagement {
 
   public shared ({ caller }) func register(email : Text, password : Text, username : Text) : async Types.RegisterResult {
     // Basic input validation
-    if (!isValidEmail(email)) return #err("invalid_email");
+    if (not isValidEmail(email)) return #err("invalid_email");
     if (Text.size(password) < 8) return #err("weak_password");
-    if (!isValidUsername(username)) return #err("invalid_username");
+    if (not isValidUsername(username)) return #err("invalid_username");
 
     // Enforce 1 account per email
     switch (emailToPrincipal.get(email)) {
