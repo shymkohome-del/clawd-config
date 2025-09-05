@@ -10,9 +10,13 @@ import 'package:crypto_market/features/auth/cubit/profile_cubit.dart';
 import 'package:crypto_market/features/auth/providers/user_service_provider.dart';
 import 'package:crypto_market/core/i18n/locale_controller.dart';
 import 'package:crypto_market/core/routing/app_router.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   try {
     final config = AppConfig.load();
     final icpService = ICPService.fromConfig(config);

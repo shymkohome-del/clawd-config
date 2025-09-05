@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:crypto_market/core/blockchain/errors.dart';
 import 'package:crypto_market/features/auth/models/user_profile.dart';
 import 'package:crypto_market/features/auth/providers/user_service_provider.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 part 'profile_state.dart';
 
@@ -68,15 +69,20 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
 
     // Update profile
+    FirebaseCrashlytics.instance.log('profile_update_attempt');
     final updateResult = await _userService.updateUserProfile(
       principal,
       updates,
     );
 
     if (updateResult.isOk) {
+      FirebaseCrashlytics.instance.log('profile_update_success');
       emit(ProfileLoaded(updateResult.ok));
       emit(ProfileUpdateSuccess(updateResult.ok));
     } else {
+      FirebaseCrashlytics.instance.log(
+        'profile_update_error: ${updateResult.err}',
+      );
       emit(ProfileError(updateResult.err));
     }
   }
