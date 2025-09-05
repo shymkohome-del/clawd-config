@@ -3,6 +3,7 @@ import 'package:crypto_market/core/blockchain/icp_service.dart';
 import 'package:crypto_market/core/blockchain/errors.dart';
 import 'package:crypto_market/core/logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:crypto_market/core/auth/auth_guard.dart';
 
 /// Abstraction for auth-related operations to enable mocking in tests.
 abstract class AuthService {
@@ -121,6 +122,17 @@ class AuthServiceProvider implements AuthService {
     if (userJson != null) {
       try {
         final userMap = jsonDecode(userJson) as Map<String, dynamic>;
+        // Validate session expiry if present
+        final expiryMillis = userMap['expiry'] as int?;
+        if (expiryMillis != null) {
+          final isExpired = DateTime.now()
+              .isAfter(DateTime.fromMillisecondsSinceEpoch(expiryMillis));
+          if (isExpired) {
+            logger.logWarn('Stored session expired. Clearing.', tag: 'AuthService');
+            await prefs.remove('current_user');
+            return null;
+          }
+        }
         final user = User(
           id: userMap['id'] as String,
           email: userMap['email'] as String,
@@ -149,7 +161,13 @@ class AuthServiceProvider implements AuthService {
   Future<void> _saveCurrentUser(User user) async {
     final prefs = await SharedPreferences.getInstance();
     logger.logDebug('Persisting session for ${user.email}', tag: 'AuthService');
-    final userJson = jsonEncode(user.toJson());
+    final expiry = DateTime.now()
+        .add(SecurityPolicy.sessionTimeout)
+        .millisecondsSinceEpoch;
+    final userJson = jsonEncode({
+      ...user.toJson(),
+      'expiry': expiry,
+    });
     await prefs.setString('current_user', userJson);
   }
 }
