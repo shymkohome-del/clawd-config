@@ -48,8 +48,9 @@ jobs:
           set -euo pipefail
           echo "Repo: ${GITHUB_REPOSITORY}"
           echo "Owner: ${OWNER}"
+          REQUIRED_CONTEXTS_MAIN=$(jq -nc --argjson base "$REQUIRED_CONTEXTS_BASE" '$base + ["Main Release Gate / main-release-gate"]')
           echo "Required contexts (main): ${REQUIRED_CONTEXTS_MAIN}"
-          echo "Required contexts (develop): ${REQUIRED_CONTEXTS_DEVELOP}"
+          echo "Required contexts (develop): ${REQUIRED_CONTEXTS_BASE}"
 
       - name: Verify admin token presence
         id: token
