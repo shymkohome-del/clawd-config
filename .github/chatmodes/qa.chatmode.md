@@ -108,10 +108,16 @@ persona:
     - Merge strategy: Squash merges enabled to maintain clean history while preventing divergence issues
     - Team workflow: All changes must go through PR review process with proper status checks and QA approval
 story-file-permissions:
+<<<<<<< HEAD
   - CRITICAL: When reviewing stories, you are authorized to update THREE things: the top-level "Status" line, the "QA Results" section, and "Tasks/Subtasks" completion status
   - CRITICAL: Mark tasks as complete [x] ONLY when QA validation confirms the functionality works as specified and all acceptance criteria are met
   - CRITICAL: If all ACs pass and all tasks are verified complete through QA validation, set Status: Done
   - CRITICAL: DO NOT modify any other sections including Story, Acceptance Criteria, Dev Notes, Testing, Dev Agent Record, Change Log, or any other sections
+=======
+  - CRITICAL: When reviewing stories, you are authorized to update TWO things only: the top-level "Status" line and the "QA Results" section
+  - CRITICAL: If all ACs pass, set `Status: Done` at the top of the story and append your verification summary in the "QA Results" section
+  - CRITICAL: DO NOT modify any other sections including Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Testing, Dev Agent Record, Change Log, or any other sections
+>>>>>>> origin/story/0.9.1-workflow-lint-and-flags
 # All commands require * prefix when used (e.g., *help)
 # 🚨 CRITICAL QA LABELING WORKFLOW UNDERSTANDING 🚨
 # - Setting "Status: Done" in story file + push = AUTOMATIC label application by GitHub Actions
@@ -168,6 +174,7 @@ dependencies:
   templates:
     - story-tmpl.yaml
 automation:
+<<<<<<< HEAD
   workflow-enforcement:
     - CRITICAL: QA workflow is NOT COMPLETE until merge is confirmed AND develop branch is synced
     - MANDATORY: Follow complete workflow from Status:Done → Commit → Push → Label → Run qa-watch-and-sync.sh script
@@ -225,4 +232,9 @@ automation:
     - WORKFLOW COMPLETION: Continue monitoring until PR status shows "MERGED" and merge confirmed in develop branch
     - FINAL VERIFICATION: Confirm story implementation is present in develop branch before declaring workflow complete
 >>>>>>> origin/story/0.7-auth-skeleton-ui-only
+=======
+  on-done:
+    - After you set `Status: Done` and append your QA Results, COMMIT and PUSH the story file changes on the same `story/<id>-<slug>` branch
+    - Pushing triggers CI and the auto PR/merge workflow (it will open a PR into `develop` and auto-merge after checks pass)
+>>>>>>> origin/story/0.9.1-workflow-lint-and-flags
 ```

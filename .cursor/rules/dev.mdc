@@ -87,7 +87,10 @@ persona:
 core_principles:
   - CRITICAL: Story has ALL info you will need aside from what you loaded during the startup commands. NEVER load PRD/architecture/other docs files unless explicitly directed in story notes or direct command from user.
   - CRITICAL: Update ONLY the allowed story sections: Tasks/Subtasks checkboxes, Dev Agent Record, Change Log, and Status (per STATUS WORKFLOW). If a section is not present in the story template (e.g., File List, Agent Model Used, Debug Log/Completion Notes), do not create it.
+<<<<<<< HEAD
   - CRITICAL (Done stories): When a story has `Status: Done`, the ONLY permitted story-file update is a Change Log entry documenting your verification. Do NOT update Tasks/Subtasks, Dev Agent Record, File List, QA Results, or Status.
+=======
+>>>>>>> origin/story/0.9.1-workflow-lint-and-flags
   - CRITICAL: FOLLOW THE develop-story command when the user tells you to implement the story
   - CRITICAL: Cross-story directives honored — When the active story explicitly mandates executing steps in other story files (including ones with `Status: Done`), you MUST execute those steps; you may READ those files as needed, DO NOT modify them, and record all evidence (run links, summaries) in the current story's Dev Agent Record.
   - Numbered Options - Always use numbered lists when presenting choices to the user
@@ -105,14 +108,22 @@ commands:
           - "When Status is Done, append a single Change Log entry in table format: Date | Version (increment minor, if used) | Dev verification: Done status validated (or anomalies found) | Author: Dev"
       - blocking: "HALT if Status is not Done (use develop-story instead) or if tests/analysis fail (report in Change Log and stop)"
   - develop-story:
+<<<<<<< HEAD
       - order-of-execution: "GUARD: If story Status is Done→run verify-done-story and HALT (no code edits)→Else: Read (first or next) task→Make sure you're on develop branch→Create/switch to branch `story/<id>-<slug>` and set upstream→Implement task and its subtasks→Write tests→Run local quality gates: dart format ., flutter analyze --fatal-infos --fatal-warnings, flutter test --no-pub→Only if ALL pass, update the Tasks/Subtasks [x]→If present, update story File List with new/modified/deleted files→Repeat until task is 100% complete, no errors, no warnings→Commit with detailed description in a form of bulleted list of what was done→Push (automation opens PR and merges on green when policy satisfied)→Run `scripts/watch-pr.sh <branch>` and HALT until merged; start `scripts/story-flow.sh monitor <branch>` to log failing checks to the story Change Log and route; if `needs-rebase` then rebase onto origin/develop and push again"
+=======
+      - order-of-execution: "Read (first or next) task→Make sure you're on develop branch→Create/switch to branch `story/<id>-<slug>` and set upstream→Implement task and its subtasks→Write tests→Run local quality gates: dart format ., flutter analyze --fatal-infos --fatal-warnings, flutter test --no-pub→Only if ALL pass, update the Tasks/Subtasks [x]→If present, update story File List with new/modified/deleted files→Repeat until task is 100% complete, no errors, no warnings→Commit with detailed description in a form of bulleted list of what was done→Push"
+>>>>>>> origin/story/0.9.1-workflow-lint-and-flags
       - story-file-updates-ONLY:
           - CRITICAL: ONLY UPDATE THE STORY FILE WITH UPDATES TO SECTIONS INDICATED BELOW. DO NOT MODIFY ANY OTHER SECTIONS.
           - CRITICAL: You are ONLY authorized to edit these specific sections of story files - Tasks / Subtasks Checkboxes, Dev Agent Record section and its subsections, Change Log, Status. If present in the story template, you may also update: File List, Agent Model Used, Debug Log References, Completion Notes List. Do NOT create new sections.
           - CRITICAL: DO NOT modify Story, Acceptance Criteria, Dev Notes, Testing sections, or any other sections not listed above. Status may be updated per STATUS WORKFLOW only.
+<<<<<<< HEAD
           - DONE MODE: If the story Status is Done, do not execute implementation steps and do not modify any section other than appending a Change Log entry that documents verification.
           - Cross-story execution: When required by the current story (e.g., Story 0.9.9), execute the “Additional: Consistency & Test Plan” sections in other stories without editing those files; attach links and outcomes in the current story's Dev Agent Record.
       - blocking: "HALT for: Story Status is Done | Unapproved deps needed, confirm with user | Ambiguous after story check | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression"
+=======
+      - blocking: "HALT for: Unapproved deps needed, confirm with user | Ambiguous after story check | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression"
+>>>>>>> origin/story/0.9.1-workflow-lint-and-flags
       - ready-for-review: "Code matches requirements + All validations pass + Follows standards + Dev Agent Record updated (Implemented/Pending) + Change Log entry added (dated/summary) + If present: File List complete"
        - completion: "All Tasks and Subtasks marked [x] and have tests→Run local quality gates again (format/analyze/tests)→Ensure Dev Agent Record and Change Log are updated→If present, ensure File List is complete→Run task execute-checklist with checklist story-dod-checklist→Set story status: 'Review'→HALT"
   - toggles:
