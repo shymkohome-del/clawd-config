@@ -63,7 +63,14 @@ jobs:
     if: ${{ vars.AUTO_MERGE_ENABLED != 'false' }}
     runs-on: ubuntu-latest
     steps:
+<<<<<<< HEAD
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+>>>>>>> origin/story/0.9.4-reliability-hardening
       - name: Prepare context
         id: ctx
         shell: bash
@@ -135,13 +142,18 @@ jobs:
         run: |
           set -euo pipefail
 <<<<<<< HEAD
+<<<<<<< HEAD
           echo "::group::Find PR for branch"
 =======
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+          echo "::group::Find PR for branch"
+>>>>>>> origin/story/0.9.4-reliability-hardening
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           BRANCH="${{ steps.ctx.outputs.branch }}"
           API="https://api.github.com"
+<<<<<<< HEAD
 <<<<<<< HEAD
           QRESP=$(bash scripts/retry.sh 6 2 -- curl -sS -i -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
             "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" -w "\nHTTPSTATUS:%{http_code}")
@@ -179,11 +191,20 @@ jobs:
 =======
           PR_NUMBER=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
             "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" | jq '.[0].number // empty')
+=======
+          QRESP=$(bash scripts/retry.sh 6 2 -- curl -sS -i -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            "${API}/repos/${OWNER}/${REPO}/pulls?head=${OWNER}:${BRANCH}&state=open" -w "\nHTTPSTATUS:%{http_code}")
+          QRAW=$(echo "$QRESP" | sed '$d')
+          QBODY=$(printf '%s\n' "$QRAW" | sed '1,/^\r\?$/d')
+          PR_NUMBER=$(printf '%s' "$QBODY" | jq '.[0].number // empty')
+>>>>>>> origin/story/0.9.4-reliability-hardening
           if [[ -z "${PR_NUMBER}" ]]; then
             echo "No open PR found for ${BRANCH}. Skipping."
+            echo "::endgroup::"
             exit 0
           fi
           echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+          echo "::endgroup::"
 
       - name: Load PR details and gate by label/branch
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
@@ -194,18 +215,26 @@ jobs:
         run: |
           set -euo pipefail
 <<<<<<< HEAD
+<<<<<<< HEAD
           echo "::group::Load PR details and gate"
 =======
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+          echo "::group::Load PR details and gate"
+>>>>>>> origin/story/0.9.4-reliability-hardening
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
           PR_NUMBER="${{ steps.find_pr.outputs.pr_number }}"
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/story/0.9.4-reliability-hardening
           PRESP=$(bash scripts/retry.sh 6 2 -- curl -sS -i -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
                "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}" -w "\nHTTPSTATUS:%{http_code}")
           PRAW=$(echo "$PRESP" | sed '$d')
           PR=$(printf '%s\n' "$PRAW" | sed '1,/^\r\?$/d')
+<<<<<<< HEAD
           HEAD_BRANCH=$(echo "$PR" | jq -r '.head.ref')
           LABELS=$(echo "$PR" | jq -r '(.labels // []) | map(.name) | join(",")')
           MERGEABLE_STATE=$(echo "$PR" | jq -r '.mergeable_state')
@@ -288,6 +317,8 @@ jobs:
 =======
           PR=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
                "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}")
+=======
+>>>>>>> origin/story/0.9.4-reliability-hardening
           HEAD_BRANCH=$(echo "$PR" | jq -r '.head.ref')
           LABELS=$(echo "$PR" | jq -r '(.labels // []) | map(.name) | join(",")')
           MERGEABLE_STATE=$(echo "$PR" | jq -r '.mergeable_state')
@@ -299,10 +330,70 @@ jobs:
           if [[ "$HEAD_BRANCH" =~ ^story/ ]]; then
             if [[ ",${LABELS}," != *",automerge-ok,"* ]]; then
               echo "Story branch without 'automerge-ok' label. Skipping."
+              echo "::endgroup::"
               exit 0
             fi
           fi
+          echo "::endgroup::"
 
+<<<<<<< HEAD
+=======
+      - name: Auto-update PR branch if behind
+        id: update_branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "::group::Auto-update PR branch if behind"
+          OWNER="${GITHUB_REPOSITORY%%/*}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          API="https://api.github.com"
+          PR_NUMBER="${{ steps.find_pr.outputs.pr_number }}"
+          # Read current mergeable_state
+          PRESP=$(bash scripts/retry.sh 6 2 -- curl -sS -i -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+               "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}" -w "\nHTTPSTATUS:%{http_code}")
+          PRAW=$(echo "$PRESP" | sed '$d')
+          PR=$(printf '%s\n' "$PRAW" | sed '1,/^\r\?$/d')
+          STATE=$(echo "$PR" | jq -r '.mergeable_state')
+          HEAD_SHA=$(echo "$PR" | jq -r '.head.sha')
+          echo "state=$STATE" >> "$GITHUB_OUTPUT"
+          if [[ "$STATE" == "behind" ]]; then
+            echo "PR is behind base; attempting to update branch via API..."
+            RESP=$(bash scripts/retry.sh 6 2 -- curl -sS -i -X PUT \
+              -H "authorization: Bearer ${GH_TOKEN}" \
+              -H "accept: application/vnd.github+json" \
+              -d "{\"expected_head_sha\":\"${HEAD_SHA}\"}" \
+              "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/update-branch" -w "\nHTTPSTATUS:%{http_code}")
+            HTTP=$(echo "$RESP" | sed -n '$s/.*HTTPSTATUS:\([0-9][0-9][0-9]\)$/\1/p')
+            RAW=$(echo "$RESP" | sed '$d')
+            BODY=$(printf '%s\n' "$RAW" | sed '1,/^\r\?$/d')
+            if [[ "$HTTP" == "202" ]]; then
+              echo "updated=true" >> "$GITHUB_OUTPUT"
+              echo "need_rebase=false" >> "$GITHUB_OUTPUT"
+            else
+              echo "updated=false" >> "$GITHUB_OUTPUT"
+              echo "need_rebase=true" >> "$GITHUB_OUTPUT"
+              echo "Auto-update failed (HTTP ${HTTP}). Marking as needs rebase."
+              # Ensure label exists
+              bash scripts/retry.sh 6 2 -- curl -sS -i -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+                -d '{"name":"needs-rebase","color":"d93f0b","description":"Rebase onto develop required"}' \
+                "${API}/repos/${OWNER}/${REPO}/labels" -w "\nHTTPSTATUS:%{http_code}" >/dev/null || true
+              # Apply label and comment
+              bash scripts/retry.sh 6 2 -- curl -sS -i -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+                -d '{"labels":["needs-rebase"]}' "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/labels" -w "\nHTTPSTATUS:%{http_code}" >/dev/null || true
+              MSG=$'Auto-merge skipped: branch is behind and could not be auto-updated.\n\nPlease rebase onto develop (git fetch origin && git rebase --autostash origin/develop).'
+              bash scripts/retry.sh 6 2 -- curl -sS -i -X POST -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" -H "content-type: application/json" \
+                -d "$(jq -cn --arg body "$MSG" '{body:$body}')" \
+                "${API}/repos/${OWNER}/${REPO}/issues/${PR_NUMBER}/comments" -w "\nHTTPSTATUS:%{http_code}" >/dev/null || true
+            fi
+          else
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+            echo "need_rebase=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "::endgroup::"
+
+>>>>>>> origin/story/0.9.4-reliability-hardening
       - name: Wait for required checks to be green (retry)
         id: wait_checks
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
@@ -469,12 +560,17 @@ jobs:
             echo "CI_LOCAL=true: Skipping REST merge."
             exit 0
           fi
+<<<<<<< HEAD
 >>>>>>> origin/story/0.9.3-auto-merge
+=======
+          echo "::group::Merge PR and cleanup"
+>>>>>>> origin/story/0.9.4-reliability-hardening
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
           PR_NUMBER="${{ steps.find_pr.outputs.pr_number }}"
           # Try merge
+<<<<<<< HEAD
 <<<<<<< HEAD
           attempt=0; max=3; sleep_s=3
           while (( attempt < max )); do
@@ -518,21 +614,34 @@ jobs:
           echo "::endgroup::"
 =======
           MERGE_RESP=$(curl -sS -X PUT -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+=======
+          MRESP=$(bash scripts/retry.sh 6 2 -- curl -sS -i -X PUT -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+>>>>>>> origin/story/0.9.4-reliability-hardening
             -d '{"merge_method":"squash"}' \
-            "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/merge")
-          echo "$MERGE_RESP" | jq '.' || true
-          if echo "$MERGE_RESP" | jq -e '.merged == true' >/dev/null; then
+            "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/merge" -w "\nHTTPSTATUS:%{http_code}")
+          MRAW=$(echo "$MRESP" | sed '$d')
+          MBODY=$(printf '%s\n' "$MRAW" | sed '1,/^\r\?$/d')
+          echo "$MBODY" | jq '.' || true
+          if echo "$MBODY" | jq -e '.merged == true' >/dev/null; then
             echo "Merged PR #${PR_NUMBER} successfully."
           else
             echo "Merge did not occur (possibly already merged or not mergeable). Exiting gracefully."
             exit 0
           fi
           # Attempt branch deletion (safe if protected)
+<<<<<<< HEAD
           HEAD_REF=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
             "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}" | jq -r '.head.ref')
           curl -sS -X DELETE -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
             "${API}/repos/${OWNER}/${REPO}/git/refs/heads/${HEAD_REF}" || true
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+          HEAD_REF=$(bash scripts/retry.sh 6 2 -- curl -sS -i -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}" -w "\nHTTPSTATUS:%{http_code}" | sed '$d' | sed '1,/^\r\?$/d' | jq -r '.head.ref')
+          bash scripts/retry.sh 6 2 -- curl -sS -i -X DELETE -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            "${API}/repos/${OWNER}/${REPO}/git/refs/heads/${HEAD_REF}" -w "\nHTTPSTATUS:%{http_code}" >/dev/null || true
+          echo "::endgroup::"
+>>>>>>> origin/story/0.9.4-reliability-hardening
 
       - name: Emit metrics summary
         if: always()

@@ -1,8 +1,12 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 time="2025-08-30T10:33:53+03:00" level=info msg="Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock'"
 =======
 time="2025-08-28T15:52:57+03:00" level=info msg="Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock'"
 >>>>>>> origin/story/0.7-auth-skeleton-ui-only
+=======
+time="2025-08-21T12:35:51+03:00" level=info msg="Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock'"
+>>>>>>> origin/story/0.9.4-reliability-hardening
 [Auto Rebase Story PRs/rebase] ⭐ Run Set up job
 [Auto Rebase Story PRs/rebase] 🚀  Start image=catthehacker/ubuntu:act-latest
 [Auto Rebase Story PRs/rebase]   🐳  docker pull image=catthehacker/ubuntu:act-latest platform=linux/amd64 username= forcePull=true
@@ -10,6 +14,7 @@ time="2025-08-28T15:52:57+03:00" level=info msg="Using docker host 'unix:///var/
 [Auto Rebase Story PRs/rebase]   🐳  docker run image=catthehacker/ubuntu:act-latest platform=linux/amd64 entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
 [Auto Rebase Story PRs/rebase]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
 [Auto Rebase Story PRs/rebase]   ✅  Success - Set up job
+<<<<<<< HEAD
 [Auto Rebase Story PRs/rebase] ⭐ Run Main Checkout
 [Auto Rebase Story PRs/rebase]   🐳  docker cp src=/Users/vitalijsimko/workspace/projects/other/crypto_market/. dst=/Users/vitalijsimko/workspace/projects/other/crypto_market
 <<<<<<< HEAD
@@ -117,3 +122,11 @@ time="2025-08-28T15:52:57+03:00" level=info msg="Using docker host 'unix:///var/
 [Auto Rebase Story PRs/rebase]   ✅  Success - Complete job
 [Auto Rebase Story PRs/rebase] 🏁  Job failed
 Error: Job 'rebase' failed
+=======
+[Auto Rebase Story PRs/rebase]   ☁  git clone 'https://github.com/actions/github-script' # ref=v7
+[Auto Rebase Story PRs/rebase] authentication required: Invalid username or token. Password authentication is not supported for Git operations.
+[Auto Rebase Story PRs/rebase] ⭐ Run Complete job
+[Auto Rebase Story PRs/rebase]   ✅  Success - Complete job
+[Auto Rebase Story PRs/rebase] 🏁  Job failed
+Error: authentication required: Invalid username or token. Password authentication is not supported for Git operations.
+>>>>>>> origin/story/0.9.4-reliability-hardening

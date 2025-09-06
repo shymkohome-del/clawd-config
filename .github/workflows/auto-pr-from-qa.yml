@@ -23,10 +23,14 @@ permissions:
   contents: write
   pull-requests: write
 <<<<<<< HEAD
+<<<<<<< HEAD
   issues: write
   actions: read
   checks: read
   statuses: read
+=======
+  issues: write
+>>>>>>> origin/story/0.9.4-reliability-hardening
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -102,6 +106,7 @@ jobs:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   preflight-parse:
     name: Preflight Parser
     needs: [workflow-lint]
@@ -110,6 +115,11 @@ jobs:
     needs: [workflow-lint]
     if: ${{ vars.AUTO_PR_ENABLED != 'false' }}
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+  preflight-parse:
+    name: Preflight Parser
+    needs: [workflow-lint]
+>>>>>>> origin/story/0.9.4-reliability-hardening
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -117,6 +127,9 @@ jobs:
         with:
           fetch-depth: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/story/0.9.4-reliability-hardening
       - name: Run preflight parser
         shell: bash
         run: |
@@ -130,9 +143,12 @@ jobs:
       contents: write
       pull-requests: write
       issues: write
+<<<<<<< HEAD
       actions: read
       checks: read
       statuses: read
+=======
+>>>>>>> origin/story/0.9.4-reliability-hardening
     uses: ./.github/workflows/reusable-auto-pr.yml
     with:
       branch: ${{ inputs.branch || github.ref_name }}
@@ -382,7 +398,7 @@ jobs:
     secrets: inherit
 >>>>>>> origin/story/0.9.3-auto-merge
   note-auto-pr-disabled:
-    needs: [workflow-lint]
+    needs: [workflow-lint, preflight-parse]
     if: ${{ vars.AUTO_PR_ENABLED == 'false' }}
     runs-on: ubuntu-latest
     steps:

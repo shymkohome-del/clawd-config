@@ -135,6 +135,7 @@ echo "[dev-validate] All local checks passed."
 
 # Optional: run workflows locally via act if installed
 <<<<<<< HEAD
+<<<<<<< HEAD
 # Enable if RUN_ACT=true, or auto-run when RUN_ACT=auto (default) and act is available
 RUN_ACT_MODE="${RUN_ACT:-auto}"
 if [[ "$RUN_ACT_MODE" == "true" || ( "$RUN_ACT_MODE" == "auto" && $(command -v act >/dev/null 2>&1; echo $?) -eq 0 ) ]]; then
@@ -142,6 +143,11 @@ if [[ "$RUN_ACT_MODE" == "true" || ( "$RUN_ACT_MODE" == "auto" && $(command -v a
 # Optional local workflow execution with 'act' (disabled by default)
 if [[ "${RUN_ACT:-false}" == "true" ]]; then
 >>>>>>> origin/story/0.9.3-auto-merge
+=======
+# Enable if RUN_ACT=true, or auto-run when RUN_ACT=auto (default) and act is available
+RUN_ACT_MODE="${RUN_ACT:-auto}"
+if [[ "$RUN_ACT_MODE" == "true" || ( "$RUN_ACT_MODE" == "auto" && $(command -v act >/dev/null 2>&1; echo $?) -eq 0 ) ]]; then
+>>>>>>> origin/story/0.9.4-reliability-hardening
   if ! command -v act >/dev/null 2>&1; then
     if command -v brew >/dev/null 2>&1; then
       echo "[dev-validate] Installing 'act' via Homebrew..."
@@ -152,6 +158,7 @@ if [[ "${RUN_ACT:-false}" == "true" ]]; then
   fi
   if command -v act >/dev/null 2>&1; then
 <<<<<<< HEAD
+<<<<<<< HEAD
     echo "[dev-validate] Running auto-rebase via act (catches github-script runtime errors)"
     # Prefer ACT_TOKEN, then GITHUB_TOKEN, else dummy
     TOKEN="${ACT_TOKEN:-${GITHUB_TOKEN:-dummy}}"
@@ -159,12 +166,18 @@ if [[ "${RUN_ACT:-false}" == "true" ]]; then
       echo "[dev-validate] No token available for 'act' (ACT_TOKEN/GITHUB_TOKEN missing). Skipping act runs to avoid false negatives."
       echo "[dev-validate] Hint: export ACT_TOKEN=ghp_xxx to enable realistic act runs."
     else
+=======
+    echo "[dev-validate] Running auto-rebase via act (catches github-script runtime errors)"
+    # Prefer ACT_TOKEN, then GITHUB_TOKEN, else dummy
+    TOKEN="${ACT_TOKEN:-${GITHUB_TOKEN:-dummy}}"
+>>>>>>> origin/story/0.9.4-reliability-hardening
     set +e
     LOG_FILE="$BIN_DIR/act-auto-rebase.log"
     act workflow_dispatch -W .github/workflows/auto-rebase.yml -j rebase -s GITHUB_TOKEN="$TOKEN" --container-architecture linux/amd64 >"$LOG_FILE" 2>&1
     ACT_STATUS=$?
     set -e
     if [[ $ACT_STATUS -ne 0 ]]; then
+<<<<<<< HEAD
         # Treat common private-repo/auth/type issues as non-fatal for local validation
         if grep -qiE 'authentication required|permission denied|could not read Username|Bad credentials|Requires authentication|Resource not accessible by integration|API rate limit exceeded|array \(\[\]\) and object|object and array cannot be added' "$LOG_FILE"; then
           echo "[dev-validate] WARN: act failed due to auth/type issues (likely limited token). Treating as non-fatal."
@@ -192,6 +205,21 @@ else
 else
   echo "[dev-validate] Skipping 'act' workflow execution (set RUN_ACT=true to enable)."
 >>>>>>> origin/story/0.9.3-auto-merge
+=======
+      if grep -qiE 'authentication required|permission denied|could not read Username' "$LOG_FILE"; then
+        echo "[dev-validate] WARN: act failed due to auth (private repo). Treating as non-fatal."
+      else
+        echo "[dev-validate] act run failed. See $LOG_FILE"
+        cat "$LOG_FILE" | tail -n 100 || true
+        exit 1
+      fi
+    fi
+  else
+    echo "[dev-validate] act still unavailable; skipping act runs."
+  fi
+else
+  echo "[dev-validate] Skipping 'act' workflow execution (set RUN_ACT=true to force; current RUN_ACT=${RUN_ACT_MODE})."
+>>>>>>> origin/story/0.9.4-reliability-hardening
 fi
 
 

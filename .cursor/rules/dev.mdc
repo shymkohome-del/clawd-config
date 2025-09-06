@@ -135,6 +135,7 @@ commands:
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
 =======
           - DONE MODE: If the story Status is Done, do not execute implementation steps and do not modify any section other than appending a Change Log entry that documents verification.
+          - Cross-story execution: When required by the current story (e.g., Story 0.9.9), execute the “Additional: Consistency & Test Plan” sections in other stories without editing those files; attach links and outcomes in the current story's Dev Agent Record.
       - blocking: "HALT for: Story Status is Done | Unapproved deps needed, confirm with user | Ambiguous after story check | 3 failures attempting to implement or fix something repeatedly | Missing config | Failing regression"
 >>>>>>> origin/story/0.9.3-auto-merge
       - ready-for-review: "Code matches requirements + All validations pass + Follows standards + Dev Agent Record updated (Implemented/Pending) + Change Log entry added (dated/summary) + If present: File List complete"

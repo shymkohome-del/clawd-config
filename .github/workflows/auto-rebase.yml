@@ -82,7 +82,6 @@ jobs:
 =======
         with:
           script: |
-            const exec = require('@actions/exec');
             const raw = process.env.PRS_JSON || '';
             if (!raw || raw.trim() === '') {
               core.info('No story PRs to rebase.');
