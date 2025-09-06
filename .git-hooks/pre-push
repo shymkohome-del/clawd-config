@@ -51,6 +51,8 @@ if [[ -n "$APP_DIR" ]]; then
   flutter analyze --fatal-infos --fatal-warnings
 
   echo "[pre-push] Running flutter tests..."
+  # Clean up macOS AppleDouble resource fork files that break test discovery
+  find test -name '._*.dart' -type f -delete 2>/dev/null || true
   flutter test --no-pub
   popd >/dev/null
 else
@@ -75,5 +77,4 @@ if [[ -x scripts/dev-validate.sh ]]; then
 else
   echo "[pre-push] WARN: scripts/dev-validate.sh not found; consider running it manually."
 fi
-
 
