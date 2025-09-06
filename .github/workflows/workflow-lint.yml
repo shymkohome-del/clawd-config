@@ -30,6 +30,7 @@ jobs:
           VERSION="1.7.1"
           mkdir -p "$HOME/bin"
 <<<<<<< HEAD
+<<<<<<< HEAD
           curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- "${VERSION}" "$HOME/bin"
           echo "$HOME/bin" >> "$GITHUB_PATH"
       - name: Run actionlint (YAML only)
@@ -38,12 +39,19 @@ jobs:
           actionlint -shellcheck=
 =======
           curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- "v${VERSION}" "$HOME/bin"
+=======
+          curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- "${VERSION}" "$HOME/bin"
+>>>>>>> origin/story/0.9.3-auto-merge
           echo "$HOME/bin" >> "$GITHUB_PATH"
-      - name: Run actionlint
+      - name: Run actionlint (YAML only)
         run: |
           set -euo pipefail
+<<<<<<< HEAD
           actionlint -no-network -shellcheck=
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+          actionlint -shellcheck=
+>>>>>>> origin/story/0.9.3-auto-merge
       - name: Install yamllint (pinned)
         run: |
           set -euo pipefail
@@ -82,6 +90,9 @@ jobs:
         run: |
           set -euo pipefail
           ~/.local/bin/yamllint --strict .github/workflows
+<<<<<<< HEAD
 
 
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+>>>>>>> origin/story/0.9.3-auto-merge

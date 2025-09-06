@@ -57,6 +57,7 @@ jobs:
         run: dart format --output=none --set-exit-if-changed .
       - name: Run tests (with retry)
         working-directory: ${{ steps.detect.outputs.app_dir }}
+<<<<<<< HEAD
         shell: bash
         run: |
           set -euo pipefail
@@ -72,3 +73,6 @@ jobs:
           done
           echo "Tests failed after ${max} attempts."
           exit 1
+=======
+        run: flutter test --no-pub
+>>>>>>> origin/story/0.9.3-auto-merge

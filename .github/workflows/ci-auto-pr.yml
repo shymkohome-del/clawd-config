@@ -1,8 +1,11 @@
 name: Legacy CI and Auto PR (disabled)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 >>>>>>> origin/story/0.9.2-deterministic-pr-creation
+=======
+>>>>>>> origin/story/0.9.3-auto-merge
 on:
   workflow_dispatch:
 
@@ -16,6 +19,7 @@ jobs:
 <<<<<<< HEAD
           echo "This workflow has been deprecated and disabled."
           echo "PR creation is now handled via REST/GraphQL in 'Auto PR and Auto-merge on QA Done'."
+<<<<<<< HEAD
 =======
           sudo apt-get update
           sudo apt-get install -y gh
@@ -110,3 +114,5 @@ jobs:
 
 
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+>>>>>>> origin/story/0.9.3-auto-merge

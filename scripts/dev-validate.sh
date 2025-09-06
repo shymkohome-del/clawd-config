@@ -21,6 +21,7 @@ if ! command -v actionlint >/dev/null 2>&1; then
     | bash -s -- "${ACTIONLINT_VERSION}" "$BIN_DIR"
 fi
 
+<<<<<<< HEAD
 echo "[dev-validate] Ensuring shellcheck availability (for bash lint via actionlint)"
 if ! command -v shellcheck >/dev/null 2>&1; then
   if command -v brew >/dev/null 2>&1; then
@@ -32,11 +33,18 @@ if ! command -v shellcheck >/dev/null 2>&1; then
 fi
 
 echo "[dev-validate] Running actionlint"
+=======
+echo "[dev-validate] Running actionlint (YAML only)"
+>>>>>>> origin/story/0.9.3-auto-merge
 actionlint -shellcheck=
 
 # Yamllint using Docker image for parity (no local Python needed)
 if command -v docker >/dev/null 2>&1; then
+<<<<<<< HEAD
   echo "[dev-validate] Running yamllint (Docker) on workflows only"
+=======
+  echo "[dev-validate] Running yamllint (Docker) on workflows"
+>>>>>>> origin/story/0.9.3-auto-merge
   docker run --rm -v "$REPO_ROOT":/data cytopia/yamllint -c /data/.yamllint.yml -s /data/.github/workflows
 else
   # Fallback: attempt via pipx or pip if Docker absent
@@ -44,14 +52,23 @@ else
     echo "[dev-validate] Installing yamllint via pipx (if missing)"
     pipx install --force yamllint==1.35.1 >/dev/null 2>&1 || true
     if pipx run --version yamllint >/dev/null 2>&1; then
+<<<<<<< HEAD
       echo "[dev-validate] Running yamllint (pipx) on workflows"
       pipx run yamllint --strict -c .yamllint.yml .github/workflows
+=======
+      echo "[dev-validate] Running yamllint (pipx)"
+      pipx run yamllint --strict .github/workflows
+>>>>>>> origin/story/0.9.3-auto-merge
     fi
   elif command -v python3 >/dev/null 2>&1; then
     echo "[dev-validate] Attempting yamllint via pip user install..."
     python3 -m pip install --user -q yamllint==1.35.1 --break-system-packages || true
     if python3 -c 'import yamllint' >/dev/null 2>&1; then
+<<<<<<< HEAD
       "$HOME/.local/bin/yamllint" --strict -c .yamllint.yml .github/workflows
+=======
+      "$HOME/.local/bin/yamllint" --strict .github/workflows
+>>>>>>> origin/story/0.9.3-auto-merge
     else
       echo "[dev-validate] WARN: yamllint unavailable; skipping"
     fi
@@ -59,6 +76,7 @@ else
     echo "[dev-validate] WARN: yamllint unavailable; skipping"
   fi
 fi
+<<<<<<< HEAD
 # Optional: direct shellcheck on local shell scripts (non-blocking if unavailable)
 if command -v shellcheck >/dev/null 2>&1; then
   echo "[dev-validate] Running shellcheck on repository shell scripts..."
@@ -88,6 +106,8 @@ if [[ -n "${FILES}" ]]; then
     exit 1
   fi
 fi
+=======
+>>>>>>> origin/story/0.9.3-auto-merge
 
 # Flutter/Dart gates (same as pre-push)
 APP_DIR=""
@@ -114,9 +134,14 @@ fi
 echo "[dev-validate] All local checks passed."
 
 # Optional: run workflows locally via act if installed
+<<<<<<< HEAD
 # Enable if RUN_ACT=true, or auto-run when RUN_ACT=auto (default) and act is available
 RUN_ACT_MODE="${RUN_ACT:-auto}"
 if [[ "$RUN_ACT_MODE" == "true" || ( "$RUN_ACT_MODE" == "auto" && $(command -v act >/dev/null 2>&1; echo $?) -eq 0 ) ]]; then
+=======
+# Optional local workflow execution with 'act' (disabled by default)
+if [[ "${RUN_ACT:-false}" == "true" ]]; then
+>>>>>>> origin/story/0.9.3-auto-merge
   if ! command -v act >/dev/null 2>&1; then
     if command -v brew >/dev/null 2>&1; then
       echo "[dev-validate] Installing 'act' via Homebrew..."
@@ -126,6 +151,7 @@ if [[ "$RUN_ACT_MODE" == "true" || ( "$RUN_ACT_MODE" == "auto" && $(command -v a
     fi
   fi
   if command -v act >/dev/null 2>&1; then
+<<<<<<< HEAD
     echo "[dev-validate] Running auto-rebase via act (catches github-script runtime errors)"
     # Prefer ACT_TOKEN, then GITHUB_TOKEN, else dummy
     TOKEN="${ACT_TOKEN:-${GITHUB_TOKEN:-dummy}}"
@@ -154,6 +180,18 @@ if [[ "$RUN_ACT_MODE" == "true" || ( "$RUN_ACT_MODE" == "auto" && $(command -v a
   fi
 else
   echo "[dev-validate] Skipping 'act' workflow execution (set RUN_ACT=true to force; current RUN_ACT=${RUN_ACT_MODE})."
+=======
+    echo "[dev-validate] Running workflow-lint via act (CI_LOCAL=true)"
+    export CI_LOCAL=true
+    act push -W .github/workflows/workflow-lint.yml -s GITHUB_TOKEN=dummy --container-architecture linux/amd64 || exit 1
+    unset CI_LOCAL
+
+    echo "[dev-validate] Running flutter-ci via act"
+    act push -W .github/workflows/flutter-ci.yml --container-architecture linux/amd64 || exit 1
+  fi
+else
+  echo "[dev-validate] Skipping 'act' workflow execution (set RUN_ACT=true to enable)."
+>>>>>>> origin/story/0.9.3-auto-merge
 fi
 
 

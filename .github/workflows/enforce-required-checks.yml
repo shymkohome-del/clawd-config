@@ -9,10 +9,14 @@ on:
       - ".github/workflows/auto-pr-from-qa.yml"
   schedule:
 <<<<<<< HEAD
+<<<<<<< HEAD
     - cron: "0 6 * * 1"  # Weekly on Mondays 06:00 UTC
 =======
     - cron: "0 6 * * 1" # Weekly on Mondays 06:00 UTC
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+    - cron: "0 6 * * 1"  # Weekly on Mondays 06:00 UTC
+>>>>>>> origin/story/0.9.3-auto-merge
 
 permissions:
   contents: read
@@ -23,6 +27,7 @@ jobs:
     env:
       OWNER: ${{ github.repository_owner }}
       REPO: ${{ github.event.repository.name || github.repository }}
+<<<<<<< HEAD
 <<<<<<< HEAD
       REQUIRED_CONTEXTS_MAIN: '["Main Release Gate / main-release-gate","Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
       REQUIRED_CONTEXTS_DEVELOP: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
@@ -35,6 +40,9 @@ jobs:
         uses: ./.github/actions/common-setup
 =======
       REQUIRED_CONTEXTS: '["Workflow Lint / lint","Auto PR and Auto-merge on QA Done / Workflow Lint"]'
+=======
+      REQUIRED_CONTEXTS: '["Workflow Lint / lint","Flutter CI / build-and-test","PR Lint / pr-lint","Auto PR and Auto-merge on QA Done / Workflow Lint"]'
+>>>>>>> origin/story/0.9.3-auto-merge
     steps:
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
       - name: Show context
@@ -66,10 +74,14 @@ jobs:
           if [[ -z "${{ secrets.REPO_ADMIN_TOKEN || '' }}" ]]; then
             echo "has_token=false" >> "$GITHUB_OUTPUT"
 <<<<<<< HEAD
+<<<<<<< HEAD
             echo "No REPO_ADMIN_TOKEN secret present. Will skip enforcement and only emit guidance."
 =======
             echo "No REPO_ADMIN_TOKEN secret present. Will skip enforcement and only emit guidance." 
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+            echo "No REPO_ADMIN_TOKEN secret present. Will skip enforcement and only emit guidance."
+>>>>>>> origin/story/0.9.3-auto-merge
           else
             echo "has_token=true" >> "$GITHUB_OUTPUT"
           fi
@@ -184,6 +196,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Enforcement job finished. See logs above for branch results."
+<<<<<<< HEAD
 
 <<<<<<< HEAD
   report-pr-required-checks:
@@ -282,3 +295,5 @@ jobs:
 =======
 
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+>>>>>>> origin/story/0.9.3-auto-merge

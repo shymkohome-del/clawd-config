@@ -56,7 +56,7 @@ jobs:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   merge-on-green:
@@ -72,6 +72,7 @@ jobs:
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
 <<<<<<< HEAD
+<<<<<<< HEAD
           # Pass potentially untrusted expressions via env vars per actionlint guidance
           WR_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch || '' }}
           WR_HEAD_SHA: ${{ github.event.workflow_run.head_sha || '' }}
@@ -84,18 +85,30 @@ jobs:
               BRANCH="${WR_HEAD_BRANCH}"
               SHA="${WR_HEAD_SHA}"
 =======
+=======
+          # Pass potentially untrusted expressions via env vars per actionlint guidance
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref || '' }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || '' }}
+          WR_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch || '' }}
+          WR_HEAD_SHA: ${{ github.event.workflow_run.head_sha || '' }}
+>>>>>>> origin/story/0.9.3-auto-merge
         run: |
           set -euo pipefail
           echo "event_name=${EVENT_NAME}" >> "$GITHUB_OUTPUT"
           case "${EVENT_NAME}" in
             workflow_run)
-              BRANCH="${{ github.event.workflow_run.head_branch }}"
-              SHA="${{ github.event.workflow_run.head_sha }}"
+              BRANCH="${WR_HEAD_BRANCH}"
+              SHA="${WR_HEAD_SHA}"
               ;;
             pull_request)
+<<<<<<< HEAD
               BRANCH="${{ github.event.pull_request.head.ref }}"
               SHA="${{ github.event.pull_request.head.sha }}"
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+              BRANCH="${PR_HEAD_REF}"
+              SHA="${PR_HEAD_SHA}"
+>>>>>>> origin/story/0.9.3-auto-merge
               ;;
             *)
               BRANCH="${GITHUB_REF_NAME:-}"
@@ -276,14 +289,16 @@ jobs:
           PR=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
                "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}")
           HEAD_BRANCH=$(echo "$PR" | jq -r '.head.ref')
-          LABELS=$(echo "$PR" | jq -r '[.labels[].name] | join(",")')
+          LABELS=$(echo "$PR" | jq -r '(.labels // []) | map(.name) | join(",")')
           MERGEABLE_STATE=$(echo "$PR" | jq -r '.mergeable_state')
+          AUTO_MERGE_ENABLED=$(echo "$PR" | jq -r '(.auto_merge != null)')
           echo "head_branch=${HEAD_BRANCH}" >> "$GITHUB_OUTPUT"
           echo "labels=${LABELS}" >> "$GITHUB_OUTPUT"
           echo "mergeable_state=${MERGEABLE_STATE}" >> "$GITHUB_OUTPUT"
+           echo "auto_merge_enabled=${AUTO_MERGE_ENABLED}" >> "$GITHUB_OUTPUT"
           if [[ "$HEAD_BRANCH" =~ ^story/ ]]; then
             if [[ ",${LABELS}," != *",automerge-ok,"* ]]; then
-              echo "Story branch without 'automerge-ok' label. Skipping." 
+              echo "Story branch without 'automerge-ok' label. Skipping."
               exit 0
             fi
           fi
@@ -425,14 +440,20 @@ jobs:
           echo "Timeout waiting for checks to pass. Skipping merge."
           exit 0
 
+<<<<<<< HEAD
       - name: Merge PR (squash) and delete branch
         if: steps.wait_checks.outputs.checks_ok == 'true'
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+      - name: Merge PR (squash) and delete branch (skipped locally)
+        if: steps.wait_checks.outputs.checks_ok == 'true' && steps.gate.outputs.auto_merge_enabled != 'true'
+>>>>>>> origin/story/0.9.3-auto-merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
+<<<<<<< HEAD
 <<<<<<< HEAD
           echo "::group::Merge PR and cleanup"
           if [[ "${CI_LOCAL:-}" == "true" ]]; then
@@ -443,6 +464,12 @@ jobs:
           echo "::group::Merge PR and cleanup"
 =======
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+          if [[ "${CI_LOCAL:-}" == "true" ]]; then
+            echo "CI_LOCAL=true: Skipping REST merge."
+            exit 0
+          fi
+>>>>>>> origin/story/0.9.3-auto-merge
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
           API="https://api.github.com"
@@ -512,6 +539,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 <<<<<<< HEAD
+<<<<<<< HEAD
           AUTO_MERGE_ENABLED: ${{ steps.gate.outputs.auto_merge_enabled || '' }}
           CHECKS_OK: ${{ steps.wait_checks.outputs.checks_ok || '' }}
           UPDATED: ${{ steps.update_branch.outputs.updated || '' }}
@@ -541,15 +569,29 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           echo "::endgroup::"
 =======
+=======
+          AUTO_MERGE_ENABLED: ${{ steps.gate.outputs.auto_merge_enabled || '' }}
+          CHECKS_OK: ${{ steps.wait_checks.outputs.checks_ok || '' }}
+>>>>>>> origin/story/0.9.3-auto-merge
         shell: bash
         run: |
           set -euo pipefail
           PR_NUMBER="${{ steps.find_pr.outputs.pr_number || '' }}"
-          MERGED_NOTE="${{ steps.wait_checks.outputs.checks_ok == 'true' && 'merge-attempted' || 'merge-skipped' }}"
+          if [[ "${AUTO_MERGE_ENABLED}" == "true" ]]; then
+            MERGED_NOTE="auto-merge-pre-enabled"
+          elif [[ "${CHECKS_OK}" == "true" ]]; then
+            MERGED_NOTE="merge-attempted"
+          else
+            MERGED_NOTE="merge-skipped"
+          fi
           echo "### Merge-on-Green summary" >> $GITHUB_STEP_SUMMARY
           echo "- PR: #${PR_NUMBER}" >> $GITHUB_STEP_SUMMARY
-          echo "- Checks green: ${{ steps.wait_checks.outputs.checks_ok }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Checks green: ${CHECKS_OK}" >> $GITHUB_STEP_SUMMARY
+          echo "- Auto-merge pre-enabled: ${AUTO_MERGE_ENABLED}" >> $GITHUB_STEP_SUMMARY
           echo "- Action: ${MERGED_NOTE}" >> $GITHUB_STEP_SUMMARY
+<<<<<<< HEAD
 
 
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+>>>>>>> origin/story/0.9.3-auto-merge

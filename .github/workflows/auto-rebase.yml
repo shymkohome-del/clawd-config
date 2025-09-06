@@ -56,6 +56,7 @@ jobs:
       - name: Rebase each PR branch on develop
         env:
           PRS_JSON: ${{ steps.list.outputs.result }}
+<<<<<<< HEAD
         shell: bash
         run: |
           set -euo pipefail
@@ -78,3 +79,27 @@ jobs:
             fi
             echo "::endgroup::"
           done
+=======
+        with:
+          script: |
+            const exec = require('@actions/exec');
+            const raw = process.env.PRS_JSON || '';
+            if (!raw || raw.trim() === '') {
+              core.info('No story PRs to rebase.');
+              return;
+            }
+            const items = JSON.parse(raw || '[]');
+            for (const item of items) {
+              core.startGroup(`Rebase ${item.ref}`);
+              await exec.exec('git', ['fetch', 'origin', 'develop', item.ref]);
+              await exec.exec('git', ['checkout', item.ref]);
+              try {
+                await exec.exec('git', ['rebase', 'origin/develop']);
+                await exec.exec('git', ['push', '--force-with-lease', 'origin', item.ref]);
+                core.info(`Rebased ${item.ref}`);
+              } catch (e) {
+                core.warning(`Conflict rebasing ${item.ref}, please resolve manually.`);
+              }
+              core.endGroup();
+            }
+>>>>>>> origin/story/0.9.3-auto-merge

@@ -1,5 +1,6 @@
 extends: default
 
+<<<<<<< HEAD
 yaml-files:
   - "**/*.yml"
   - "**/*.yaml"
@@ -19,6 +20,8 @@ ignore: |
   .idea/**
   .vscode/**
 
+=======
+>>>>>>> origin/story/0.9.3-auto-merge
 rules:
   # GitHub Actions YAML does not require '---' document start
   document-start: disable
@@ -26,22 +29,34 @@ rules:
   # Allow common non-boolean words and do not check keys like 'on'
   truthy: disable
 
+<<<<<<< HEAD
   # Lines often exceed 80 due to long URLs and commands
+=======
+  # GitHub workflow lines often exceed 80 due to long URLs and commands
+>>>>>>> origin/story/0.9.3-auto-merge
   line-length:
     max: 180
     allow-non-breakable-words: true
     allow-non-breakable-inline-mappings: true
+<<<<<<< HEAD
     level: warning
+=======
+>>>>>>> origin/story/0.9.3-auto-merge
 
   # Reduce noise for bracket spacing peculiarities in Actions syntax
   brackets: disable
 
+<<<<<<< HEAD
   # Keep at most one consecutive blank line; disallow trailing blank lines
+=======
+  # Keep at most one consecutive blank line
+>>>>>>> origin/story/0.9.3-auto-merge
   empty-lines:
     max: 1
     max-start: 0
     max-end: 0
 
+<<<<<<< HEAD
   # No trailing spaces
   trailing-spaces:
     level: error
@@ -51,5 +66,9 @@ rules:
     spaces: 2
     indent-sequences: consistent
     check-multi-line-strings: false
+=======
+  trailing-spaces:
+    level: warning
+>>>>>>> origin/story/0.9.3-auto-merge
 
 

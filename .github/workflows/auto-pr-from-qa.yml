@@ -35,8 +35,12 @@ concurrency:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
+<<<<<<< HEAD
   cancel-in-progress: false
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+  cancel-in-progress: true
+>>>>>>> origin/story/0.9.3-auto-merge
 
 jobs:
   workflow-lint:
@@ -52,15 +56,19 @@ jobs:
         with:
           fetch-depth: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
       - name: Common setup
         uses: ./.github/actions/common-setup
 =======
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+>>>>>>> origin/story/0.9.3-auto-merge
       - name: Install actionlint (pinned)
         run: |
           set -euo pipefail
           VERSION="1.7.1"
           mkdir -p "$HOME/bin"
+<<<<<<< HEAD
 <<<<<<< HEAD
           curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- "${VERSION}" "$HOME/bin"
           echo "$HOME/bin" >> "$GITHUB_PATH"
@@ -70,12 +78,19 @@ jobs:
           actionlint -shellcheck=
 =======
           curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- "v${VERSION}" "$HOME/bin"
+=======
+          curl -sSfL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- "${VERSION}" "$HOME/bin"
+>>>>>>> origin/story/0.9.3-auto-merge
           echo "$HOME/bin" >> "$GITHUB_PATH"
-      - name: Run actionlint
+      - name: Run actionlint (YAML only)
         run: |
           set -euo pipefail
+<<<<<<< HEAD
           actionlint -no-network -shellcheck=
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+          actionlint -shellcheck=
+>>>>>>> origin/story/0.9.3-auto-merge
       - name: Install yamllint (pinned)
         run: |
           set -euo pipefail
@@ -85,6 +100,7 @@ jobs:
           set -euo pipefail
           ~/.local/bin/yamllint --strict .github/workflows
 
+<<<<<<< HEAD
 <<<<<<< HEAD
   preflight-parse:
     name: Preflight Parser
@@ -353,19 +369,38 @@ jobs:
             -d "$PAYLOAD" "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/reviews" | jq '.' || true
 
 
+=======
+  open-pr-and-automerge-reusable:
+    needs: [workflow-lint]
+    if: ${{ vars.AUTO_PR_ENABLED != 'false' }}
+    uses: ./.github/workflows/reusable-auto-pr.yml
+    with:
+      branch: ${{ github.ref_name }}
+      enable_auto_merge: ${{ vars.AUTO_MERGE_ENABLED != 'false' }}
+      auto_approve: ${{ vars.AUTO_APPROVE_ENABLED != 'false' }}
+      dry_run: false
+    secrets: inherit
+>>>>>>> origin/story/0.9.3-auto-merge
   note-auto-pr-disabled:
     needs: [workflow-lint]
     if: ${{ vars.AUTO_PR_ENABLED == 'false' }}
     runs-on: ubuntu-latest
     steps:
+<<<<<<< HEAD
       - name: Flag note: AUTO_PR_ENABLED=false
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+      - name: "Flag note: AUTO_PR_ENABLED=false"
+>>>>>>> origin/story/0.9.3-auto-merge
         shell: bash
         run: |
           set -euo pipefail
           echo "AUTO_PR_ENABLED=false: Open PR and auto-merge steps are disabled by repo variable. No PR will be created or modified by this workflow."
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+=======
+>>>>>>> origin/story/0.9.3-auto-merge
