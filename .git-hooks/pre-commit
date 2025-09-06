@@ -7,6 +7,11 @@ cd "$REPO_ROOT"
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "[pre-commit] branch: $CURRENT_BRANCH"
 
+# Clean AppleDouble artifacts proactively to avoid local flakiness
+if [[ -x scripts/clean-appledouble.sh ]]; then
+  scripts/clean-appledouble.sh >/dev/null || true
+fi
+
 # If on story branch, run formatter (write mode) to minimize CI churn
 if [[ "$CURRENT_BRANCH" =~ ^story/ ]]; then
   APP_DIR="crypto_market/crypto_market"
@@ -75,5 +80,4 @@ if [[ -n "$CHANGED_YAML" ]]; then
 fi
 
 echo "[pre-commit] OK"
-
 
