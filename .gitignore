@@ -2,3 +2,8 @@
 # Editor/IDE history
 .history/
 node_modules/**/node_modules/
+
+# macOS metadata
+.DS_Store
+**/.DS_Store
+**/._*
