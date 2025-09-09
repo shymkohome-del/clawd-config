@@ -47,10 +47,10 @@ void main() {
     await tester.pumpWidget(
       RepositoryProvider<MarketServiceProvider>.value(
         value: service,
-        child: MaterialApp(
+        child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const EditListingScreen(
+          home: EditListingScreen(
             listingId: '1',
             initialTitle: 'Old',
             initialPrice: 10,

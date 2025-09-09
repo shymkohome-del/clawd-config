@@ -115,8 +115,8 @@ class TestAppWrapper extends StatelessWidget {
         password: any(named: 'password'),
       ),
     ).thenAnswer(
-      (_) async => Result.ok(
-        const User(
+      (_) async => const Result.ok(
+        User(
           id: 'test-user-id',
           email: 'test@example.com',
           username: 'testuser',
@@ -133,8 +133,8 @@ class TestAppWrapper extends StatelessWidget {
         username: any(named: 'username'),
       ),
     ).thenAnswer(
-      (_) async => Result.ok(
-        const User(
+      (_) async => const Result.ok(
+        User(
           id: 'test-user-id',
           email: 'test@example.com',
           username: 'testuser',
@@ -150,8 +150,8 @@ class TestAppWrapper extends StatelessWidget {
         token: any(named: 'token'),
       ),
     ).thenAnswer(
-      (_) async => Result.ok(
-        const User(
+      (_) async => const Result.ok(
+        User(
           id: 'test-user-id-oauth',
           email: 'test@gmail.com',
           username: 'testuser',

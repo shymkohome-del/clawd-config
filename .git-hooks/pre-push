@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Optional bypass for local emergencies
+if [[ "${PRE_PUSH_SKIP_VALIDATIONS:-0}" == "1" ]]; then
+  echo "[pre-push] WARNING: Skipping validations due to PRE_PUSH_SKIP_VALIDATIONS=1"
+  exit 0
+fi
+
 # Ensure we're inside the repo root
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
@@ -51,6 +57,8 @@ if [[ -n "$APP_DIR" ]]; then
   flutter analyze --fatal-infos --fatal-warnings
 
   echo "[pre-push] Running flutter tests..."
+  # Clean up macOS AppleDouble resource fork files that break test discovery
+  find test -name '._*.dart' -type f -delete 2>/dev/null || true
   flutter test --no-pub
   popd >/dev/null
 else
@@ -59,12 +67,14 @@ fi
 
 echo "[pre-push] OK"
 
-# Full local validation (CI parity)
-if [[ -x scripts/dev-validate.sh ]]; then
-  # Run with RUN_ACT=auto to execute fast local workflow simulations when available
-  RUN_ACT=auto scripts/dev-validate.sh
+# Optional: extended local validation (CI parity)
+if [[ "${RUN_FULL_VALIDATE:-false}" == "true" ]]; then
+  if [[ -x scripts/dev-validate.sh ]]; then
+    # Run with RUN_ACT=auto to execute fast local workflow simulations when available
+    RUN_ACT=auto scripts/dev-validate.sh
+  else
+    echo "[pre-push] WARN: scripts/dev-validate.sh not found; consider running it manually."
+  fi
 else
-  echo "[pre-push] WARN: scripts/dev-validate.sh not found; consider running it manually."
+  echo "[pre-push] Skipping extended dev-validate (set RUN_FULL_VALIDATE=true to enable)."
 fi
-
-

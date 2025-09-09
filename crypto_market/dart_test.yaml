@@ -1,0 +1,6 @@
+exclude:
+  # Ignore macOS AppleDouble resource fork artifacts that mirror real tests
+  - "test/**/._*.dart"
+  # Ignore any hidden test files that may appear (leading dot)
+  - "test/**/.*_test.dart"
+

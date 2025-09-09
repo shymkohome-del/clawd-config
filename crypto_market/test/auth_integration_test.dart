@@ -7,7 +7,7 @@ void main() {
     late ICPService icpService;
 
     setUp(() {
-      final config = AppConfig(
+      final config = const AppConfig(
         canisterIdMarketplace: 'local-marketplace-id',
         canisterIdUserManagement: 'local-user-management-id',
         canisterIdAtomicSwap: 'local-atomic-swap-id',
@@ -30,18 +30,20 @@ void main() {
         username: 'testuser',
       );
 
-      // Debug output
-      if (result.isErr) {
-        print('Registration error: ${result.err}');
+      // Fail early with explicit message to avoid eager evaluation of reason
+      if (!result.isOk) {
+        fail('Registration error: ${result.err}');
       }
-
       expect(result.isOk, isTrue);
       final user = result.ok;
       expect(user.email, equals('test@example.com'));
       expect(user.username, equals('testuser'));
       expect(user.authProvider, equals('email'));
       expect(user.id, isNotEmpty);
-      expect(user.id, isNot(equals(''))); // Should not be empty with blockchain integration
+      expect(
+        user.id,
+        isNot(equals('')),
+      ); // Should not be empty with blockchain integration
     });
 
     test('should login user with blockchain integration', () async {
@@ -55,7 +57,10 @@ void main() {
       expect(user.email, equals('test@example.com'));
       expect(user.authProvider, equals('email'));
       expect(user.id, isNotEmpty);
-      expect(user.id, isNot(equals(''))); // Should not be empty with blockchain integration
+      expect(
+        user.id,
+        isNot(equals('')),
+      ); // Should not be empty with blockchain integration
     });
 
     test('should handle oauth login with blockchain integration', () async {
@@ -68,7 +73,10 @@ void main() {
       final user = result.ok;
       expect(user.authProvider, equals('google'));
       expect(user.id, isNotEmpty);
-      expect(user.id, isNot(equals(''))); // Should not be empty with blockchain integration
+      expect(
+        user.id,
+        isNot(equals('')),
+      ); // Should not be empty with blockchain integration
     });
 
     test('should reject invalid oauth provider', () async {

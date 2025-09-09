@@ -83,7 +83,7 @@ void main() {
         operation: 'login',
         currentCount: 6,
         limit: 5,
-        timeWindow: Duration(minutes: 1),
+        timeWindow: const Duration(minutes: 1),
       );
 
       expect(event.type, equals(SecurityEventType.rateLimitViolation));
@@ -108,7 +108,7 @@ void main() {
     });
 
     test('should create session expiration event', () {
-      final expirationTime = DateTime.now().add(Duration(hours: 1));
+      final expirationTime = DateTime.now().add(const Duration(hours: 1));
       final event = SecurityEvent.sessionExpired(
         principalId: 'user123',
         expirationTime: expirationTime,
@@ -152,7 +152,8 @@ void main() {
       expect(json['principalId'], equals('user123'));
       expect(json['userEmail'], equals('test@example.com'));
       expect(json['timestamp'], isA<String>());
-      expect(json['metadata']['source'], equals('mobile'));
+      final metadata = json['metadata'] as Map<String, dynamic>;
+      expect(metadata['source'], equals('mobile'));
     });
 
     test('should convert to log string correctly', () {
@@ -265,7 +266,7 @@ void main() {
         operation: 'login',
         currentCount: 6,
         limit: 5,
-        timeWindow: Duration(minutes: 1),
+        timeWindow: const Duration(minutes: 1),
       );
 
       final events = securityLogger.getRecentEvents();
@@ -286,7 +287,7 @@ void main() {
     });
 
     test('should log session expiration', () {
-      final expirationTime = DateTime.now().add(Duration(hours: 1));
+      final expirationTime = DateTime.now().add(const Duration(hours: 1));
       securityLogger.logSessionExpired(
         principalId: 'user123',
         expirationTime: expirationTime,

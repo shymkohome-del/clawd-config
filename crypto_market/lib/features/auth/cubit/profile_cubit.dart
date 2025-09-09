@@ -34,7 +34,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     File? profileImage,
   }) async {
     if (state is! ProfileLoaded) {
-      emit(ProfileError(AuthError.unknown));
+      emit(const ProfileError(AuthError.unknown));
       return;
     }
 
@@ -93,7 +93,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     required Uint8List imageData,
   }) async {
     if (state is! ProfileLoaded) {
-      emit(ProfileError(AuthError.unknown));
+      emit(const ProfileError(AuthError.unknown));
       return;
     }
 

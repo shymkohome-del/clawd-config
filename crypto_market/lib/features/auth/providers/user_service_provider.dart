@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:crypto_market/core/blockchain/errors.dart';
 import 'package:crypto_market/features/auth/models/user_profile.dart';
+import 'package:crypto_market/core/blockchain/icp_service.dart' show ICPService;
 
 /// Service for user profile operations
 abstract class UserService {
@@ -29,7 +30,7 @@ abstract class UserService {
 
 /// Implementation of UserService using ICP service layer
 class UserServiceProvider implements UserService {
-  final dynamic icpService; // ICPService dependency
+  final ICPService icpService; // ICPService dependency
 
   const UserServiceProvider(this.icpService);
 
@@ -45,7 +46,7 @@ class UserServiceProvider implements UserService {
         return Result.err(result.err);
       }
 
-      final profileData = result.ok as Map<String, dynamic>;
+      final Map<String, dynamic> profileData = result.ok;
 
       // Mock profile data for now - replace with actual canister response parsing
       final profile = UserProfile(
@@ -75,7 +76,7 @@ class UserServiceProvider implements UserService {
       // TODO: Replace with actual canister call
       // Validate inputs
       if (updates.username != null && updates.username!.trim().isEmpty) {
-        return Result.err(AuthError.invalidCredentials);
+        return const Result.err(AuthError.invalidCredentials);
       }
 
       // Simulate canister call
@@ -108,7 +109,7 @@ class UserServiceProvider implements UserService {
       // TODO: Replace with actual canister call
       // This would typically be called by system/admin operations
       await Future.delayed(const Duration(milliseconds: 50));
-      return Result.ok(null);
+      return const Result.ok(null);
     } catch (e) {
       return Result.err(mapAuthExceptionToAuthError(e));
     }
@@ -128,7 +129,7 @@ class UserServiceProvider implements UserService {
           'Qm${DateTime.now().millisecondsSinceEpoch.toRadixString(16)}';
       return Result.ok(hash);
     } catch (e) {
-      return Result.err(AuthError.network);
+      return const Result.err(AuthError.network);
     }
   }
 
@@ -140,7 +141,7 @@ class UserServiceProvider implements UserService {
       final bytes = await imageFile.readAsBytes();
       return uploadImageToIPFS(bytes);
     } catch (e) {
-      return Result.err(AuthError.network);
+      return const Result.err(AuthError.network);
     }
   }
 }
@@ -193,7 +194,7 @@ class MockUserService implements UserService {
     int reputationChange,
   ) async {
     await Future.delayed(const Duration(milliseconds: 50));
-    return Result.ok(null);
+    return const Result.ok(null);
   }
 
   @override

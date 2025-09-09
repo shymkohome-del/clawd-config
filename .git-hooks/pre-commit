@@ -7,6 +7,22 @@ cd "$REPO_ROOT"
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 echo "[pre-commit] branch: $CURRENT_BRANCH"
 
+# Clean AppleDouble artifacts proactively to avoid local flakiness
+if [[ -x scripts/clean-appledouble.sh ]]; then
+  scripts/clean-appledouble.sh >/dev/null || true
+fi
+
+# Block committing AppleDouble artifacts if any slipped into the index
+STAGED=$(git diff --cached --name-only --diff-filter=ACM | grep -E '(^|/)\._' || true)
+if [[ -n "$STAGED" ]]; then
+  echo "[pre-commit] ERROR: AppleDouble files detected in staging. They cannot be committed." >&2
+  echo "$STAGED" | sed 's/^/  /'
+  # Unstage them to be safe
+  # shellcheck disable=SC2086
+  git restore --staged $STAGED || true
+  exit 1
+fi
+
 # If on story branch, run formatter (write mode) to minimize CI churn
 if [[ "$CURRENT_BRANCH" =~ ^story/ ]]; then
   APP_DIR="crypto_market/crypto_market"
@@ -75,5 +91,3 @@ if [[ -n "$CHANGED_YAML" ]]; then
 fi
 
 echo "[pre-commit] OK"
-
-

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ### PR Title
 
 - Include a story reference in the title or body: e.g., `story 0.9.3`, `story-0.9.3`, `story/0.9.3`, or `story: 0.9.3`.
@@ -27,6 +28,11 @@
 ## PR Title
 
 Use a descriptive title. For story branches, prefer: `Story <id>: <short summary>` (e.g., `Story 1.2: login form validation`). Include a story reference in title or body (e.g., `story 1.2`).
+=======
+## PR Title
+
+Use a descriptive title. For story branches, prefer: `Story <id>: <short summary>` (e.g., `Story 1.2: login form validation`).
+>>>>>>> origin/story/0.9.1-workflow-lint-and-flags
 
 ## Story Reference
 
@@ -44,8 +50,13 @@ Describe what changed and why. Link to docs if relevant.
   - `feature|fix|chore|patch/<slug>` for non-story work
 - [ ] Local gates passed: `dart format`, `flutter analyze --fatal-infos --fatal-warnings`, `flutter test`
 - [ ] Acceptance Criteria implemented; docs updated if needed
+<<<<<<< HEAD
 - [ ] For story branches: story file `docs/stories/<id>.*.md` exists
 - [ ] Label added automatically: `qa:ready` (QA will later apply `qa:approved`)
+=======
+- [ ] For story branches: story file `docs/stories/<id>.*.md` exists and includes `Status: Done`
+- [ ] Labels present (automation adds automatically): `automerge-candidate`, `automerge-ok`
+>>>>>>> origin/story/0.9.1-workflow-lint-and-flags
 
 ## QA Checklist
 
@@ -57,15 +68,23 @@ Describe what changed and why. Link to docs if relevant.
 
 - PRs are created automatically on push (for `feature|fix|chore|patch/*`) and when stories are marked `Status: Done` (for `story/*`).
 - Auto-approve may occur if `AUTO_APPROVE_ENABLED=true`.
+<<<<<<< HEAD
 - Auto-merge is gated by QA applying the `qa:approved` label and all required checks being green.
 - Merge-on-green fallback will squash-merge when above conditions are met.
 - To pause auto-merge, remove the `qa:approved` label or set a repo variable:
+=======
+- Merge-on-green fallback will squash-merge automatically when required checks pass and `AUTO_MERGE_ENABLED=true`.
+- To pause auto-merge, remove the `automerge-ok` label or set a repo variable:
+>>>>>>> origin/story/0.9.1-workflow-lint-and-flags
   - `AUTO_PR_ENABLED=false` (disables PR creation)
   - `AUTO_MERGE_ENABLED=false` (disables auto-merge)
   - `AUTO_APPROVE_ENABLED=false` (disables auto-approval)
 
+<<<<<<< HEAD
 Tip: These variables are repository-level Action variables (Settings → Actions → Variables). If a PR didn’t auto-open/merge, first verify they’re not set to `false`.
 
+=======
+>>>>>>> origin/story/0.9.1-workflow-lint-and-flags
 ## Screenshots / Notes
 
 Add any relevant screenshots or notes for QA.

@@ -96,9 +96,7 @@ class ConfigErrorApp extends StatelessWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Configuration Error'),
-        ),
+        appBar: AppBar(title: const Text('Configuration Error')),
         body: Center(child: Text(message)),
       ),
     );
