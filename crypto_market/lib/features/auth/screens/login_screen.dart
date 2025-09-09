@@ -1,16 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:crypto_market/core/blockchain/errors.dart' as be;
-import 'package:crypto_market/core/error/domain_errors.dart'
-    as de
-    show AuthError, NetworkError;
-import 'package:crypto_market/core/logger/logger.dart';
+import 'package:crypto_market/core/blockchain/errors.dart';
 import 'package:crypto_market/features/auth/cubit/auth_cubit.dart';
 import 'package:crypto_market/l10n/app_localizations.dart';
-import 'package:crypto_market/shared/widgets/error_dialog.dart';
-import 'package:crypto_market/shared/widgets/success_snackbar.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -56,10 +49,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleLogin() {
     if (_formKey.currentState?.validate() == true) {
-      logger.logDebug(
-        'Login pressed for ${_emailController.text.trim()}',
-        tag: 'LoginScreen',
-      );
       context.read<AuthCubit>().loginWithEmailPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text,
@@ -70,7 +59,6 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleOAuth(String provider) {
     // In a real implementation, this would integrate with OAuth providers
     // For demo purposes, we'll simulate with a mock token
-    logger.logDebug('OAuth login pressed for $provider', tag: 'LoginScreen');
     final mockToken =
         '${provider}_mock_token_${DateTime.now().millisecondsSinceEpoch}';
     context.read<AuthCubit>().loginWithOAuth(
@@ -79,33 +67,17 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> _showErrorFor(be.AuthError error) async {
+  String _getErrorMessage(AuthError error) {
+    final l10n = AppLocalizations.of(context);
     switch (error) {
-      case be.AuthError.network:
-        await ErrorDialogHelper.showNetworkError(
-          context,
-          de.NetworkError.requestFailed(),
-        );
-        return;
-      case be.AuthError.invalidCredentials:
-        // Keep legacy text expected by tests for this specific case
-        final l10n = AppLocalizations.of(context);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.errorInvalidCredentials)));
-        return;
-      case be.AuthError.oauthDenied:
-        await ErrorDialogHelper.showAuthError(
-          context,
-          de.AuthError.loginFailed('OAuth sign-in denied'),
-        );
-        return;
-      case be.AuthError.unknown:
-        await ErrorDialogHelper.showAuthError(
-          context,
-          de.AuthError.loginFailed(),
-        );
-        return;
+      case AuthError.invalidCredentials:
+        return l10n.errorInvalidCredentials;
+      case AuthError.oauthDenied:
+        return l10n.errorOAuthDenied;
+      case AuthError.network:
+        return l10n.errorNetwork;
+      case AuthError.unknown:
+        return l10n.errorUnknown;
     }
   }
 
@@ -118,14 +90,15 @@ class _LoginScreenState extends State<LoginScreen> {
       body: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthSuccess) {
-            logger.logInfo('User authenticated', tag: 'LoginScreen');
-            // Optional visual confirmation in dev UX
-            SuccessSnackbar.showAuthSuccess(context);
+            // Navigate to home screen on successful login
             context.go('/home');
           } else if (state is AuthFailure) {
-            logger.logWarn('Login failed: ${state.error}', tag: 'LoginScreen');
-            // Show appropriate error dialog based on failure type
-            unawaited(_showErrorFor(state.error));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(_getErrorMessage(state.error)),
+                backgroundColor: Colors.red,
+              ),
+            );
           }
         },
         child: Padding(
