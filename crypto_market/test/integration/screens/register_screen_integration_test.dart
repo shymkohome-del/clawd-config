@@ -9,10 +9,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        const TestAppWrapper(
-          includeRouter: false,
-          child: RegisterScreen(),
-        ),
+        const TestAppWrapper(includeRouter: false, child: RegisterScreen()),
       );
 
       await tester.pumpAndSettle();
@@ -28,10 +25,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        const TestAppWrapper(
-          includeRouter: false,
-          child: RegisterScreen(),
-        ),
+        const TestAppWrapper(includeRouter: false, child: RegisterScreen()),
       );
 
       await tester.pumpAndSettle();
