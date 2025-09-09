@@ -7,13 +7,12 @@ import 'package:crypto_market/core/blockchain/icp_service.dart';
 import 'package:crypto_market/features/auth/providers/auth_service_provider.dart';
 import 'package:crypto_market/features/market/providers/market_service_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:crypto_market/features/auth/screens/register_screen.dart'
-    as auth_ui;
-import 'package:crypto_market/features/auth/screens/login_screen.dart';
+import 'package:crypto_market/features/auth/models/user_profile.dart';
 import 'package:crypto_market/features/auth/cubit/auth_cubit.dart';
 import 'package:crypto_market/features/auth/cubit/profile_cubit.dart';
 import 'package:crypto_market/features/auth/providers/user_service_provider.dart';
 import 'package:crypto_market/core/i18n/locale_controller.dart';
+import 'package:crypto_market/core/routing/app_router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:crypto_market/core/logger/logger.dart';
@@ -102,7 +101,8 @@ class MyApp extends StatelessWidget {
     return ValueListenableBuilder<Locale?>(
       valueListenable: localeController.listenable,
       builder: (context, locale, _) {
-        return MaterialApp(
+        return MaterialApp.router(
+          routerConfig: AppRouter.router,
           locale: locale,
           onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
           theme: ThemeData(
@@ -110,18 +110,6 @@ class MyApp extends StatelessWidget {
           ),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: BlocBuilder<AuthCubit, AuthState>(
-            builder: (context, state) {
-              if (state is AuthSuccess) {
-                return HomeScreen(user: state.user);
-              }
-              return const LoginScreen();
-            },
-          ),
-          routes: {
-            '/login': (context) => const LoginScreen(),
-            '/register': (context) => const auth_ui.RegisterScreen(),
-          },
         );
       },
     );
@@ -147,7 +135,7 @@ class ConfigErrorApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatelessWidget {
-  final User? user;
+  final UserProfile? user;
 
   const HomeScreen({super.key, this.user});
 
