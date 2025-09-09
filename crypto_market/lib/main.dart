@@ -7,6 +7,7 @@ import 'package:crypto_market/core/blockchain/icp_service.dart';
 import 'package:crypto_market/features/auth/providers/auth_service_provider.dart';
 import 'package:crypto_market/features/market/providers/market_service_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:crypto_market/features/auth/models/user_profile.dart';
 import 'package:crypto_market/features/auth/cubit/auth_cubit.dart';
 import 'package:crypto_market/features/auth/cubit/profile_cubit.dart';
 import 'package:crypto_market/features/auth/providers/user_service_provider.dart';
@@ -128,6 +129,47 @@ class ConfigErrorApp extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(title: const Text('Configuration Error')),
         body: Center(child: Text(message)),
+      ),
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  final UserProfile? user;
+
+  const HomeScreen({super.key, this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.homeTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              context.read<AuthCubit>().logout();
+            },
+          ),
+        ],
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(l10n.homeTitle),
+            if (user != null) ...[
+              const SizedBox(height: 16),
+              Text('${l10n.email}: ${user!.email}'),
+              Text('${l10n.username}: ${user!.username}'),
+              if (user!.id.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Text('Principal: ${user!.id}'),
+              ],
+            ],
+          ],
+        ),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:crypto_market/core/blockchain/icp_service.dart';
 import 'package:crypto_market/core/config/app_config.dart';
@@ -7,7 +8,7 @@ void main() {
     late ICPService icpService;
 
     setUp(() {
-      final config = const AppConfig(
+      const config = AppConfig(
         canisterIdMarketplace: 'local-marketplace-id',
         canisterIdUserManagement: 'local-user-management-id',
         canisterIdAtomicSwap: 'local-atomic-swap-id',
@@ -30,10 +31,11 @@ void main() {
         username: 'testuser',
       );
 
-      // Fail early with explicit message to avoid eager evaluation of reason
-      if (!result.isOk) {
-        fail('Registration error: ${result.err}');
+      // Debug output (avoid print in analyzer)
+      if (result.isErr) {
+        debugPrint('Registration error: ${result.err}');
       }
+
       expect(result.isOk, isTrue);
       final user = result.ok;
       expect(user.email, equals('test@example.com'));
