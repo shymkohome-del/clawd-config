@@ -400,9 +400,10 @@ class BlockchainService {
 
       final prices = <String, Map<String, dynamic>>{};
       if (result['prices'] != null) {
-        for (final entry in result['prices'] as List) {
-          final symbol = entry[0] as String;
-          final data = entry[1] as Map<String, dynamic>;
+        for (final entry in (result['prices'] as List<dynamic>)) {
+          final pair = entry as List<dynamic>;
+          final symbol = pair[0] as String;
+          final data = Map<String, dynamic>.from(pair[1] as Map);
           prices[symbol] = data;
         }
       }

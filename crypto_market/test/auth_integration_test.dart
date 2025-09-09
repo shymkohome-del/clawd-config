@@ -7,7 +7,7 @@ void main() {
     late ICPService icpService;
 
     setUp(() {
-      final config = AppConfig(
+      final config = const AppConfig(
         canisterIdMarketplace: 'local-marketplace-id',
         canisterIdUserManagement: 'local-user-management-id',
         canisterIdAtomicSwap: 'local-atomic-swap-id',
@@ -30,12 +30,8 @@ void main() {
         username: 'testuser',
       );
 
-      // Debug output
-      if (result.isErr) {
-        print('Registration error: ${result.err}');
-      }
-
-      expect(result.isOk, isTrue);
+      // Assert with reason instead of printing
+      expect(result.isOk, isTrue, reason: 'Registration error: ${result.err}');
       final user = result.ok;
       expect(user.email, equals('test@example.com'));
       expect(user.username, equals('testuser'));
