@@ -19,22 +19,16 @@ story_file=""
 
 if [[ "$BRANCH" =~ ^story/([0-9]+(\.[0-9]+)*)- ]]; then
   story_id="${BASH_REMATCH[1]}"
-<<<<<<< HEAD
   # Extract the slug part after the story ID
   slug_part=${BRANCH#story/${story_id}-}
-  
+
   # First try to find exact match with slug
   story_file=$(find docs/stories -maxdepth 1 -type f -name "${story_id}.${slug_part}.md" 2>/dev/null | head -n1 || true)
-  
+
   # If no exact match, try pattern matching but prefer longer matches (epics over individual stories)
   if [[ -z "${story_file:-}" ]]; then
     story_file=$(find docs/stories -maxdepth 1 -type f -name "${story_id}.*.md" 2>/dev/null | sort -r | head -n1 || true)
   fi
-  
-=======
-  # find story file by id prefix
-  story_file=$(ls docs/stories/${story_id}.*.md 2>/dev/null | head -n1 || true)
->>>>>>> origin/story/0.9.3-auto-merge
   if [[ -z "${story_file:-}" ]]; then
     reason="story-file-missing"
   else
@@ -59,6 +53,5 @@ echo "reason=${reason}"
 if [[ "$qa_done" != "true" ]]; then
   echo "[preflight] Not eligible for auto PR: reason=${reason}" >&2
 fi
-
 
 
