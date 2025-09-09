@@ -14,11 +14,41 @@ import 'package:crypto_market/core/i18n/locale_controller.dart';
 import 'package:crypto_market/core/routing/app_router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:crypto_market/core/logger/logger.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+  // Initialize app logger early
+  await logger.initialize(
+    minLevel: kDebugMode ? LogLevel.debug : LogLevel.info,
+    enableFileLogging: true,
+  );
+
+  // Capture Flutter framework errors: Crashlytics + internal logger
+  FlutterError.onError = (FlutterErrorDetails details) {
+    // Forward to default presenter in debug for visibility
+    FlutterError.presentError(details);
+    FirebaseCrashlytics.instance.recordFlutterError(details);
+    logger.logError(
+      'FlutterError: ${details.exceptionAsString()}',
+      tag: 'FlutterError',
+      error: details.exception,
+      stackTrace: details.stack,
+    );
+  };
+
+  // Capture uncaught async errors at the engine boundary
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    logger.logError(
+      'Uncaught async error',
+      tag: 'Zone',
+      error: error,
+      stackTrace: stack,
+    );
+    return true; // handled
+  };
   try {
     // Load configuration with development defaults in debug mode
     final config = kDebugMode ? DevelopmentConfig.load() : AppConfig.load();

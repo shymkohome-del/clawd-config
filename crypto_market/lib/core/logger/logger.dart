@@ -50,20 +50,25 @@ class Logger {
 
     if (_fileLoggingEnabled) {
       try {
-        // Honor debug log path from core-config (.ai/debug-log.md)
-        final Directory appDir = await getApplicationDocumentsDirectory();
-        _debugLogPath = '${appDir.parent.path}/.ai/debug-log.md';
-
-        // Ensure the .ai directory exists
-        final debugDir = Directory('${appDir.parent.path}/.ai');
-        if (!await debugDir.exists()) {
-          await debugDir.create(recursive: true);
-        }
-
-        // Initialize debug log file if it doesn't exist
-        final debugFile = File(_debugLogPath!);
-        if (!await debugFile.exists()) {
-          await debugFile.writeAsString('# Debug Log\n\n');
+        // Primary: honor devDebugLog from core-config (repo-relative path)
+        // Default configured path is .ai/debug-log.md at repo root
+        const repoRelativePath = '.ai/debug-log.md';
+        final repoDir = Directory('.ai');
+        if (await repoDir.exists()) {
+          _debugLogPath = repoRelativePath;
+          final debugFile = File(_debugLogPath!);
+          if (!await debugFile.exists()) {
+            await debugFile.create(recursive: true);
+            await debugFile.writeAsString('# Debug Log\n\n');
+          }
+        } else {
+          // Fallback: use app documents directory to keep dev logs accessible
+          final Directory appDir = await getApplicationDocumentsDirectory();
+          _debugLogPath = '${appDir.path}/debug-log.md';
+          final debugFile = File(_debugLogPath!);
+          if (!await debugFile.exists()) {
+            await debugFile.writeAsString('# Debug Log\n\n');
+          }
         }
       } catch (e) {
         // If file logging fails, continue with console-only logging
