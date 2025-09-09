@@ -32,8 +32,10 @@ class DioClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          _logger.logInfo('Request: ${options.method} ${options.path}',
-              tag: 'DioClient');
+          _logger.logInfo(
+            'Request: ${options.method} ${options.path}',
+            tag: 'DioClient',
+          );
           return handler.next(options);
         },
         onResponse: (response, handler) {

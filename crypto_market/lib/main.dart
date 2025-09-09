@@ -41,7 +41,12 @@ Future<void> main() async {
   // Capture uncaught async errors at the engine boundary
   PlatformDispatcher.instance.onError = (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    logger.logError('Uncaught async error', tag: 'Zone', error: error, stackTrace: stack);
+    logger.logError(
+      'Uncaught async error',
+      tag: 'Zone',
+      error: error,
+      stackTrace: stack,
+    );
     return true; // handled
   };
   try {
