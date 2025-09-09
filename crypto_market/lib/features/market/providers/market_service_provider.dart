@@ -10,7 +10,6 @@ class MarketServiceProvider {
 
   MarketServiceProvider(this.icpService) {
     _blockchainService = BlockchainService(
-      config: icpService.config,
       dio: Dio(),
       logger: logger,
     );

@@ -929,9 +929,9 @@ jobs:
 
           FILES=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
             "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/files?per_page=100" 2>/dev/null || echo '[]')
-          CHANGED_COUNT=$(echo "$FILES" | jq 'if type == "array" then length else 0 end' 2>/dev/null || echo '0')
+          CHANGED_COUNT=$(echo "$FILES" | jq -r 'if type == "array" then length else 0 end' 2>/dev/null || echo '0')
           SUMMARY_FILES=$(echo "$FILES" | jq -r \
-            'if type == "array" then .[0:20] | map("- " + .filename + " (" + (.changes|tostring) + " lines)") | join("\n")
+            'if type == "array" then (.[0:20] // []) | map("- " + .filename + " (" + (.changes|tostring) + " lines)") | join("\n")
              else "Files list unavailable" end' 2>/dev/null || echo "Files list unavailable")
 
           READY="No"
@@ -1068,7 +1068,7 @@ jobs:
             "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/files?per_page=100" 2>/dev/null || echo '[]')
           CHANGED_COUNT=$(echo "$FILES" | jq 'if type == "array" then length else 0 end' 2>/dev/null || echo '0')
           SUMMARY_FILES=$(echo "$FILES" | jq -r \
-            'if type == "array" then .[0:20] | map("- " + .filename + " (" + (.changes|tostring) + " lines)") | join("\n")
+            'if type == "array" then (.[0:20] // []) | map("- " + .filename + " (" + (.changes|tostring) + " lines)") | join("\n")
              else "Files list unavailable" end' 2>/dev/null || echo "Files list unavailable")
 
           # Merge readiness evaluation

@@ -137,7 +137,7 @@ jobs:
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
         id: find_pr
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -210,7 +210,7 @@ jobs:
 >>>>>>> origin/story/0.9.1-workflow-lint-and-flags
         id: gate
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -259,7 +259,7 @@ jobs:
         id: update_branch
         if: steps.gate.outputs.proceed == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -341,7 +341,7 @@ jobs:
       - name: Auto-update PR branch if behind
         id: update_branch
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -540,7 +540,7 @@ jobs:
         if: steps.wait_checks.outputs.checks_ok == 'true' && steps.gate.outputs.auto_merge_enabled != 'true'
 >>>>>>> origin/story/0.9.3-auto-merge
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.AUTO_PR_TOKEN || secrets.BOT_PAT || secrets.REPO_SCOPED_TOKEN || secrets.REPO_ADMIN_TOKEN || secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail

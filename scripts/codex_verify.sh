@@ -71,4 +71,3 @@ if [[ "$CODEX_SETUP_RUST" == "true" ]]; then
 fi
 
 exit $status
-

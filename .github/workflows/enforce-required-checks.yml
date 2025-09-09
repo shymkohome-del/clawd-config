@@ -1,5 +1,8 @@
 name: Enforce Required Checks (Workflow Lint)
 
+env:
+  REQUIRED_CONTEXTS_BASE: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
+
 on:
   workflow_dispatch:
   push:
@@ -8,29 +11,16 @@ on:
       - ".github/workflows/enforce-required-checks.yml"
       - ".github/workflows/auto-pr-from-qa.yml"
   schedule:
-<<<<<<< HEAD
-<<<<<<< HEAD
     - cron: "0 6 * * 1"  # Weekly on Mondays 06:00 UTC
-=======
-    - cron: "0 6 * * 1" # Weekly on Mondays 06:00 UTC
->>>>>>> origin/story/0.9.1-workflow-lint-and-flags
-=======
-    - cron: "0 6 * * 1"  # Weekly on Mondays 06:00 UTC
->>>>>>> origin/story/0.9.3-auto-merge
 
 permissions:
   contents: read
-
 jobs:
   enforce:
     runs-on: ubuntu-latest
     env:
       OWNER: ${{ github.repository_owner }}
       REPO: ${{ github.event.repository.name || github.repository }}
-<<<<<<< HEAD
-<<<<<<< HEAD
-      REQUIRED_CONTEXTS_MAIN: '["Main Release Gate / main-release-gate","Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
-      REQUIRED_CONTEXTS_DEVELOP: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,33 +28,29 @@ jobs:
           fetch-depth: 0
       - name: Common setup
         uses: ./.github/actions/common-setup
-=======
-      REQUIRED_CONTEXTS: '["Workflow Lint / lint","Auto PR and Auto-merge on QA Done / Workflow Lint"]'
-=======
-      REQUIRED_CONTEXTS: '["Workflow Lint / lint","Flutter CI / build-and-test","PR Lint / pr-lint","Auto PR and Auto-merge on QA Done / Workflow Lint"]'
->>>>>>> origin/story/0.9.3-auto-merge
-    steps:
->>>>>>> origin/story/0.9.1-workflow-lint-and-flags
-      - name: Show context
-        shell: bash
-        run: |
-          set -euo pipefail
-<<<<<<< HEAD
-          echo "Repo: ${GITHUB_REPOSITORY}"
-          echo "Owner: ${OWNER}"
-          echo "Required contexts (main): ${REQUIRED_CONTEXTS_MAIN}"
-          echo "Required contexts (develop): ${REQUIRED_CONTEXTS_DEVELOP}"
 
       - name: Install jq
         run: |
           set -euo pipefail
           sudo apt-get update -y
           sudo apt-get install -y jq
-=======
-          echo "Repo: $GITHUB_REPOSITORY"
-          echo "Owner: $OWNER"
-          echo "Required contexts: $REQUIRED_CONTEXTS"
->>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+
+      - name: Set required contexts
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "REQUIRED_CONTEXTS_MAIN=$(jq -nc --argjson base "$REQUIRED_CONTEXTS_BASE" '$base + ["Main Release Gate / main-release-gate"]')" >> "$GITHUB_ENV"
+          echo "REQUIRED_CONTEXTS_DEVELOP=$REQUIRED_CONTEXTS_BASE" >> "$GITHUB_ENV"
+
+      - name: Show context
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Repo: ${GITHUB_REPOSITORY}"
+          echo "Owner: ${OWNER}"
+          REQUIRED_CONTEXTS_MAIN=$(jq -nc --argjson base "$REQUIRED_CONTEXTS_BASE" '$base + ["Main Release Gate / main-release-gate"]')
+          echo "Required contexts (main): ${REQUIRED_CONTEXTS_MAIN}"
+          echo "Required contexts (develop): ${REQUIRED_CONTEXTS_BASE}"
 
       - name: Verify admin token presence
         id: token
@@ -73,15 +59,7 @@ jobs:
           set -euo pipefail
           if [[ -z "${{ secrets.REPO_ADMIN_TOKEN || '' }}" ]]; then
             echo "has_token=false" >> "$GITHUB_OUTPUT"
-<<<<<<< HEAD
-<<<<<<< HEAD
             echo "No REPO_ADMIN_TOKEN secret present. Will skip enforcement and only emit guidance."
-=======
-            echo "No REPO_ADMIN_TOKEN secret present. Will skip enforcement and only emit guidance." 
->>>>>>> origin/story/0.9.1-workflow-lint-and-flags
-=======
-            echo "No REPO_ADMIN_TOKEN secret present. Will skip enforcement and only emit guidance."
->>>>>>> origin/story/0.9.3-auto-merge
           else
             echo "has_token=true" >> "$GITHUB_OUTPUT"
           fi
@@ -99,16 +77,11 @@ jobs:
           echo "- Re-run this workflow (workflow_dispatch)"
           echo
           echo "This will configure branch protection to require these status checks on main/develop:"
-<<<<<<< HEAD
           echo "- Main Release Gate / main-release-gate (main only)"
           echo "- Workflow Lint / lint"
           echo "- PR Lint / pr-lint"
           echo "- Flutter CI / build-and-test"
           echo "- QA Gate / qa-approved"
-=======
-          echo "- Workflow Lint / lint"
-          echo "- Auto PR and Auto-merge on QA Done / Workflow Lint"
->>>>>>> origin/story/0.9.1-workflow-lint-and-flags
 
       - name: Enforce required checks for branches
         if: steps.token.outputs.has_token == 'true'
@@ -125,21 +98,12 @@ jobs:
           else
             REPO_NAME="$REPO"
           fi
-<<<<<<< HEAD
+
           enforce_for_branch() {
             local BRANCH="$1"
             local REQUIRED_CONTEXTS_JSON="$2"
             echo ""
             echo ">>> Enforcing required checks on branch: ${BRANCH}"
-=======
-
-          # Required contexts JSON array from env (must be valid JSON)
-          REQUIRED_CONTEXTS_JSON="${REQUIRED_CONTEXTS}"
-
-          enforce_for_branch() {
-            local BRANCH="$1"
-            echo "\n>>> Enforcing required checks on branch: $BRANCH"
->>>>>>> origin/story/0.9.1-workflow-lint-and-flags
 
             # Fetch existing protection (if any)
             PROTECTION=$(curl -sS -H "authorization: Bearer ${TOKEN}" -H "accept: application/vnd.github+json" \
@@ -148,14 +112,8 @@ jobs:
             # Extract current contexts if present; default to empty array
             CURRENT_CONTEXTS=$(printf '%s' "$PROTECTION" | jq -c '.required_status_checks.contexts // []')
 
-<<<<<<< HEAD
             # Replace existing contexts with the required set (prune legacy names)
             UPDATED_CONTEXTS=$(jq -nc --argjson req "$REQUIRED_CONTEXTS_JSON" '$req')
-=======
-            # Merge contexts with all required contexts, unique
-            UPDATED_CONTEXTS=$(jq -nc --argjson ctxs "$CURRENT_CONTEXTS" --argjson req "$REQUIRED_CONTEXTS_JSON" '
-              ($ctxs + $req) | unique')
->>>>>>> origin/story/0.9.1-workflow-lint-and-flags
 
             # Build payload: preserve strict=true, set contexts; keep other settings permissive
             PAYLOAD=$(jq -nc --argjson contexts "$UPDATED_CONTEXTS" '{
@@ -182,13 +140,9 @@ jobs:
             echo "✓ Required contexts enforced on $BRANCH"
           }
 
-<<<<<<< HEAD
+          REQUIRED_CONTEXTS_MAIN=$(jq -nc --argjson base "$REQUIRED_CONTEXTS_BASE" '$base + ["Main Release Gate / main-release-gate"]')
           enforce_for_branch main "$REQUIRED_CONTEXTS_MAIN" || true
-          enforce_for_branch develop "$REQUIRED_CONTEXTS_DEVELOP" || true
-=======
-          enforce_for_branch main || true
-          enforce_for_branch develop || true
->>>>>>> origin/story/0.9.1-workflow-lint-and-flags
+          enforce_for_branch develop "$REQUIRED_CONTEXTS_BASE" || true
 
       - name: Summary
         if: always()
@@ -196,9 +150,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Enforcement job finished. See logs above for branch results."
-<<<<<<< HEAD
 
-<<<<<<< HEAD
   report-pr-required-checks:
     name: Report PR required checks
     needs: [enforce]
@@ -208,8 +160,6 @@ jobs:
       contents: read
       pull-requests: write
       checks: read
-    env:
-      REQUIRED_CONTEXTS: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
     steps:
       - name: Install jq
         run: |
@@ -249,7 +199,7 @@ jobs:
           API="https://api.github.com"
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
-          REQUIRED_CONTEXTS_JSON='${REQUIRED_CONTEXTS}'
+          REQUIRED_CONTEXTS_JSON="$REQUIRED_CONTEXTS_BASE"
           echo "$PRS_JSON" | jq -r '.[] | @base64' | while read -r row; do
             _jq() { echo "$row" | base64 --decode | jq -r "$1"; }
             PR=$(_jq '.number'); SHA=$(_jq '.sha')
@@ -292,8 +242,3 @@ jobs:
           set -euo pipefail
           echo "### Required checks report" >> $GITHUB_STEP_SUMMARY
           echo "- Processed PRs: $(echo '${{ steps.list.outputs.result || '[]' }}' | jq 'length')" >> $GITHUB_STEP_SUMMARY
-=======
-
->>>>>>> origin/story/0.9.1-workflow-lint-and-flags
-=======
->>>>>>> origin/story/0.9.3-auto-merge

@@ -1,0 +1,40 @@
+#!/bin/bash
+# Pre-push hook to enforce local quality gates before pushing
+# Install via ./scripts/install-git-hooks.sh
+
+set -euo pipefail
+
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+cd "$REPO_ROOT"
+
+echo "[pre-push] Running local quality gates via scripts/dev-validate.sh..."
+
+if [[ "${PRE_PUSH_SKIP_VALIDATIONS:-0}" == "1" ]]; then
+  echo "[pre-push] WARNING: Skipping validations due to PRE_PUSH_SKIP_VALIDATIONS=1 (override)."
+  exit 0
+fi
+
+if [[ ! -x "scripts/dev-validate.sh" ]]; then
+  if [[ -f "scripts/dev-validate.sh" ]]; then
+    chmod +x scripts/dev-validate.sh || true
+  else
+    echo "[pre-push] ERROR: scripts/dev-validate.sh not found. Cannot validate. Push blocked."
+    echo "[pre-push] Hint: restore the script or ask a maintainer."
+    exit 1
+  fi
+fi
+
+set +e
+scripts/dev-validate.sh
+STATUS=$?
+set -e
+
+if [[ $STATUS -ne 0 ]]; then
+  echo "[pre-push] ❌ Quality gates FAILED (exit $STATUS). Push blocked."
+  echo "[pre-push] Fix issues reported above, then push again."
+  echo "[pre-push] Temporary override (not recommended): PRE_PUSH_SKIP_VALIDATIONS=1 git push"
+  exit $STATUS
+fi
+
+echo "[pre-push] ✅ Quality gates passed. Proceeding with push."
+exit 0

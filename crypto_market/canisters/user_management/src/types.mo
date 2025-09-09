@@ -19,4 +19,11 @@ module {
   public type OAuthProvider = { #google; #apple; #github; #facebook };
 
   public type LoginResult = { #ok : User; #err : Text };
+
+  public type Result = { #ok : (); #err : Text };
+
+  public type UserUpdate = {
+    username : ?Text;
+    profileImage : ?Text;
+  };
 }

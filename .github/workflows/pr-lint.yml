@@ -80,8 +80,11 @@ jobs:
             REPO="${GITHUB_REPOSITORY#*/}"
             API="https://api.github.com"
             # List stories directory at the PR HEAD commit
-            CONTENTS=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+            RAW=$(bash scripts/retry.sh 5 2 -- curl -i -sS \
+              -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
+              -w "HTTPSTATUS:%{http_code}" \
               "${API}/repos/${OWNER}/${REPO}/contents/docs/stories?ref=${{ github.event.pull_request.head.sha }}")
+            CONTENTS=$(printf '%s' "$RAW" | sed -n '/^\r\?$/,$p' | sed 's/HTTPSTATUS:[0-9][0-9][0-9]$//')
             MATCH=$(echo "$CONTENTS" | jq -r --arg id "$STORY_ID" '.[] | select(.type=="file") | .name | select(startswith($id + "."))' | head -n1 || true)
             if [[ -z "${MATCH:-}" ]]; then
               echo "::error::Missing docs/stories/${STORY_ID}.*.md for branch ${HEAD_REF}"
