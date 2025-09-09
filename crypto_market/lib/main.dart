@@ -121,7 +121,6 @@ class MyApp extends StatelessWidget {
           routes: {
             '/login': (context) => const LoginScreen(),
             '/register': (context) => const auth_ui.RegisterScreen(),
-            '/home': (context) => const HomeScreen(),
           },
         );
       },
