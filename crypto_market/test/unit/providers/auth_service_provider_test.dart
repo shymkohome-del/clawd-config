@@ -216,7 +216,7 @@ void main() {
             email: any(named: 'email'),
             password: any(named: 'password'),
           ),
-        ).thenAnswer((_) async => Result.ok(testUser));
+        ).thenAnswer((_) async => const Result.ok(testUser));
 
         await authService.loginWithEmailPassword(
           email: 'test@example.com',
@@ -258,7 +258,7 @@ void main() {
             email: any(named: 'email'),
             password: any(named: 'password'),
           ),
-        ).thenAnswer((_) async => Result.ok(testUser));
+        ).thenAnswer((_) async => const Result.ok(testUser));
 
         await authService.loginWithEmailPassword(
           email: 'test@example.com',
