@@ -48,7 +48,7 @@ class _MockAuthService implements AuthService {
     if (provider == 'unknown') {
       return const Result.err(AuthError.unknown);
     }
-    
+
     return Result.ok(
       User(
         id: 'oauth-principal-mock',

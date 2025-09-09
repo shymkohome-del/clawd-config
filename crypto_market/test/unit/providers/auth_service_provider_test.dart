@@ -7,7 +7,6 @@ import 'package:crypto_market/core/blockchain/icp_service.dart';
 import 'package:crypto_market/core/auth/auth_guard.dart';
 import 'package:crypto_market/features/auth/providers/auth_service_provider.dart';
 
-
 class MockICPService extends Mock implements ICPService {}
 
 void main() {
@@ -72,11 +71,13 @@ void main() {
 
         final prefs = await SharedPreferences.getInstance();
         final data =
-            jsonDecode(prefs.getString('current_user')!) as Map<String, dynamic>;
+            jsonDecode(prefs.getString('current_user')!)
+                as Map<String, dynamic>;
         final expiry = data['expiry'] as int;
         final minExpected =
             before + SecurityPolicy.sessionTimeout.inMilliseconds;
-        final maxExpected = DateTime.now().millisecondsSinceEpoch +
+        final maxExpected =
+            DateTime.now().millisecondsSinceEpoch +
             SecurityPolicy.sessionTimeout.inMilliseconds;
         expect(expiry, greaterThanOrEqualTo(minExpected));
         expect(expiry, lessThanOrEqualTo(maxExpected));
@@ -264,7 +265,8 @@ void main() {
 
         final prefs = await SharedPreferences.getInstance();
         final data =
-            jsonDecode(prefs.getString('current_user')!) as Map<String, dynamic>;
+            jsonDecode(prefs.getString('current_user')!)
+                as Map<String, dynamic>;
         data['expiry'] = DateTime.now()
             .subtract(const Duration(hours: 1))
             .millisecondsSinceEpoch;

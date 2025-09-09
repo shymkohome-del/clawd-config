@@ -9,11 +9,9 @@ class BlockchainService {
   final Dio _dio;
   final Logger _logger;
 
-  BlockchainService({
-    required Dio dio,
-    required Logger logger,
-  }) : _dio = dio,
-       _logger = logger;
+  BlockchainService({required Dio dio, required Logger logger})
+    : _dio = dio,
+      _logger = logger;
 
   /// Get base canister URL based on network configuration
   String get _baseUrl => CanisterConfig.baseUrl;

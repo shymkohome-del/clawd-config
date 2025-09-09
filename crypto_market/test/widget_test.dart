@@ -12,7 +12,7 @@ import 'test_utils/test_app_wrapper.dart';
 void main() {
   group('Widget Tests', () {
     testWidgets('Base routes are navigable', (WidgetTester tester) async {
-      // Build our app with proper test setup  
+      // Build our app with proper test setup
       await tester.pumpWidget(
         TestAppWrapper(
           includeRouter: false,
@@ -21,10 +21,7 @@ void main() {
             body: const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Welcome to the App'),
-                  Text('Navigation Test'),
-                ],
+                children: [Text('Welcome to the App'), Text('Navigation Test')],
               ),
             ),
           ),
