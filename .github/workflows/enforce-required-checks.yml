@@ -1,5 +1,8 @@
 name: Enforce Required Checks (Workflow Lint)
 
+env:
+  REQUIRED_CONTEXTS_BASE: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
+
 on:
   workflow_dispatch:
   push:
@@ -12,15 +15,12 @@ on:
 
 permissions:
   contents: read
-
 jobs:
   enforce:
     runs-on: ubuntu-latest
     env:
       OWNER: ${{ github.repository_owner }}
       REPO: ${{ github.event.repository.name || github.repository }}
-      REQUIRED_CONTEXTS_MAIN: '["Main Release Gate / main-release-gate","Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
-      REQUIRED_CONTEXTS_DEVELOP: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,20 +28,29 @@ jobs:
           fetch-depth: 0
       - name: Common setup
         uses: ./.github/actions/common-setup
-      - name: Show context
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "Repo: ${GITHUB_REPOSITORY}"
-          echo "Owner: ${OWNER}"
-          echo "Required contexts (main): ${REQUIRED_CONTEXTS_MAIN}"
-          echo "Required contexts (develop): ${REQUIRED_CONTEXTS_DEVELOP}"
 
       - name: Install jq
         run: |
           set -euo pipefail
           sudo apt-get update -y
           sudo apt-get install -y jq
+
+      - name: Set required contexts
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "REQUIRED_CONTEXTS_MAIN=$(jq -nc --argjson base "$REQUIRED_CONTEXTS_BASE" '$base + ["Main Release Gate / main-release-gate"]')" >> "$GITHUB_ENV"
+          echo "REQUIRED_CONTEXTS_DEVELOP=$REQUIRED_CONTEXTS_BASE" >> "$GITHUB_ENV"
+
+      - name: Show context
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Repo: ${GITHUB_REPOSITORY}"
+          echo "Owner: ${OWNER}"
+          REQUIRED_CONTEXTS_MAIN=$(jq -nc --argjson base "$REQUIRED_CONTEXTS_BASE" '$base + ["Main Release Gate / main-release-gate"]')
+          echo "Required contexts (main): ${REQUIRED_CONTEXTS_MAIN}"
+          echo "Required contexts (develop): ${REQUIRED_CONTEXTS_BASE}"
 
       - name: Verify admin token presence
         id: token
@@ -89,6 +98,7 @@ jobs:
           else
             REPO_NAME="$REPO"
           fi
+
           enforce_for_branch() {
             local BRANCH="$1"
             local REQUIRED_CONTEXTS_JSON="$2"
@@ -130,8 +140,9 @@ jobs:
             echo "✓ Required contexts enforced on $BRANCH"
           }
 
+          REQUIRED_CONTEXTS_MAIN=$(jq -nc --argjson base "$REQUIRED_CONTEXTS_BASE" '$base + ["Main Release Gate / main-release-gate"]')
           enforce_for_branch main "$REQUIRED_CONTEXTS_MAIN" || true
-          enforce_for_branch develop "$REQUIRED_CONTEXTS_DEVELOP" || true
+          enforce_for_branch develop "$REQUIRED_CONTEXTS_BASE" || true
 
       - name: Summary
         if: always()
@@ -149,8 +160,6 @@ jobs:
       contents: read
       pull-requests: write
       checks: read
-    env:
-      REQUIRED_CONTEXTS: '["Flutter CI / build-and-test","PR Lint / pr-lint","Workflow Lint / lint","QA Gate / qa-approved"]'
     steps:
       - name: Install jq
         run: |
@@ -190,7 +199,7 @@ jobs:
           API="https://api.github.com"
           OWNER="${GITHUB_REPOSITORY%%/*}"
           REPO="${GITHUB_REPOSITORY#*/}"
-          REQUIRED_CONTEXTS_JSON='${REQUIRED_CONTEXTS}'
+          REQUIRED_CONTEXTS_JSON="$REQUIRED_CONTEXTS_BASE"
           echo "$PRS_JSON" | jq -r '.[] | @base64' | while read -r row; do
             _jq() { echo "$row" | base64 --decode | jq -r "$1"; }
             PR=$(_jq '.number'); SHA=$(_jq '.sha')

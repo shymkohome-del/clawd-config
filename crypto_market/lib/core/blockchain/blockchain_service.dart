@@ -1,38 +1,22 @@
 import 'dart:convert';
-import 'package:crypto_market/core/config/app_config.dart';
+import 'package:crypto_market/core/config/environment_config.dart';
 import 'package:crypto_market/core/logger/logger.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 /// Real blockchain service for ICP canister interactions
 class BlockchainService {
-  final AppConfig _config;
   final Dio _dio;
   final Logger _logger;
 
   BlockchainService({
-    required AppConfig config,
     required Dio dio,
     required Logger logger,
-  }) : _config = config,
-       _dio = dio,
+  }) : _dio = dio,
        _logger = logger;
 
-  /// Check if running in mainnet mode based on canister IDs
-  bool get _isMainnet {
-    // If canister IDs start with a known mainnet pattern or are configured for IC
-    return !_config.canisterIdUserManagement.startsWith('rdmx6') &&
-        !_config.canisterIdUserManagement.startsWith('rrkah');
-  }
-
   /// Get base canister URL based on network configuration
-  String get _baseUrl {
-    if (_isMainnet) {
-      return 'https://ic0.app';
-    } else {
-      return 'http://127.0.0.1:8000';
-    }
-  }
+  String get _baseUrl => CanisterConfig.baseUrl;
 
   /// Generic canister call method
   Future<Map<String, dynamic>> _callCanister({
@@ -101,7 +85,7 @@ class BlockchainService {
     required String username,
   }) async {
     return await _callCanister(
-      canisterId: _config.canisterIdUserManagement,
+      canisterId: CanisterConfig.getCanisterId('user_management'),
       method: 'register',
       args: {'email': email, 'password': password, 'username': username},
     );
@@ -120,7 +104,7 @@ class BlockchainService {
     };
 
     return await _callCanister(
-      canisterId: _config.canisterIdUserManagement,
+      canisterId: CanisterConfig.getCanisterId('user_management'),
       method: 'loginWithOAuth',
       args: {'provider': oauthProvider, 'token': token},
     );
@@ -129,7 +113,7 @@ class BlockchainService {
   Future<Map<String, dynamic>?> getUserProfile(String principalId) async {
     try {
       final result = await _callCanister(
-        canisterId: _config.canisterIdUserManagement,
+        canisterId: CanisterConfig.getCanisterId('user_management'),
         method: 'getUserProfile',
         args: {'user': principalId},
         isQuery: true,
@@ -156,7 +140,7 @@ class BlockchainService {
     required List<String> paymentMethods,
   }) async {
     return await _callCanister(
-      canisterId: _config.canisterIdMarketplace,
+      canisterId: CanisterConfig.getCanisterId('marketplace'),
       method: 'createListing',
       args: {
         'title': title,
@@ -172,7 +156,7 @@ class BlockchainService {
   Future<Map<String, dynamic>?> getListing(String listingId) async {
     try {
       return await _callCanister(
-        canisterId: _config.canisterIdMarketplace,
+        canisterId: CanisterConfig.getCanisterId('marketplace'),
         method: 'getListing',
         args: {'listingId': listingId},
         isQuery: true,
@@ -205,7 +189,7 @@ class BlockchainService {
     if (isActive != null) updateArgs['isActive'] = [isActive];
 
     return await _callCanister(
-      canisterId: _config.canisterIdMarketplace,
+      canisterId: CanisterConfig.getCanisterId('marketplace'),
       method: 'updateListing',
       args: {'listingId': listingId, 'req': updateArgs},
     );
@@ -230,7 +214,7 @@ class BlockchainService {
     if (paymentMethod != null) filters['paymentMethod'] = [paymentMethod];
 
     return await _callCanister(
-      canisterId: _config.canisterIdMarketplace,
+      canisterId: CanisterConfig.getCanisterId('marketplace'),
       method: 'searchListings',
       args: {'filters': filters, 'offset': offset, 'limit': limit},
       isQuery: true,
@@ -240,7 +224,7 @@ class BlockchainService {
   Future<List<Map<String, dynamic>>> getUserListings(String principalId) async {
     try {
       final result = await _callCanister(
-        canisterId: _config.canisterIdMarketplace,
+        canisterId: CanisterConfig.getCanisterId('marketplace'),
         method: 'getUserListings',
         args: {'user': principalId},
         isQuery: true,
@@ -267,7 +251,7 @@ class BlockchainService {
     required int lockTimeHours,
   }) async {
     return await _callCanister(
-      canisterId: _config.canisterIdAtomicSwap,
+      canisterId: CanisterConfig.getCanisterId('atomic_swap'),
       method: 'initiateSwap',
       args: {
         'seller': seller,
@@ -286,7 +270,7 @@ class BlockchainService {
     required int sellerDepositAmount,
   }) async {
     return await _callCanister(
-      canisterId: _config.canisterIdAtomicSwap,
+      canisterId: CanisterConfig.getCanisterId('atomic_swap'),
       method: 'lockFunds',
       args: {
         'swapId': swapId,
@@ -301,7 +285,7 @@ class BlockchainService {
     required Uint8List secret,
   }) async {
     return await _callCanister(
-      canisterId: _config.canisterIdAtomicSwap,
+      canisterId: CanisterConfig.getCanisterId('atomic_swap'),
       method: 'completeSwap',
       args: {'swapId': swapId, 'secret': secret},
     );
@@ -310,7 +294,7 @@ class BlockchainService {
   Future<Map<String, dynamic>?> getSwap(String swapId) async {
     try {
       return await _callCanister(
-        canisterId: _config.canisterIdAtomicSwap,
+        canisterId: CanisterConfig.getCanisterId('atomic_swap'),
         method: 'getSwap',
         args: {'swapId': swapId},
         isQuery: true,
@@ -328,7 +312,7 @@ class BlockchainService {
   Future<List<Map<String, dynamic>>> getUserSwaps(String principalId) async {
     try {
       final result = await _callCanister(
-        canisterId: _config.canisterIdAtomicSwap,
+        canisterId: CanisterConfig.getCanisterId('atomic_swap'),
         method: 'getUserSwaps',
         args: {'user': principalId},
         isQuery: true,
@@ -349,7 +333,7 @@ class BlockchainService {
   Future<Map<String, dynamic>?> getPrice(String symbol) async {
     try {
       return await _callCanister(
-        canisterId: _config.canisterIdPriceOracle,
+        canisterId: CanisterConfig.getCanisterId('price_oracle'),
         method: 'getPrice',
         args: {'symbol': symbol},
         isQuery: true,
@@ -371,7 +355,7 @@ class BlockchainService {
   }) async {
     try {
       return await _callCanister(
-        canisterId: _config.canisterIdPriceOracle,
+        canisterId: CanisterConfig.getCanisterId('price_oracle'),
         method: 'convertCurrency',
         args: {
           'fromSymbol': fromSymbol,
@@ -393,7 +377,7 @@ class BlockchainService {
   Future<List<String>> getSupportedCurrencies() async {
     try {
       final result = await _callCanister(
-        canisterId: _config.canisterIdPriceOracle,
+        canisterId: CanisterConfig.getCanisterId('price_oracle'),
         method: 'getSupportedCurrencies',
         isQuery: true,
       );
@@ -411,7 +395,7 @@ class BlockchainService {
   Future<Map<String, Map<String, dynamic>>> getAllPrices() async {
     try {
       final result = await _callCanister(
-        canisterId: _config.canisterIdPriceOracle,
+        canisterId: CanisterConfig.getCanisterId('price_oracle'),
         method: 'getAllPrices',
         isQuery: true,
       );
@@ -440,7 +424,7 @@ class BlockchainService {
     if (kDebugMode) {
       try {
         await _callCanister(
-          canisterId: _config.canisterIdPriceOracle,
+          canisterId: CanisterConfig.getCanisterId('price_oracle'),
           method: 'initializeWithMockPrices',
         );
         _logger.logInfo(

@@ -23,8 +23,7 @@
 - QA gate: `.github/workflows/qa-gate.yml` (required status)
 - Label authority: `.github/workflows/label-guard.yml` (restrict `qa:approved` to QA)
 - Fallback merge: `.github/workflows/merge-on-green-fallback.yml`
-- CI→Story bridge: `.github/workflows/ci-to-story-bridge.yml` (posts failure summary to story and labels `qa:blocker`)
-- GitHub Copilot Review provides PR summaries and suggestions; validation report injection and comment-only enforcement are retired by default.
+ - CI→Story bridge: `.github/workflows/ci-to-story-bridge.yml` (posts failure summary to story and labels `qa:blocker`)
 
 ### Required Checks (branch protection)
 
@@ -41,7 +40,6 @@ Use `.github/workflows/enforce-required-checks.yml` to apply these contexts to `
 - `AUTO_PR_ENABLED` — enable/disable PR auto‑creation
 - `AUTO_MERGE_ENABLED` — enable/disable auto‑merge steps
 - `AUTO_APPROVE_ENABLED` — enable/disable auto‑approval
-- `COPILOT_REVIEW_ENABLED` — enable/disable Copilot Review integration (when `'false'`, legacy validation/comment steps run)
   
 Branch protection should require the above checks on `develop` and `main`. Use `.github/workflows/enforce-required-checks.yml` to configure via admin token (`REPO_ADMIN_TOKEN`).
 
@@ -52,19 +50,6 @@ Branch protection should require the above checks on `develop` and `main`. Use `
 - Developers cannot self-approve; auto-approval is disabled by default in the wrapper and must be explicitly enabled via repo variable `AUTO_APPROVE_ENABLED == 'true'` (not recommended)
 - If GraphQL auto-merge is disabled at the repo level, the fallback workflow merges on green with squash and deletes the source branch
 - QA approval allowlist is managed via repo variable `QA_APPROVERS` (comma/space separated GitHub usernames) and enforced by `label-guard.yml`
-
-## Release Process (develop → main)
-
-1. Ensure `develop` is up to date and all CI checks are green.
-2. Open a pull request with base `main` and head `develop` (see chat shortcut below).
-3. Apply the `release:approved` label to the PR.
-4. The `main-release-gate` check verifies branch and label; it reports `wrong-head`, `missing-label`, or `ok`.
-5. When all required checks including `Main Release Gate / main-release-gate` pass, squash merge to `main` is permitted.
-
-**Chat shortcuts**
-
-- `dev *open-pr --base main --head develop`
-- `dev *label release:approved`
 
 ## **Error Taxonomy**
 
