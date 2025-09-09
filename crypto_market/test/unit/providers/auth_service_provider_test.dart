@@ -7,6 +7,7 @@ import 'package:crypto_market/core/blockchain/icp_service.dart';
 import 'package:crypto_market/core/auth/auth_guard.dart';
 import 'package:crypto_market/features/auth/providers/auth_service_provider.dart';
 
+
 class MockICPService extends Mock implements ICPService {}
 
 void main() {
@@ -38,7 +39,7 @@ void main() {
             email: 'test@example.com',
             password: 'password123',
           ),
-        ).thenAnswer((_) async => const Result.ok(testUser));
+        ).thenAnswer((_) async => Result.ok(testUser));
 
         // Act
         final result = await authService.loginWithEmailPassword(
@@ -61,7 +62,7 @@ void main() {
             email: 'test@example.com',
             password: 'password123',
           ),
-        ).thenAnswer((_) async => const Result.ok(testUser));
+        ).thenAnswer((_) async => Result.ok(testUser));
 
         final before = DateTime.now().millisecondsSinceEpoch;
         await authService.loginWithEmailPassword(
@@ -71,13 +72,11 @@ void main() {
 
         final prefs = await SharedPreferences.getInstance();
         final data =
-            jsonDecode(prefs.getString('current_user')!)
-                as Map<String, dynamic>;
+            jsonDecode(prefs.getString('current_user')!) as Map<String, dynamic>;
         final expiry = data['expiry'] as int;
         final minExpected =
             before + SecurityPolicy.sessionTimeout.inMilliseconds;
-        final maxExpected =
-            DateTime.now().millisecondsSinceEpoch +
+        final maxExpected = DateTime.now().millisecondsSinceEpoch +
             SecurityPolicy.sessionTimeout.inMilliseconds;
         expect(expiry, greaterThanOrEqualTo(minExpected));
         expect(expiry, lessThanOrEqualTo(maxExpected));
@@ -90,9 +89,7 @@ void main() {
             email: any(named: 'email'),
             password: any(named: 'password'),
           ),
-        ).thenAnswer(
-          (_) async => const Result.err(AuthError.invalidCredentials),
-        );
+        ).thenAnswer((_) async => Result.err(AuthError.invalidCredentials));
 
         // Act
         final result = await authService.loginWithEmailPassword(
@@ -126,7 +123,7 @@ void main() {
             provider: 'google',
             token: 'mock-token',
           ),
-        ).thenAnswer((_) async => const Result.ok(oauthUser));
+        ).thenAnswer((_) async => Result.ok(oauthUser));
 
         // Act
         final result = await authService.loginWithOAuth(
@@ -153,7 +150,7 @@ void main() {
             password: 'password123',
             username: 'testuser',
           ),
-        ).thenAnswer((_) async => const Result.ok(testUser));
+        ).thenAnswer((_) async => Result.ok(testUser));
 
         // Act
         final result = await authService.register(
@@ -180,7 +177,7 @@ void main() {
             email: any(named: 'email'),
             password: any(named: 'password'),
           ),
-        ).thenAnswer((_) async => const Result.ok(testUser));
+        ).thenAnswer((_) async => Result.ok(testUser));
 
         await authService.loginWithEmailPassword(
           email: 'test@example.com',
@@ -216,7 +213,7 @@ void main() {
             email: any(named: 'email'),
             password: any(named: 'password'),
           ),
-        ).thenAnswer((_) async => const Result.ok(testUser));
+        ).thenAnswer((_) async => Result.ok(testUser));
 
         await authService.loginWithEmailPassword(
           email: 'test@example.com',
@@ -258,7 +255,7 @@ void main() {
             email: any(named: 'email'),
             password: any(named: 'password'),
           ),
-        ).thenAnswer((_) async => const Result.ok(testUser));
+        ).thenAnswer((_) async => Result.ok(testUser));
 
         await authService.loginWithEmailPassword(
           email: 'test@example.com',
@@ -267,8 +264,7 @@ void main() {
 
         final prefs = await SharedPreferences.getInstance();
         final data =
-            jsonDecode(prefs.getString('current_user')!)
-                as Map<String, dynamic>;
+            jsonDecode(prefs.getString('current_user')!) as Map<String, dynamic>;
         data['expiry'] = DateTime.now()
             .subtract(const Duration(hours: 1))
             .millisecondsSinceEpoch;

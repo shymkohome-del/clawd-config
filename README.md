@@ -73,15 +73,12 @@ Open PRs from feature/fix/chore branches into `develop`. For release, open a PR 
 
 ## CI
 
-Workflow file: `.github/workflows/flutter-ci.yml` (name: Flutter CI). Triggers on PRs to `main`/`develop` and runs:
->>>>>>> 8c1e6e7 (docs(story-0.2): QA approve testing baseline; document local testing)
-Workflow file: `.github/workflows/flutter-ci.yml` (name: Flutter CI). Triggers on PRs to `main`/`develop` and runs:
->>>>>>> 8c1e6e7 (docs(story-0.2): QA approve testing baseline; document local testing)
+Workflow file: `.github/workflows/flutter-ci.yml` (name: Flutter CI). Triggers on PRs to `develop` and pushes to `story/*` and runs:
 
 - flutter pub get
 - flutter analyze --fatal-infos --fatal-warnings
 - dart format --output=none --set-exit-if-changed .
-- flutter test --reporter expanded --no-pub
+- flutter test
 
 ### Automated Story Flow
 
@@ -158,16 +155,3 @@ Behavior:
   4. Promote to Prod and verify.
   5. Revoke the old key and document the rotation in change logs/audit.
 
-## Testing
-
-- Folders:
-  - `test/unit/` for unit and widget tests
-  - `test/integration/` for integration tests
-  - `test/e2e/` for end-to-end tests (optional for now)
-
-- Run locally:
-  - Analyze and format check: `flutter analyze --fatal-infos --fatal-warnings && dart format --output=none --set-exit-if-changed .`
-  - Tests (expanded reporter): `flutter test --no-pub --reporter expanded`
-
-- Sample test:
-  - `test/unit/widgets/sample_widget_test.dart`

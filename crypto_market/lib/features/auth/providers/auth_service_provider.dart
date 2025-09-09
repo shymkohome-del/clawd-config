@@ -3,6 +3,7 @@ import 'package:crypto_market/core/blockchain/icp_service.dart';
 import 'package:crypto_market/core/blockchain/errors.dart';
 import 'package:crypto_market/core/logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:crypto_market/core/auth/auth_guard.dart';
 
 /// Abstraction for auth-related operations to enable mocking in tests.
 abstract class AuthService {
@@ -57,15 +58,19 @@ class AuthServiceProvider implements AuthService {
     required String email,
     required String password,
   }) async {
-    logger.logDebug('Email/password login attempt for $email',
-        tag: 'AuthService');
+    logger.logDebug(
+      'Email/password login attempt for $email',
+      tag: 'AuthService',
+    );
     final result = await icpService.loginWithEmailPassword(
       email: email,
       password: password,
     );
     if (result.isOk) {
-      logger.logInfo('Login success for ${result.ok.email}',
-          tag: 'AuthService');
+      logger.logInfo(
+        'Login success for ${result.ok.email}',
+        tag: 'AuthService',
+      );
       await _saveCurrentUser(result.ok);
     } else {
       logger.logWarn('Login failed: ${result.err}', tag: 'AuthService');
@@ -78,19 +83,19 @@ class AuthServiceProvider implements AuthService {
     required String provider,
     required String token,
   }) async {
-    logger.logDebug('OAuth login attempt for $provider',
-        tag: 'AuthService');
+    logger.logDebug('OAuth login attempt for $provider', tag: 'AuthService');
     final result = await icpService.loginWithOAuth(
       provider: provider,
       token: token,
     );
     if (result.isOk) {
-      logger.logInfo('OAuth login success for ${result.ok.email}',
-          tag: 'AuthService');
+      logger.logInfo(
+        'OAuth login success for ${result.ok.email}',
+        tag: 'AuthService',
+      );
       await _saveCurrentUser(result.ok);
     } else {
-      logger.logWarn('OAuth login failed: ${result.err}',
-          tag: 'AuthService');
+      logger.logWarn('OAuth login failed: ${result.err}', tag: 'AuthService');
     }
     return result;
   }
@@ -117,6 +122,17 @@ class AuthServiceProvider implements AuthService {
     if (userJson != null) {
       try {
         final userMap = jsonDecode(userJson) as Map<String, dynamic>;
+        // Validate session expiry if present
+        final expiryMillis = userMap['expiry'] as int?;
+        if (expiryMillis != null) {
+          final isExpired = DateTime.now()
+              .isAfter(DateTime.fromMillisecondsSinceEpoch(expiryMillis));
+          if (isExpired) {
+            logger.logWarn('Stored session expired. Clearing.', tag: 'AuthService');
+            await prefs.remove('current_user');
+            return null;
+          }
+        }
         final user = User(
           id: userMap['id'] as String,
           email: userMap['email'] as String,
@@ -124,12 +140,16 @@ class AuthServiceProvider implements AuthService {
           authProvider: userMap['authProvider'] as String,
           createdAtMillis: userMap['createdAt'] as int,
         );
-        logger.logDebug('Session restored for ${user.email}',
-            tag: 'AuthService');
+        logger.logDebug(
+          'Session restored for ${user.email}',
+          tag: 'AuthService',
+        );
         return user;
       } catch (e) {
-        logger.logWarn('Failed to parse stored session: $e',
-            tag: 'AuthService');
+        logger.logWarn(
+          'Failed to parse stored session: $e',
+          tag: 'AuthService',
+        );
         await prefs.remove('current_user');
       }
     } else {
@@ -140,9 +160,14 @@ class AuthServiceProvider implements AuthService {
 
   Future<void> _saveCurrentUser(User user) async {
     final prefs = await SharedPreferences.getInstance();
-    logger.logDebug('Persisting session for ${user.email}',
-        tag: 'AuthService');
-    final userJson = jsonEncode(user.toJson());
+    logger.logDebug('Persisting session for ${user.email}', tag: 'AuthService');
+    final expiry = DateTime.now()
+        .add(SecurityPolicy.sessionTimeout)
+        .millisecondsSinceEpoch;
+    final userJson = jsonEncode({
+      ...user.toJson(),
+      'expiry': expiry,
+    });
     await prefs.setString('current_user', userJson);
   }
 }

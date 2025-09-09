@@ -9,9 +9,11 @@ class BlockchainService {
   final Dio _dio;
   final Logger _logger;
 
-  BlockchainService({required Dio dio, required Logger logger})
-    : _dio = dio,
-      _logger = logger;
+  BlockchainService({
+    required Dio dio,
+    required Logger logger,
+  }) : _dio = dio,
+       _logger = logger;
 
   /// Get base canister URL based on network configuration
   String get _baseUrl => CanisterConfig.baseUrl;
@@ -400,10 +402,9 @@ class BlockchainService {
 
       final prices = <String, Map<String, dynamic>>{};
       if (result['prices'] != null) {
-        for (final entry in (result['prices'] as List<dynamic>)) {
-          final pair = entry as List<dynamic>;
-          final symbol = pair[0] as String;
-          final data = Map<String, dynamic>.from(pair[1] as Map);
+        for (final entry in result['prices'] as List) {
+          final symbol = entry[0] as String;
+          final data = entry[1] as Map<String, dynamic>;
           prices[symbol] = data;
         }
       }

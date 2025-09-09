@@ -70,22 +70,18 @@ class ICPService {
     // Initialize BlockchainService for real canister calls
     final dio = Dio();
     final logger = Logger.instance;
-    final blockchainService = BlockchainService(dio: dio, logger: logger);
-
+    final blockchainService = BlockchainService(
+      dio: dio,
+      logger: logger,
+    );
+    
     // Initialize canister actors here using config.canisterId*
     final market = {'canisterId': config.canisterIdMarketplace};
     final userMgmt = {'canisterId': config.canisterIdUserManagement};
     final atomicSwap = {'canisterId': config.canisterIdAtomicSwap};
     final priceOracle = {'canisterId': config.canisterIdPriceOracle};
-
-    return ICPService._(
-      config,
-      blockchainService,
-      market,
-      userMgmt,
-      atomicSwap,
-      priceOracle,
-    );
+    
+    return ICPService._(config, blockchainService, market, userMgmt, atomicSwap, priceOracle);
   }
 
   Map<String, String> get marketActor => _marketActor;
@@ -175,9 +171,7 @@ class ICPService {
           email: profileResult['email'] as String? ?? email,
           username: profileResult['username'] as String? ?? email.split('@')[0],
           authProvider: 'email',
-          createdAtMillis:
-              profileResult['createdAt'] as int? ??
-              DateTime.now().millisecondsSinceEpoch,
+          createdAtMillis: profileResult['createdAt'] as int? ?? DateTime.now().millisecondsSinceEpoch,
         );
       } else if (config.featurePrincipalShim) {
         // Fall back to shimmed behavior
@@ -231,8 +225,7 @@ class ICPService {
         // Fall back to shimmed behavior
         final email = 'social-user@example.com';
         final username = provider == 'google' ? 'g_user' : 'a_user';
-        final principal =
-            'principal-${_deriveDeterministicPrincipal('$provider:$token')}';
+        final principal = 'principal-${_deriveDeterministicPrincipal('$provider:$token')}';
         return User(
           id: principal,
           email: email,
@@ -261,7 +254,7 @@ class ICPService {
     return _wrapAuthCall<Map<String, dynamic>>(() async {
       // Try to fetch profile from canister
       final result = await _blockchainService.getUserProfile(principal);
-
+      
       if (result != null) {
         return result;
       } else {
@@ -278,20 +271,20 @@ String _deriveDeterministicPrincipal(String seed) {
   final hash = seed.hashCode;
   final random = math.Random(hash);
   final bytes = List.generate(29, (_) => random.nextInt(256));
-
+  
   // Convert to a canister-like ID format using base32-like encoding
   final base32Chars = 'abcdefghijklmnopqrstuvwxyz234567';
   final result = StringBuffer();
-
+  
   for (int i = 0; i < bytes.length; i += 5) {
     var chunk = 0;
     var chunkSize = 0;
-
+    
     for (int j = 0; j < 5 && i + j < bytes.length; j++) {
       chunk = (chunk << 8) | bytes[i + j];
       chunkSize += 8;
     }
-
+    
     while (chunkSize > 0) {
       final index = chunk & 0x1F;
       result.write(base32Chars[index]);
@@ -299,6 +292,6 @@ String _deriveDeterministicPrincipal(String seed) {
       chunkSize -= 5;
     }
   }
-
+  
   return result.toString().substring(0, 27);
 }

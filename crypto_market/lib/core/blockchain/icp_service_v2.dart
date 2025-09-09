@@ -21,20 +21,20 @@ class User {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'email': email,
-    'username': username,
-    'authProvider': authProvider,
-    'createdAt': createdAtMillis,
-  };
+        'id': id,
+        'email': email,
+        'username': username,
+        'authProvider': authProvider,
+        'createdAt': createdAtMillis,
+      };
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-    id: json['id'] as String,
-    email: json['email'] as String,
-    username: json['username'] as String,
-    authProvider: json['authProvider'] as String,
-    createdAtMillis: json['createdAt'] as int,
-  );
+        id: json['id'] as String,
+        email: json['email'] as String,
+        username: json['username'] as String,
+        authProvider: json['authProvider'] as String,
+        createdAtMillis: json['createdAt'] as int,
+      );
 }
 
 /// Real ICP service that connects to deployed canisters
@@ -52,9 +52,15 @@ class ICPService {
   factory ICPService.fromConfig(dynamic config) {
     final dio = Dio();
     final logger = Logger.instance;
-    final blockchainService = BlockchainService(dio: dio, logger: logger);
-
-    return ICPService(blockchainService: blockchainService, logger: logger);
+    final blockchainService = BlockchainService(
+      dio: dio,
+      logger: logger,
+    );
+    
+    return ICPService(
+      blockchainService: blockchainService,
+      logger: logger,
+    );
   }
 
   Future<Result<T, AuthError>> _wrapAuthCall<T>(
@@ -117,9 +123,7 @@ class ICPService {
           email: profileResult['email'] as String? ?? email,
           username: profileResult['username'] as String? ?? email.split('@')[0],
           authProvider: 'email',
-          createdAtMillis:
-              profileResult['createdAt'] as int? ??
-              DateTime.now().millisecondsSinceEpoch,
+          createdAtMillis: profileResult['createdAt'] as int? ?? DateTime.now().millisecondsSinceEpoch,
         );
       } else {
         // User not found, but credentials might be valid for a new user
@@ -165,7 +169,7 @@ class ICPService {
   }) async {
     return _wrapAuthCall<Map<String, dynamic>>(() async {
       final result = await _blockchainService.getUserProfile(principal);
-
+      
       if (result != null) {
         return result;
       } else {
@@ -179,20 +183,20 @@ class ICPService {
     final hash = email.hashCode;
     final random = math.Random(hash);
     final bytes = List.generate(29, (_) => random.nextInt(256));
-
+    
     // Convert to a canister-like ID format
     final base32Chars = 'abcdefghijklmnopqrstuvwxyz234567';
     final result = StringBuffer();
-
+    
     for (int i = 0; i < bytes.length; i += 5) {
       var chunk = 0;
       var chunkSize = 0;
-
+      
       for (int j = 0; j < 5 && i + j < bytes.length; j++) {
         chunk = (chunk << 8) | bytes[i + j];
         chunkSize += 8;
       }
-
+      
       while (chunkSize > 0) {
         final index = chunk & 0x1F;
         result.write(base32Chars[index]);
@@ -200,7 +204,7 @@ class ICPService {
         chunkSize -= 5;
       }
     }
-
+    
     return result.toString().substring(0, 27);
   }
 
