@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:crypto_market/core/blockchain/errors.dart' as be;
-import 'package:crypto_market/core/error/domain_errors.dart' as de
+import 'package:crypto_market/core/error/domain_errors.dart'
+    as de
     show AuthError, NetworkError;
 import 'package:crypto_market/features/auth/cubit/auth_cubit.dart';
 import 'package:crypto_market/features/auth/providers/auth_service_provider.dart';
@@ -53,9 +54,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         return;
       case be.AuthError.invalidCredentials:
         final l10n = AppLocalizations.of(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorInvalidCredentials)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.errorInvalidCredentials)));
         return;
       case be.AuthError.oauthDenied:
         await ErrorDialogHelper.showAuthError(

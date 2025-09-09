@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crypto_market/core/blockchain/errors.dart' as be;
-import 'package:crypto_market/core/error/domain_errors.dart' as de
+import 'package:crypto_market/core/error/domain_errors.dart'
+    as de
     show AuthError, NetworkError;
 import 'package:crypto_market/core/logger/logger.dart';
 import 'package:crypto_market/features/auth/cubit/auth_cubit.dart';
@@ -89,9 +90,9 @@ class _LoginScreenState extends State<LoginScreen> {
       case be.AuthError.invalidCredentials:
         // Keep legacy text expected by tests for this specific case
         final l10n = AppLocalizations.of(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorInvalidCredentials)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.errorInvalidCredentials)));
         return;
       case be.AuthError.oauthDenied:
         await ErrorDialogHelper.showAuthError(
