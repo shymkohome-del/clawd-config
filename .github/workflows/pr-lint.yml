@@ -22,11 +22,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-<<<<<<< HEAD
       - name: Common setup
         uses: ./.github/actions/common-setup
-=======
->>>>>>> origin/story/0.9.1-workflow-lint-and-flags
       - name: Check branch when not a PR (push)
         if: ${{ github.event_name == 'push' }}
         shell: bash
@@ -95,7 +92,6 @@ jobs:
           # Keep lint simple; print reminder unconditionally.
           echo "::notice::Reminder: Ensure the story's Status is updated appropriately."
           exit $fail
-<<<<<<< HEAD
 
       - name: Enforce story PR targets develop (guard)
         if: ${{ github.event_name == 'pull_request' && startsWith(github.event.pull_request.head.ref, 'story/') && github.event.pull_request.base.ref != 'develop' }}
@@ -104,5 +100,3 @@ jobs:
           set -euo pipefail
           echo "::error::Story branches must open PRs to 'develop'. Current base: '${{ github.event.pull_request.base.ref }}'"
           exit 1
-=======
->>>>>>> origin/story/0.9.3-auto-merge
