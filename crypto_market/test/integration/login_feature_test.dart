@@ -9,11 +9,13 @@ void main() {
       await tester.pumpWidget(
         const TestAppWrapper(
           child: MaterialApp(
-            home: Scaffold(body: Center(child: Text('Test App'))),
+            home: Scaffold(
+              body: Center(child: Text('Test App')),
+            ),
           ),
         ),
       );
-
+      
       // Verify the app starts without errors
       expect(find.byType(MaterialApp), findsOneWidget);
     });

@@ -15,27 +15,23 @@ void main() {
 
     setUp(() {
       mockAuthCubit = MockAuthCubit();
-
+      
       // Stub getters
       when(() => mockAuthCubit.state).thenReturn(AuthState.initial());
-      when(
-        () => mockAuthCubit.stream,
-      ).thenAnswer((_) => Stream.fromIterable([AuthState.initial()]));
-
+      when(() => mockAuthCubit.stream).thenAnswer(
+        (_) => Stream.fromIterable([AuthState.initial()]),
+      );
+      
       // Stub async methods to return proper Future<void>
       when(() => mockAuthCubit.close()).thenAnswer((_) async {});
-      when(
-        () => mockAuthCubit.loginWithEmailPassword(
-          email: any(named: 'email'),
-          password: any(named: 'password'),
-        ),
-      ).thenAnswer((_) async {});
-      when(
-        () => mockAuthCubit.loginWithOAuth(
-          provider: any(named: 'provider'),
-          token: any(named: 'token'),
-        ),
-      ).thenAnswer((_) async {});
+      when(() => mockAuthCubit.loginWithEmailPassword(
+        email: any(named: 'email'),
+        password: any(named: 'password'),
+      )).thenAnswer((_) async {});
+      when(() => mockAuthCubit.loginWithOAuth(
+        provider: any(named: 'provider'),
+        token: any(named: 'token'),
+      )).thenAnswer((_) async {});
     });
 
     Widget createWidgetUnderTest() {
@@ -150,7 +146,7 @@ void main() {
 
       // Act - Find the password field (should be obscured initially)
       expect(find.byIcon(Icons.visibility), findsOneWidget);
-
+      
       // Tap the visibility icon to show password
       await tester.tap(find.byIcon(Icons.visibility));
       await tester.pump();
@@ -192,7 +188,7 @@ void main() {
     testWidgets('should show error message when login fails', (tester) async {
       // Arrange - Create a mock with failure state and stream
       final failureAuthCubit = _FailureAuthCubit();
-
+      
       final failureWidget = MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -214,24 +210,24 @@ void main() {
 
 class _FailureAuthCubit extends Mock implements AuthCubit {
   final Stream<AuthState> _stream = Stream.fromIterable([
-    AuthState.failure(AuthError.invalidCredentials),
+    AuthState.failure(AuthError.invalidCredentials)
   ]);
-
+  
   @override
   Stream<AuthState> get stream => _stream;
-
+  
   @override
   AuthState get state => AuthState.failure(AuthError.invalidCredentials);
-
+  
   @override
   Future<void> close() async {}
-
+  
   @override
   Future<void> loginWithOAuth({
     required String provider,
     required String token,
   }) async {}
-
+  
   @override
   Future<void> loginWithEmailPassword({
     required String email,

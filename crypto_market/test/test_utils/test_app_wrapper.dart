@@ -10,7 +10,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:crypto_market/l10n/app_localizations.dart';
 
 class MockAuthService extends Mock implements AuthService {}
-
 class MockICPService extends Mock implements ICPService {}
 
 class TestAppWrapper extends StatelessWidget {
@@ -20,12 +19,12 @@ class TestAppWrapper extends StatelessWidget {
   final String? initialLocation;
 
   const TestAppWrapper({
-    super.key,
+    Key? key,
     required this.child,
     this.mockAuthService,
     this.includeRouter = true,
     this.initialLocation = '/',
-  });
+  }) : super(key: key);
 
   static GoRouter createTestRouter({
     String initialLocation = '/',
@@ -36,9 +35,17 @@ class TestAppWrapper extends StatelessWidget {
     return GoRouter(
       initialLocation: initialLocation,
       routes: [
-        GoRoute(path: '/', name: 'home', builder: homeBuilder),
+        GoRoute(
+          path: '/',
+          name: 'home',
+          builder: homeBuilder,
+        ),
         if (loginBuilder != null)
-          GoRoute(path: '/login', name: 'login', builder: loginBuilder),
+          GoRoute(
+            path: '/login',
+            name: 'login',
+            builder: loginBuilder,
+          ),
         if (registerBuilder != null)
           GoRoute(
             path: '/register',
@@ -51,17 +58,20 @@ class TestAppWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AuthService authService =
-        mockAuthService ?? _createDefaultMockAuthService();
-
+    final AuthService authService = mockAuthService ?? _createDefaultMockAuthService();
+    
     Widget app = MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<AuthService>(create: (context) => authService),
+        RepositoryProvider<AuthService>(
+          create: (context) => authService,
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
           BlocProvider<AuthCubit>(
-            create: (context) => AuthCubit(authService: authService),
+            create: (context) => AuthCubit(
+              authService: authService,
+            ),
           ),
         ],
         child: child,
@@ -87,7 +97,10 @@ class TestAppWrapper extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [Locale('en'), Locale('lv')],
+        supportedLocales: const [
+          Locale('en'),
+          Locale('lv'),
+        ],
       );
     } else {
       app = MaterialApp(
@@ -97,7 +110,10 @@ class TestAppWrapper extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [Locale('en'), Locale('lv')],
+        supportedLocales: const [
+          Locale('en'),
+          Locale('lv'),
+        ],
         home: app,
       );
     }
@@ -107,64 +123,52 @@ class TestAppWrapper extends StatelessWidget {
 
   static AuthService _createDefaultMockAuthService() {
     final mockService = MockAuthService();
-
+    
     // Setup default successful behaviors
-    when(
-      () => mockService.loginWithEmailPassword(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-      ),
-    ).thenAnswer(
-      (_) async => const Result.ok(
-        User(
-          id: 'test-user-id',
-          email: 'test@example.com',
-          username: 'testuser',
-          authProvider: 'email',
-          createdAtMillis: 1234567890,
-        ),
-      ),
+    when(() => mockService.loginWithEmailPassword(
+      email: any(named: 'email'), 
+      password: any(named: 'password')
+    )).thenAnswer(
+      (_) async => Result.ok(const User(
+        id: 'test-user-id',
+        email: 'test@example.com',
+        username: 'testuser',
+        authProvider: 'email',
+        createdAtMillis: 1234567890,
+      )),
     );
-
-    when(
-      () => mockService.register(
-        email: any(named: 'email'),
-        password: any(named: 'password'),
-        username: any(named: 'username'),
-      ),
-    ).thenAnswer(
-      (_) async => const Result.ok(
-        User(
-          id: 'test-user-id',
-          email: 'test@example.com',
-          username: 'testuser',
-          authProvider: 'email',
-          createdAtMillis: 1234567890,
-        ),
-      ),
+    
+    when(() => mockService.register(
+      email: any(named: 'email'),
+      password: any(named: 'password'),
+      username: any(named: 'username'),
+    )).thenAnswer(
+      (_) async => Result.ok(const User(
+        id: 'test-user-id',
+        email: 'test@example.com',
+        username: 'testuser',
+        authProvider: 'email',
+        createdAtMillis: 1234567890,
+      )),
     );
-
-    when(
-      () => mockService.loginWithOAuth(
-        provider: any(named: 'provider'),
-        token: any(named: 'token'),
-      ),
-    ).thenAnswer(
-      (_) async => const Result.ok(
-        User(
-          id: 'test-user-id-oauth',
-          email: 'test@gmail.com',
-          username: 'testuser',
-          authProvider: 'google',
-          createdAtMillis: 1234567890,
-        ),
-      ),
+    
+    when(() => mockService.loginWithOAuth(
+      provider: any(named: 'provider'),
+      token: any(named: 'token'),
+    )).thenAnswer(
+      (_) async => Result.ok(const User(
+        id: 'test-user-id-oauth',
+        email: 'test@gmail.com',
+        username: 'testuser',
+        authProvider: 'google',
+        createdAtMillis: 1234567890,
+      )),
     );
-
+    
     when(() => mockService.logout()).thenAnswer((_) async {});
-
+    
     when(() => mockService.getCurrentUser()).thenAnswer((_) async => null);
-
+    
     return mockService;
   }
 }

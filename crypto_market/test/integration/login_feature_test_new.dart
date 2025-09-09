@@ -131,7 +131,10 @@ void main() {
         find.byType(TextFormField).first,
         'test@example.com',
       );
-      await tester.enterText(find.byType(TextFormField).last, 'password123');
+      await tester.enterText(
+        find.byType(TextFormField).last, 
+        'password123',
+      );
 
       // Verify text was entered
       expect(find.text('test@example.com'), findsOneWidget);
@@ -152,7 +155,7 @@ void main() {
       // Verify login button exists and can be tapped
       final loginButton = find.byType(ElevatedButton);
       expect(loginButton, findsAtLeastNWidgets(1));
-
+      
       // Tap the button (won't navigate due to no router context, but shouldn't crash)
       await tester.tap(loginButton.first);
       await tester.pumpAndSettle();
@@ -172,11 +175,10 @@ void main() {
                 children: [
                   Text('State: ${state.runtimeType}'),
                   ElevatedButton(
-                    onPressed: () =>
-                        context.read<AuthCubit>().loginWithEmailPassword(
-                          email: 'test@example.com',
-                          password: 'password123',
-                        ),
+                    onPressed: () => context.read<AuthCubit>().loginWithEmailPassword(
+                      email: 'test@example.com',
+                      password: 'password123',
+                    ),
                     child: const Text('Test Login'),
                   ),
                 ],
@@ -220,7 +222,7 @@ void main() {
       await tester.tap(find.byType(ElevatedButton).first);
       await tester.pumpAndSettle();
 
-      // Form validation should prevent submission
+      // Form validation should prevent submission 
       // (we're still on login screen rather than crashed)
       expect(find.byType(LoginScreen), findsOneWidget);
     });

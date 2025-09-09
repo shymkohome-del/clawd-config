@@ -73,9 +73,7 @@ void main() {
               email: any(named: 'email'),
               password: any(named: 'password'),
             ),
-          ).thenAnswer(
-            (_) async => const Result.err(AuthError.invalidCredentials),
-          );
+          ).thenAnswer((_) async => const Result.err(AuthError.invalidCredentials));
         },
         act: (cubit) => cubit.loginWithEmailPassword(
           email: 'invalid@email.com',
@@ -102,8 +100,7 @@ void main() {
             ),
           ).thenAnswer((_) async => Result.ok(testUser));
         },
-        act: (cubit) =>
-            cubit.loginWithOAuth(provider: 'google', token: 'mock-token'),
+        act: (cubit) => cubit.loginWithOAuth(provider: 'google', token: 'mock-token'),
         expect: () => [
           isA<AuthSubmitting>(),
           isA<AuthSuccess>().having((s) => s.user, 'user', testUser),
@@ -127,14 +124,10 @@ void main() {
         'checkSession should emit success when session exists',
         build: () => authCubit,
         setUp: () {
-          when(
-            () => mockAuthService.getCurrentUser(),
-          ).thenAnswer((_) async => testUser);
+          when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => testUser);
         },
         act: (cubit) => cubit.checkSession(),
-        expect: () => [
-          isA<AuthSuccess>().having((s) => s.user, 'user', testUser),
-        ],
+        expect: () => [isA<AuthSuccess>().having((s) => s.user, 'user', testUser)],
         verify: (_) {
           verify(() => mockAuthService.getCurrentUser()).called(1);
         },
@@ -144,9 +137,7 @@ void main() {
         'checkSession should emit initial state when no session exists',
         build: () => authCubit,
         setUp: () {
-          when(
-            () => mockAuthService.getCurrentUser(),
-          ).thenAnswer((_) async => null);
+          when(() => mockAuthService.getCurrentUser()).thenAnswer((_) async => null);
         },
         act: (cubit) => cubit.checkSession(),
         expect: () => [isA<AuthInitial>()],
@@ -196,7 +187,11 @@ void main() {
         ),
         expect: () => [
           isA<AuthSubmitting>(),
-          isA<AuthFailure>().having((s) => s.error, 'error', AuthError.unknown),
+          isA<AuthFailure>().having(
+            (s) => s.error,
+            'error',
+            AuthError.unknown,
+          ),
         ],
       );
     });

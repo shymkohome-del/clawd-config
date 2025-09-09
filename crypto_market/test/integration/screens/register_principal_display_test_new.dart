@@ -4,15 +4,15 @@ import '../../test_utils/test_app_wrapper.dart';
 
 void main() {
   group('Register -> Home principal display (shim off)', () {
-    testWidgets('principal is not shown on Home when shim disabled', (
-      tester,
-    ) async {
+    testWidgets('principal is not shown on Home when shim disabled', (tester) async {
       await tester.pumpWidget(
         TestAppWrapper(
           includeRouter: false,
           child: Scaffold(
             appBar: AppBar(title: const Text('Home')),
-            body: const Center(child: Text('Principal display test')),
+            body: const Center(
+              child: Text('Principal display test'),
+            ),
           ),
         ),
       );
