@@ -73,7 +73,10 @@ Open PRs from feature/fix/chore branches into `develop`. For release, open a PR 
 
 ## CI
 
-Workflow file: `.github/workflows/flutter-ci.yml` (name: Flutter CI). Triggers on PRs to `develop` and pushes to `story/*` and runs:
+Workflow file: `.github/workflows/flutter-ci.yml` (name: Flutter CI). Triggers on PRs to `main`/`develop` and runs:
+>>>>>>> 8c1e6e7 (docs(story-0.2): QA approve testing baseline; document local testing)
+Workflow file: `.github/workflows/flutter-ci.yml` (name: Flutter CI). Triggers on PRs to `main`/`develop` and runs:
+>>>>>>> 8c1e6e7 (docs(story-0.2): QA approve testing baseline; document local testing)
 
 - flutter pub get
 - flutter analyze --fatal-infos --fatal-warnings
