@@ -1,10 +1,15 @@
-import 'package:crypto_market/core/blockchain/errors.dart';
+import 'dart:async';
+import 'package:crypto_market/core/blockchain/errors.dart' as be;
+import 'package:crypto_market/core/error/domain_errors.dart' as de
+    show AuthError, NetworkError;
 import 'package:crypto_market/features/auth/cubit/auth_cubit.dart';
 import 'package:crypto_market/features/auth/providers/auth_service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:crypto_market/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:crypto_market/shared/widgets/error_dialog.dart';
+import 'package:crypto_market/shared/widgets/success_snackbar.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key, this.authServiceOverride});
@@ -38,16 +43,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  String _errorToMessage(AuthError error) {
+  Future<void> _showErrorFor(be.AuthError error) async {
     switch (error) {
-      case AuthError.invalidCredentials:
-        return AppLocalizations.of(context).errorInvalidCredentials;
-      case AuthError.oauthDenied:
-        return AppLocalizations.of(context).errorOAuthDenied;
-      case AuthError.network:
-        return AppLocalizations.of(context).errorNetwork;
-      case AuthError.unknown:
-        return AppLocalizations.of(context).errorUnknown;
+      case be.AuthError.network:
+        await ErrorDialogHelper.showNetworkError(
+          context,
+          de.NetworkError.requestFailed(),
+        );
+        return;
+      case be.AuthError.invalidCredentials:
+        final l10n = AppLocalizations.of(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorInvalidCredentials)),
+        );
+        return;
+      case be.AuthError.oauthDenied:
+        await ErrorDialogHelper.showAuthError(
+          context,
+          de.AuthError.loginFailed('OAuth sign-in denied'),
+        );
+        return;
+      case be.AuthError.unknown:
+        await ErrorDialogHelper.showAuthError(
+          context,
+          de.AuthError.registrationFailed(),
+        );
+        return;
     }
   }
 
@@ -64,12 +85,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         body: BlocConsumer<AuthCubit, AuthState>(
           listener: (context, state) {
             if (state is AuthSuccess) {
+              // show success then navigate
+              SuccessSnackbar.showAuthSuccess(context);
               context.go('/home');
             } else if (state is AuthFailure) {
-              final message = _errorToMessage(state.error);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(message)));
+              unawaited(_showErrorFor(state.error));
             }
           },
           builder: (context, state) {
