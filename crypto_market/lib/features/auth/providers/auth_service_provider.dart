@@ -125,10 +125,14 @@ class AuthServiceProvider implements AuthService {
         // Validate session expiry if present
         final expiryMillis = userMap['expiry'] as int?;
         if (expiryMillis != null) {
-          final isExpired = DateTime.now()
-              .isAfter(DateTime.fromMillisecondsSinceEpoch(expiryMillis));
+          final isExpired = DateTime.now().isAfter(
+            DateTime.fromMillisecondsSinceEpoch(expiryMillis),
+          );
           if (isExpired) {
-            logger.logWarn('Stored session expired. Clearing.', tag: 'AuthService');
+            logger.logWarn(
+              'Stored session expired. Clearing.',
+              tag: 'AuthService',
+            );
             await prefs.remove('current_user');
             return null;
           }
@@ -164,10 +168,7 @@ class AuthServiceProvider implements AuthService {
     final expiry = DateTime.now()
         .add(SecurityPolicy.sessionTimeout)
         .millisecondsSinceEpoch;
-    final userJson = jsonEncode({
-      ...user.toJson(),
-      'expiry': expiry,
-    });
+    final userJson = jsonEncode({...user.toJson(), 'expiry': expiry});
     await prefs.setString('current_user', userJson);
   }
 }

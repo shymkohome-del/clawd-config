@@ -41,7 +41,10 @@ void main() {
       expect(user.username, equals('testuser'));
       expect(user.authProvider, equals('email'));
       expect(user.id, isNotEmpty);
-      expect(user.id, isNot(equals(''))); // Should not be empty with blockchain integration
+      expect(
+        user.id,
+        isNot(equals('')),
+      ); // Should not be empty with blockchain integration
     });
 
     test('should login user with blockchain integration', () async {
@@ -55,7 +58,10 @@ void main() {
       expect(user.email, equals('test@example.com'));
       expect(user.authProvider, equals('email'));
       expect(user.id, isNotEmpty);
-      expect(user.id, isNot(equals(''))); // Should not be empty with blockchain integration
+      expect(
+        user.id,
+        isNot(equals('')),
+      ); // Should not be empty with blockchain integration
     });
 
     test('should handle oauth login with blockchain integration', () async {
@@ -68,7 +74,10 @@ void main() {
       final user = result.ok;
       expect(user.authProvider, equals('google'));
       expect(user.id, isNotEmpty);
-      expect(user.id, isNot(equals(''))); // Should not be empty with blockchain integration
+      expect(
+        user.id,
+        isNot(equals('')),
+      ); // Should not be empty with blockchain integration
     });
 
     test('should reject invalid oauth provider', () async {
