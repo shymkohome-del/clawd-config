@@ -30,8 +30,11 @@ void main() {
         username: 'testuser',
       );
 
-      // Assert with reason instead of printing
-      expect(result.isOk, isTrue, reason: 'Registration error: ${result.err}');
+      // Fail early with explicit message to avoid eager evaluation of reason
+      if (!result.isOk) {
+        fail('Registration error: ${result.err}');
+      }
+      expect(result.isOk, isTrue);
       final user = result.ok;
       expect(user.email, equals('test@example.com'));
       expect(user.username, equals('testuser'));

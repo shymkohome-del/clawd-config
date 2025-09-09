@@ -7,7 +7,7 @@ void main() {
     testWidgets('app starts successfully', (WidgetTester tester) async {
       // Build a simple test app
       await tester.pumpWidget(
-        TestAppWrapper(
+        const TestAppWrapper(
           child: MaterialApp(
             home: Scaffold(body: Center(child: Text('Test App'))),
           ),

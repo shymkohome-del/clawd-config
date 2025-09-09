@@ -38,7 +38,7 @@ void main() {
             email: 'test@example.com',
             password: 'password123',
           ),
-        ).thenAnswer((_) async => Result.ok(testUser));
+        ).thenAnswer((_) async => const Result.ok(testUser));
 
         // Act
         final result = await authService.loginWithEmailPassword(
@@ -61,7 +61,7 @@ void main() {
             email: 'test@example.com',
             password: 'password123',
           ),
-        ).thenAnswer((_) async => Result.ok(testUser));
+        ).thenAnswer((_) async => const Result.ok(testUser));
 
         final before = DateTime.now().millisecondsSinceEpoch;
         await authService.loginWithEmailPassword(
@@ -90,7 +90,9 @@ void main() {
             email: any(named: 'email'),
             password: any(named: 'password'),
           ),
-        ).thenAnswer((_) async => Result.err(AuthError.invalidCredentials));
+        ).thenAnswer(
+          (_) async => const Result.err(AuthError.invalidCredentials),
+        );
 
         // Act
         final result = await authService.loginWithEmailPassword(
@@ -124,7 +126,7 @@ void main() {
             provider: 'google',
             token: 'mock-token',
           ),
-        ).thenAnswer((_) async => Result.ok(oauthUser));
+        ).thenAnswer((_) async => const Result.ok(oauthUser));
 
         // Act
         final result = await authService.loginWithOAuth(
@@ -151,7 +153,7 @@ void main() {
             password: 'password123',
             username: 'testuser',
           ),
-        ).thenAnswer((_) async => Result.ok(testUser));
+        ).thenAnswer((_) async => const Result.ok(testUser));
 
         // Act
         final result = await authService.register(
@@ -178,7 +180,7 @@ void main() {
             email: any(named: 'email'),
             password: any(named: 'password'),
           ),
-        ).thenAnswer((_) async => Result.ok(testUser));
+        ).thenAnswer((_) async => const Result.ok(testUser));
 
         await authService.loginWithEmailPassword(
           email: 'test@example.com',
@@ -214,7 +216,7 @@ void main() {
             email: any(named: 'email'),
             password: any(named: 'password'),
           ),
-        ).thenAnswer((_) async => Result.ok(testUser));
+        ).thenAnswer((_) async => const Result.ok(testUser));
 
         await authService.loginWithEmailPassword(
           email: 'test@example.com',
@@ -256,7 +258,7 @@ void main() {
             email: any(named: 'email'),
             password: any(named: 'password'),
           ),
-        ).thenAnswer((_) async => Result.ok(testUser));
+        ).thenAnswer((_) async => const Result.ok(testUser));
 
         await authService.loginWithEmailPassword(
           email: 'test@example.com',

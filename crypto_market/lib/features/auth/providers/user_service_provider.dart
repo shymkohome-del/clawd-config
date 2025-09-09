@@ -29,7 +29,7 @@ abstract class UserService {
 }
 
 /// Implementation of UserService using ICP service layer
-  class UserServiceProvider implements UserService {
+class UserServiceProvider implements UserService {
   final ICPService icpService; // ICPService dependency
 
   const UserServiceProvider(this.icpService);
