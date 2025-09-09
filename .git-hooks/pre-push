@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Optional bypass for local emergencies
+if [[ "${PRE_PUSH_SKIP_VALIDATIONS:-0}" == "1" ]]; then
+  echo "[pre-push] WARNING: Skipping validations due to PRE_PUSH_SKIP_VALIDATIONS=1"
+  exit 0
+fi
+
 # Ensure we're inside the repo root
 REPO_ROOT=$(git rev-parse --show-toplevel)
 cd "$REPO_ROOT"
