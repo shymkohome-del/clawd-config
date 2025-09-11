@@ -11,6 +11,7 @@ permissions:
 jobs:
   qa-approved:
     runs-on: ubuntu-latest
+    if: vars.COPILOT_REVIEW_ENABLED != 'true'
     steps:
       - name: QA Gate / qa-approved
         shell: bash
