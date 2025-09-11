@@ -1,0 +1,190 @@
+template:
+  id: parallel-story-set-template-v1
+  name: Parallel Story Set Document  
+  version: 1.0
+  output:
+    format: markdown
+    filename: docs/stories/parallel-set-{{set_number}}.md
+    title: "Parallel Story Set {{set_number}}: {{set_title}}"
+
+workflow:
+  mode: interactive
+  elicitation: advanced-elicitation
+
+agent_config:
+  editable_sections:
+    - Status
+    - Parallel Stories
+    - Sequential Dependencies  
+    - Integration Plan
+    - Worktree Configuration
+    - Change Log
+
+sections:
+  - id: status
+    title: Status
+    type: choice
+    choices: [Draft, Ready for Development, In Progress, Integration Testing, Complete, Blocked]
+    instruction: |
+      Select the current status of the parallel story set. Flow: Draft → Ready for Development → In Progress → Integration Testing → Complete
+    owner: scrum-master
+    editors: [scrum-master, dev-agent]
+
+  - id: parallel-stories
+    title: Parallel Development Set
+    type: structured-list
+    template: |
+      ## Story {{epic_num}}.{{story_num}}: {{story_title}}
+      - **Branch**: feature/epic{{epic_num}}-story{{story_num}}-{{branch_suffix}}
+      - **Module Focus**: {{module_area}}
+      - **Parallel-Safe**: {{parallel_safe_indicator}}
+      - **Estimated Effort**: {{effort_points}} points
+      - **Primary Files**: {{primary_file_paths}}
+      
+      **Story Statement**: As a {{role}}, I want {{action}}, so that {{benefit}}
+      
+      **Acceptance Criteria**:
+      {{acceptance_criteria_list}}
+      
+      **Module Boundaries**:
+      - Files to Create/Modify: {{file_boundaries}}
+      - Components: {{component_boundaries}}  
+      - APIs: {{api_boundaries}}
+      - Database: {{database_boundaries}}
+    instruction: |
+      Define each story in the parallel set with clear module boundaries to prevent conflicts
+    elicit: true
+    owner: scrum-master
+    editors: [scrum-master]
+
+  - id: sequential-dependencies
+    title: Sequential Stories (Post-Parallel)
+    type: structured-list  
+    template: |
+      ## Story {{story_num}}: {{story_title}}
+      - **Depends On**: {{dependency_list}}
+      - **Integration Points**: {{integration_requirements}}
+      - **Merge Requirements**: {{merge_prerequisites}}
+    instruction: |
+      Define stories that must wait for parallel set completion
+    elicit: true
+    owner: scrum-master
+    editors: [scrum-master]
+
+  - id: integration-plan
+    title: Integration Strategy
+    type: structured-text
+    template: |
+      ### Merge Order
+      1. {{first_story_to_merge}} - {{merge_rationale}}
+      2. {{second_story_to_merge}} - {{merge_rationale}}
+      3. {{third_story_to_merge}} - {{merge_rationale}}
+      
+      ### Integration Testing Strategy
+      - **Pre-Merge Testing**: {{pre_merge_tests}}
+      - **Integration Testing**: {{integration_test_strategy}}
+      - **Regression Testing**: {{regression_test_requirements}}
+      
+      ### Conflict Resolution
+      - **Expected Conflicts**: {{potential_conflicts}}
+      - **Resolution Procedures**: {{conflict_resolution_steps}}
+    instruction: |
+      Define how parallel stories will be integrated back to main branch
+    elicit: true
+    owner: scrum-master
+    editors: [scrum-master]
+
+  - id: worktree-configuration
+    title: Git Worktree Setup
+    type: code-block
+    language: bash
+    template: |
+      # Worktree Setup Commands
+      {{worktree_setup_commands}}
+      
+      # Development Environment Setup
+      {{environment_setup_commands}}
+      
+      # Integration Commands  
+      {{integration_commands}}
+    instruction: |
+      Provide ready-to-execute Git worktree setup commands
+    elicit: true
+    owner: scrum-master
+    editors: [scrum-master]
+
+  - id: quality-assurance
+    title: QA Strategy for Parallel Development
+    type: structured-text
+    template: |
+      ### Individual Story QA
+      - **Code Quality**: {{code_quality_requirements}}
+      - **Testing Requirements**: {{testing_standards}}
+      - **Documentation**: {{documentation_requirements}}
+      
+      ### Cross-Story QA
+      - **Integration Testing**: {{integration_qa_strategy}}
+      - **Performance Testing**: {{performance_testing_requirements}}
+      - **UI/UX Consistency**: {{consistency_requirements}}
+      
+      ### Quality Gates
+      - **Pre-Merge Checklist**: {{pre_merge_checklist}}
+      - **Integration Checklist**: {{integration_checklist}}
+      - **Completion Criteria**: {{completion_requirements}}
+    instruction: |
+      Define QA requirements specific to parallel development
+    elicit: true
+    owner: scrum-master
+    editors: [scrum-master]
+
+  - id: risk-management
+    title: Risk Assessment and Mitigation
+    type: structured-text
+    template: |
+      ### Identified Risks
+      - **Risk**: {{risk_description}}
+        - **Impact**: {{impact_level}}
+        - **Probability**: {{probability_level}}
+        - **Mitigation**: {{mitigation_strategy}}
+      
+      ### Contingency Plans
+      - **Scenario**: {{risk_scenario}}
+        - **Response**: {{contingency_response}}
+        - **Rollback**: {{rollback_procedure}}
+    instruction: |
+      Identify and plan for parallel development risks
+    elicit: true
+    owner: scrum-master
+    editors: [scrum-master]
+
+  - id: team-coordination
+    title: Team Coordination Requirements
+    type: structured-text
+    template: |
+      ### Communication Schedule
+      - **Daily Standups**: {{standup_requirements}}
+      - **Integration Checkpoints**: {{checkpoint_schedule}}
+      - **Ad-hoc Coordination**: {{coordination_protocols}}
+      
+      ### Role Assignments
+      - **Story {{story_id}}**: {{assigned_developer}} ({{specialization}})
+      - **Integration Lead**: {{integration_lead}}
+      - **QA Coordinator**: {{qa_coordinator}}
+      
+      ### Decision-Making Process
+      - **Technical Decisions**: {{technical_decision_process}}
+      - **Scope Changes**: {{scope_change_process}}
+      - **Conflict Resolution**: {{conflict_resolution_process}}
+    instruction: |
+      Define team coordination requirements for parallel development
+    elicit: true
+    owner: scrum-master
+    editors: [scrum-master]
+
+  - id: change-log
+    title: Change Log
+    type: table
+    columns: [Date, Version, Description, Author]
+    instruction: Track changes made to this parallel story set document
+    owner: scrum-master
+    editors: [scrum-master, dev-agent, qa-agent]

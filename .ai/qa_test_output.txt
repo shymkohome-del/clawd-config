@@ -1,0 +1,183 @@
+00:00 +0: loading /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart
+00:00 +0: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +1: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +2: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +3: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +4: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +5: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +6: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +7: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +8: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +9: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +10: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +11: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +12: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +13: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +14: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +15: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +16: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +17: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +18: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +19: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +20: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +21: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +22: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +23: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +24: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +25: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +26: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +27: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +28: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +29: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +30: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +31: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +32: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +33: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +34: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +35: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +36: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +37: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +38: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +39: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +40: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +41: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +42: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +43: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +44: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +45: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +46: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +47: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +48: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +49: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +50: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +51: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +52: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +53: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +54: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +55: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +56: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +57: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget_test.dart: Widget Tests Base routes are navigable
+00:00 +58: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/login_feature_test.dart: Login Feature Integration Tests app starts successfully
+00:00 +59: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/login_feature_test.dart: Login Feature Integration Tests app starts successfully
+00:00 +60: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/login_feature_test.dart: Login Feature Integration Tests app starts successfully
+00:00 +61: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/login_feature_test.dart: Login Feature Integration Tests app starts successfully
+00:00 +62: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/login_feature_test.dart: Login Feature Integration Tests app starts successfully
+00:00 +63: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/login_feature_test.dart: Login Feature Integration Tests app starts successfully
+00:00 +64: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/router_integration_test.dart: AppRouter Integration Tests navigation to protected route redirects to login when unauthenticated
+00:01 +65: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/router_integration_test.dart: AppRouter Integration Tests navigation to protected route redirects to login when unauthenticated
+00:01 +66: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/router_integration_test.dart: AppRouter Integration Tests can navigate between login and register screens
+00:02 +67: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/shared/utils/validators_test.dart: EmailValidator should validate correct email formats
+00:02 +68: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/app_config_test.dart: AppConfig.tryLoad throws when a required key is missing
+00:02 +69: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/app_config_test.dart: AppConfig.tryLoad throws when a required key is missing
+00:02 +70: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/app_config_test.dart: AppConfig.tryLoad throws when a required key is missing
+00:02 +71: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/app_config_test.dart: AppConfig.tryLoad throws when a required key is missing
+00:02 +72: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/app_config_test.dart: AppConfig.tryLoad throws when a required key is missing
+00:02 +73: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/app_config_test.dart: AppConfig.tryLoad throws when a required key is missing
+00:02 +74: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/app_config_test.dart: AppConfig.tryLoad throws when a required key is missing
+00:02 +75: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/shared/utils/validators_test.dart: PasswordValidator should check password strength score
+00:02 +76: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/app_config_test.dart: AppConfig.tryLoad loads when all required keys are present
+00:02 +77: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/shared/utils/validators_test.dart: PasswordValidator should return appropriate strength labels
+00:02 +78: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/app_config_test.dart: AppConfig.tryLoad optional keys can be absent and resolve to null
+00:02 +79: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/app_config_test.dart: AppConfig.tryLoad optional keys can be absent and resolve to null
+00:02 +80: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration successful email registration navigates to home
+00:02 +81: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration successful email registration navigates to home
+00:02 +82: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration successful email registration navigates to home
+00:02 +83: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration successful email registration navigates to home
+00:02 +84: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/shared/utils/validators_test.dart: StringValidator should sanitize strings
+00:02 +85: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration OAuth initiation buttons are present and tappable
+00:02 +86: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration OAuth initiation buttons are present and tappable
+00:02 +87: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration OAuth initiation buttons are present and tappable
+00:02 +88: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration OAuth initiation buttons are present and tappable
+00:02 +89: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration OAuth initiation buttons are present and tappable
+00:02 +90: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration OAuth initiation buttons are present and tappable
+00:02 +91: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration OAuth initiation buttons are present and tappable
+00:02 +92: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration OAuth initiation buttons are present and tappable
+00:02 +93: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration OAuth initiation buttons are present and tappable
+00:02 +94: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration OAuth initiation buttons are present and tappable
+00:02 +95: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration OAuth initiation buttons are present and tappable
+00:02 +96: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/integration/screens/register_screen_integration_test.dart: RegisterScreen integration OAuth initiation buttons are present and tappable
+00:02 +97: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/auth_cubit_test.dart: AuthCubit emits [submitting, success] on register success
+00:02 +98: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/auth_cubit_test.dart: AuthCubit emits [submitting, success] on register success
+00:02 +99: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/cubit/auth_cubit_test.dart: AuthCubit Login Tests loginWithEmailPassword should emit success when login succeeds
+00:02 +100: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/cubit/auth_cubit_test.dart: AuthCubit Login Tests loginWithEmailPassword should emit success when login succeeds
+00:02 +101: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/cubit/auth_cubit_test.dart: AuthCubit Login Tests loginWithEmailPassword should emit success when login succeeds
+00:02 +102: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/cubit/auth_cubit_test.dart: AuthCubit Login Tests loginWithEmailPassword should emit failure when login fails
+00:02 +103: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/cubit/auth_cubit_test.dart: AuthCubit Login Tests loginWithOAuth should emit success when OAuth login succeeds
+00:02 +104: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/cubit/auth_cubit_test.dart: AuthCubit Login Tests logout should call logout service and emit initial state
+00:02 +105: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/cubit/auth_cubit_test.dart: AuthCubit Login Tests checkSession should emit success when session exists
+00:02 +106: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/cubit/auth_cubit_test.dart: AuthCubit Login Tests checkSession should emit initial state when no session exists
+00:02 +107: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/cubit/auth_cubit_test.dart: AuthCubit Register Tests register should emit success when registration succeeds
+00:02 +108: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/cubit/auth_cubit_test.dart: AuthCubit Register Tests register should emit failure when registration fails
+00:03 +109: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/i18n/locale_controller_test.dart: LocaleController persists and loads locale
+00:03 +110: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Domain Errors AuthError should create invalid credentials error
+00:03 +111: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Domain Errors AuthError should create user not found error
+00:03 +112: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Domain Errors AuthError should create custom message error
+00:03 +113: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Domain Errors NetworkError should create connection timeout error
+00:03 +114: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Domain Errors NetworkError should create server error with status code
+00:03 +115: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Domain Errors ValidationError should create required field error
+00:03 +116: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Domain Errors ValidationError should create format error
+00:03 +117: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Domain Errors BusinessLogicError should create insufficient balance error
+00:03 +118: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/icp_service_test.dart: ICPService.fromConfig constructs
+00:03 +119: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/icp_service_test.dart: ICPService.fromConfig constructs
+00:03 +120: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/icp_service_test.dart: ICPService.fromConfig constructs
+00:03 +121: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/icp_service_test.dart: ICPService.fromConfig constructs
+00:03 +122: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/icp_service_test.dart: ICPService.fromConfig constructs
+00:03 +123: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/icp_service_test.dart: ICPService.fromConfig constructs
+00:03 +124: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/icp_service_test.dart: ICPService.fromConfig constructs
+00:03 +125: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/icp_service_test.dart: ICPService.fromConfig constructs
+00:03 +126: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Result should fold results correctly
+00:03 +127: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/icp_service_test.dart: register maps low-level exceptions to AuthError via wrapper
+00:03 +128: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/icp_service_test.dart: register maps low-level exceptions to AuthError via wrapper
+00:03 +129: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Result should execute onFailure callback for failure result
+00:03 +130: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Result should wrap function calls with tryCall
+00:03 +131: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Result should convert unknown exceptions to domain errors
+00:03 +132: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Result Extensions should get value or default
+00:03 +133: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Result Extensions should get value or compute default
+00:03 +134: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/error_handling_test.dart: Result Extensions should convert to nullable
+00:03 +135: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/logger_test.dart: Logger should initialize with default settings
+00:03 +136: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/logger_test.dart: Logger should log debug messages
+00:03 +137: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/logger_test.dart: Logger should log info messages
+00:03 +138: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/logger_test.dart: Logger should log warning messages
+00:03 +139: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/logger_test.dart: Logger should log error messages
+00:03 +140: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/logger_test.dart: Logger should log errors with exception and stack trace
+00:03 +141: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/logger_test.dart: LogLevel should have correct priority order
+00:03 +142: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/logger_test.dart: LogLevel should have correct labels
+00:03 +143: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/principal_shim_test.dart: Principal shim register returns user with empty id when shim disabled
+00:03 +144: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/principal_shim_test.dart: Principal shim register returns user with principal when shim enabled
+00:03 +145: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/providers/auth_service_provider_test.dart: AuthServiceProvider Session Management Tests loginWithEmailPassword should save user to storage when login succeeds
+00:03 +146: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/providers/auth_service_provider_test.dart: AuthServiceProvider Session Management Tests loginWithEmailPassword should not save user when login fails
+00:03 +147: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/providers/auth_service_provider_test.dart: AuthServiceProvider Session Management Tests loginWithOAuth should save user to storage when OAuth login succeeds
+00:03 +148: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/providers/auth_service_provider_test.dart: AuthServiceProvider Session Management Tests register should save user to storage when registration succeeds
+00:03 +149: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/providers/auth_service_provider_test.dart: AuthServiceProvider Session Management Tests logout should clear user from storage
+00:03 +150: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/providers/auth_service_provider_test.dart: AuthServiceProvider Session Management Tests getCurrentUser should return null when no user is stored
+00:03 +151: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/providers/auth_service_provider_test.dart: AuthServiceProvider Session Management Tests getCurrentUser should return user when valid user data is stored
+00:03 +152: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/providers/auth_service_provider_test.dart: AuthServiceProvider Session Management Tests getCurrentUser should return null and clear storage when corrupted data exists
+00:03 +153: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/unit/widgets/sample_widget_test.dart: MyApp renders base routes
+00:04 +154: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/error_dialog_test.dart: ErrorDialog should display auth error with correct title and message
+00:04 +155: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/icp_di_wiring_test.dart: Providers resolve with injected ICPService
+00:04 +156: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/icp_di_wiring_test.dart: Providers resolve with injected ICPService
+00:04 +157: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/icp_di_wiring_test.dart: Providers resolve with injected ICPService
+00:04 +158: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/error_dialog_test.dart: ErrorDialog should display business logic error with correct content
+00:04 +159: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/error_dialog_test.dart: ErrorDialog should show custom title when provided
+00:04 +160: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/error_dialog_test.dart: ErrorDialog should show action button when provided
+00:04 +161: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/error_dialog_test.dart: ErrorDialog should dismiss dialog when OK is pressed
+00:04 +162: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/error_dialog_test.dart: ErrorDialog should not display error code section when code is null
+00:06 +163: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/login_screen_widget_test.dart: LoginScreen Widget Tests LoginScreen renders correctly
+00:06 +164: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/login_screen_widget_test.dart: LoginScreen Widget Tests LoginScreen renders correctly
+00:07 +165: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/login_screen_widget_test.dart: LoginScreen Widget Tests LoginScreen renders correctly
+00:07 +166: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/login_screen_widget_test.dart: LoginScreen Widget Tests LoginScreen renders correctly
+00:07 +167: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/register_screen_test.dart: Register form validates and submit button disabled while submitting
+00:07 +168: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/register_screen_test.dart: Register form validates and submit button disabled while submitting
+00:07 +169: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/register_screen_test.dart: Register form validates and submit button disabled while submitting
+00:07 +170: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/register_screen_test.dart: Register form validates and submit button disabled while submitting
+00:07 +171: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/register_screen_test.dart: Register form validates and submit button disabled while submitting
+00:07 +172: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/register_screen_test.dart: Register form validates and submit button disabled while submitting
+00:07 +173: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/widget/register_screen_test.dart: Register form validates and submit button disabled while submitting
+00:07 +174: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/features/market/edit_listing_screen_test.dart: prepopulates fields and updates listing on save
+00:07 +175: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/features/market/edit_listing_screen_test.dart: prepopulates fields and updates listing on save
+00:07 +176: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/features/market/edit_listing_screen_test.dart: prepopulates fields and updates listing on save
+00:07 +177: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/features/market/edit_listing_screen_test.dart: prepopulates fields and updates listing on save
+00:07 +178: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/features/market/edit_listing_screen_test.dart: prepopulates fields and updates listing on save
+00:08 +179: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/features/market/edit_listing_screen_test.dart: prepopulates fields and updates listing on save
+00:08 +180: /Volumes/workspace/projects/other/crypto_market/crypto_market/test/features/market/edit_listing_screen_test.dart: prepopulates fields and updates listing on save
+00:08 +181: All tests passed!

@@ -77,7 +77,8 @@ core_principles:
 # All commands require * prefix when used (e.g., *help)
 commands:
   - help: Show numbered list of the following commands to allow selection
-  - run-tests: Execute linting and tests
+  - run-tests: Execute linting and tests (prefers scripts/dev-validate.sh; else runs dart format/analyze/test)
+  - validate-local: Run scripts/dev-validate.sh from repo root; treat any failure as a blocker and iterate until green or escalate after 3 attempts
   - explain: teach me what and why you did whatever you just did in detail so I can learn. Explain to me as if you were training a junior engineer.
   - exit: Say goodbye as the Developer, and then abandon inhabiting this persona
   - develop-story:

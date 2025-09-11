@@ -1,17 +1,10 @@
-# **Coding Standards**
+# Coding Standards
 
-## **Critical Fullstack Rules**
+This document defines comprehensive coding standards for the Crypto Market project across Flutter/Dart (frontend), Motoko canisters (ICP backend), and supporting JavaScript/TypeScript tooling. It builds on our existing architecture and enforces clarity, safety, and consistency.
 
-- **Type Sharing:** Always define types in packages/shared and import from there
-- **Canister Calls:** Never make direct HTTP calls to canisters - use the ICP service layer
-- **Environment Variables:** Access only through config objects, never process.env directly
-- **Error Handling:** All canister calls must handle Result types properly
-- **State Updates:** Never mutate state directly - use proper state management patterns
-- **Principal Security:** Always validate caller principal in canister functions
-- **Input Validation:** Validate all inputs in canisters before processing
-- **Rate Limiting:** Implement rate limiting for all user-facing canister functions
+Last updated: 2025-08-29
 
-## **Naming Conventions**
+## Critical Fullstack Rules
 
 | Element | Frontend (Flutter) | Backend (Motoko) | Example |
 |----------|-------------------|------------------|---------|

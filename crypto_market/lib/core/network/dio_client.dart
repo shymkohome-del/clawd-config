@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:logger/logger.dart';
 import 'package:crypto_market/core/config/app_constants.dart';
+import 'package:crypto_market/core/logger/logger.dart';
 
 class DioClient {
   static final DioClient _instance = DioClient._internal();
@@ -28,7 +28,10 @@ class DioClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          _logger.i('Request: ${options.method} ${options.path}');
+          _logger.logInfo(
+            'Request: ${options.method} ${options.path}',
+            tag: 'DioClient',
+          );
           return handler.next(options);
         },
         onResponse: (response, handler) {
@@ -38,7 +41,12 @@ class DioClient {
           return handler.next(response);
         },
         onError: (error, handler) {
-          _logger.e('Error: ${error.message}');
+          _logger.logError(
+            'Error: ${error.message}',
+            tag: 'DioClient',
+            error: error,
+            stackTrace: error.stackTrace,
+          );
           return handler.next(error);
         },
       ),

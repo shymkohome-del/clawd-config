@@ -1,0 +1,20 @@
+type ListingResult = 
+ variant {
+   err: text;
+   ok: Listing;
+ };
+type Listing = 
+ record {
+   createdAt: int;
+   description: text;
+   id: text;
+   price: nat;
+   seller: principal;
+   title: text;
+ };
+service : {
+  createListing: (title: text, description: text, price: nat) ->
+   (ListingResult);
+  getListings: () -> (vec Listing) query;
+  healthCheck: () -> (bool) query;
+}
