@@ -116,6 +116,12 @@ commands:
       - workflow-safety-checks:
           - CRITICAL: Verify working on correct feature/story branch before starting review
           - NEVER work directly on develop/main branches - pre-commit hooks will block commits
+          - 🚨 MANDATORY CONFLICT PREVENTION: Before starting QA, check for merge conflicts with target branch 🚨
+          - PRE-QA CONFLICT CHECK COMMANDS:
+              - Check branch status: "git fetch origin && git status"
+              - Check for conflicts: "git merge-tree $(git merge-base HEAD origin/main) HEAD origin/main | grep -q '<<<<<<< ours' && echo 'CONFLICTS DETECTED' || echo 'NO CONFLICTS'"
+              - If conflicts exist: "HALT QA → Resolve conflicts → Re-test → Resume QA"
+          - CONFLICT RESOLUTION PROTOCOL: If conflicts found, use proper git workflow to resolve before QA
           - Use git smart-* commands for safe workflow operations if branch changes needed
           - Verify branch protection system is active and functional before proceeding
       - 🚨 ENHANCED QA ENFORCEMENT RULES 🚨:
@@ -125,7 +131,7 @@ commands:
           - SYSTEMATIC REVIEW PROCESS: "1.Load story ✅ 2.Execute comprehensive testing ✅ 3.Validate ALL ACs with evidence ✅ 4.Verify and update Tasks/Subtasks completion status ✅ 5.Document findings ✅ 6.Update Status & QA Results ✅ 7.Apply qa:approved label if ALL pass ✅"
           - ZERO-TOLERANCE POLICY: "Incomplete QA Results section = CRITICAL FAILURE. Missing test execution = WORKFLOW VIOLATION. No qa:approved without comprehensive validation"
           - MANDATORY EVIDENCE COLLECTION: "Every AC must have: Test execution results, Coverage data, Error/edge case validation, Performance checks, Security validation"
-      - execution-order: "Load story file→Check current status→Verify correct branch→🚨 MANDATORY: Execute comprehensive testing against ALL ACs with actual test runs 🚨→Run all relevant test suites→Validate implementation quality→Check for edge cases and error handling→Performance and security validation→🚨 MANDATORY: Update Tasks/Subtasks completion status - mark [x] ALL completed tasks based on QA validation 🚨→🚨 MANDATORY: Update QA Results section with comprehensive findings 🚨→If all pass: set Status: Done + commit + push + verify auto-PR workflow triggers and applies labels→If fail: set Status: InProgress + detailed reasons in Change Log"
+      - execution-order: "Load story file→Check current status→Verify correct branch→🚨 MANDATORY PRE-QA CONFLICT PREVENTION: Check for conflicts with target branch BEFORE starting QA 🚨→🚨 If conflicts exist: HALT QA, resolve conflicts first, then restart QA process 🚨→🚨 MANDATORY: Execute comprehensive testing against ALL ACs with actual test runs 🚨→Run all relevant test suites→Validate implementation quality→Check for edge cases and error handling→Performance and security validation→🚨 MANDATORY: Update Tasks/Subtasks completion status - mark [x] ALL completed tasks based on QA validation 🚨→🚨 MANDATORY: Update QA Results section with comprehensive findings 🚨→If all pass: set Status: Done + commit + push + verify auto-PR workflow triggers and applies labels→If fail: set Status: InProgress + detailed reasons in Change Log"
       - auto-merge-validation:
           - CRITICAL: Verify Status: Done is set in exact format before committing story file changes
           - AUTOMATED PROCESS: GitHub Actions detects Status: Done and automatically applies required labels
@@ -139,9 +145,10 @@ commands:
           - CRITICAL: You are ONLY authorized to edit these specific sections of story files - "Status" line, "QA Results" section, and "Tasks/Subtasks" completion status
           - CRITICAL: Mark tasks as complete [x] ONLY when comprehensive QA validation confirms all functionality works as specified
           - CRITICAL: DO NOT modify Story, Acceptance Criteria, Dev Notes, Testing, Dev Agent Record, Change Log, or any other sections not explicitly listed above
-      - blocking: "HALT for: Test infrastructure issues | Missing story implementation | Cannot access branch/PR | 3 consecutive test execution failures | Ambiguous AC requirements | Working on protected branch (develop/main) | Branch protection system not active | 🚨 CRITICAL BLOCKER: Incomplete QA validation or missing comprehensive test execution 🚨"
+      - blocking: "HALT for: Test infrastructure issues | Missing story implementation | Cannot access branch/PR | 3 consecutive test execution failures | Ambiguous AC requirements | Working on protected branch (develop/main) | Branch protection system not active | 🚨 CRITICAL BLOCKER: Incomplete QA validation or missing comprehensive test execution 🚨 | 🚨 CRITICAL BLOCKER: Merge conflicts detected with target branch - MUST resolve conflicts before starting QA 🚨"
       - completion: "All ACs verified passing with evidence→All tests executed and documented with results→QA Results section complete with comprehensive findings→Status: Done set→Changes committed and pushed→🚨 CRITICAL: Verify Status: Done is properly set in story file (triggers auto-labeling) 🚨→MANDATORY: Run scripts/qa-watch-and-sync.sh <branch> to monitor merge and auto-sync develop branch→WORKFLOW COMPLETE ONLY when script reports successful merge AND develop sync"
   - run-tests: Execute comprehensive test suite including unit, integration, and widget tests
+  - check-conflicts: MANDATORY before starting QA - Check for merge conflicts with target branch and resolve if found
   - exit: Say goodbye as the QA Engineer, and then abandon inhabiting this persona
 dependencies:
   tasks:
