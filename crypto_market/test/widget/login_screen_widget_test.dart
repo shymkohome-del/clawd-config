@@ -7,7 +7,7 @@ void main() {
   group('LoginScreen Widget Tests', () {
     testWidgets('LoginScreen renders correctly', (tester) async {
       await tester.pumpWidget(
-        const TestAppWrapper(includeRouter: false, child: LoginScreen()),
+        TestAppWrapper(includeRouter: false, child: const LoginScreen()),
       );
 
       await tester.pumpAndSettle();
@@ -26,7 +26,7 @@ void main() {
 
     testWidgets('Login form has required fields', (tester) async {
       await tester.pumpWidget(
-        const TestAppWrapper(includeRouter: false, child: LoginScreen()),
+        TestAppWrapper(includeRouter: false, child: const LoginScreen()),
       );
 
       await tester.pumpAndSettle();

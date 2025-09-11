@@ -212,7 +212,7 @@ void main() {
     testWidgets('should not display error code section when code is null', (
       tester,
     ) async {
-      final error = const BusinessLogicError('Simple error without code');
+      final error = BusinessLogicError('Simple error without code');
 
       await tester.pumpWidget(
         createTestApp(

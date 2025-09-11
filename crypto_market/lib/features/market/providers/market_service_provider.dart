@@ -9,7 +9,11 @@ class MarketServiceProvider {
   late final BlockchainService _blockchainService;
 
   MarketServiceProvider(this.icpService) {
-    _blockchainService = BlockchainService(dio: Dio(), logger: logger);
+    _blockchainService = BlockchainService(
+      config: icpService.config,
+      dio: Dio(),
+      logger: logger,
+    );
   }
 
   Future<void> updateListing({

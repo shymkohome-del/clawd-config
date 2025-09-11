@@ -52,3 +52,4 @@ rules:
     indent-sequences: consistent
     check-multi-line-strings: false
 
+

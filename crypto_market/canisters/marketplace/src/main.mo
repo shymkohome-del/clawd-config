@@ -8,14 +8,16 @@ import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 import Time "mo:base/Time";
 import Types "./types";
+import UUID "mo:uuid/UUID";
+import Source "mo:uuid/Source";
 
-persistent actor MarketplaceCanister {
+actor MarketplaceCanister {
   
-  var listingsEntries : [(Types.ListingId, Types.Listing)] = [];
-  var userListingsEntries : [(Principal, [Types.ListingId])] = [];
+  stable var listingsEntries : [(Types.ListingId, Types.Listing)] = [];
+  stable var userListingsEntries : [(Principal, [Types.ListingId])] = [];
   
-  transient let listings = HashMap.HashMap<Types.ListingId, Types.Listing>(16, Text.equal, Text.hash);
-  transient let userListings = HashMap.HashMap<Principal, [Types.ListingId]>(16, Principal.equal, Principal.hash);
+  let listings = HashMap.HashMap<Types.ListingId, Types.Listing>(16, Text.equal, Text.hash);
+  let userListings = HashMap.HashMap<Principal, [Types.ListingId]>(16, Principal.equal, Principal.hash);
 
   system func preupgrade() {
     listingsEntries := Iter.toArray(listings.entries());

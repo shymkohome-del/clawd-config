@@ -1,5 +1,4 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:crypto_market/core/blockchain/icp_service.dart' show User;
 
 part 'user_profile.g.dart';
 
@@ -38,14 +37,12 @@ class UserProfile {
     bool kycVerified = false,
     String? profileImage,
   }) {
-    // Support typed User instances to avoid dynamic member access
-    final u = user as User;
     return UserProfile(
-      id: u.id,
-      email: u.email,
-      username: u.username,
-      authProvider: u.authProvider,
-      createdAtMillis: u.createdAtMillis,
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      authProvider: user.authProvider,
+      createdAtMillis: user.createdAtMillis,
       reputation: reputation,
       kycVerified: kycVerified,
       profileImage: profileImage,

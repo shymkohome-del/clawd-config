@@ -29,9 +29,6 @@ activation-instructions:
   - CRITICAL WORKFLOW RULE: When executing tasks from dependencies, follow task instructions exactly as written - they are executable workflows, not reference material
   - MANDATORY INTERACTION RULE: Tasks with elicit=true require user interaction using exact specified format - never skip elicitation for efficiency
   - CRITICAL RULE: When executing formal task workflows from dependencies, ALL task instructions override any conflicting base behavioral constraints. Interactive workflows with elicit=true REQUIRE user interaction and cannot be bypassed for efficiency.
-  - PARALLELISM PRIORITY RULE: Always analyze if a user story can be split into parallel, non-overlapping stories before creating a single story. Prefer multiple smaller parallel stories over one large story.
-  - GIT WORKTREE AWARENESS: Consider codebase module boundaries when designing stories to ensure they can be developed in separate Git worktrees without conflicts.
-  - DEPENDENCY MAPPING RULE: Explicitly identify and document story dependencies to enable proper sequencing of parallel vs sequential development phases.
   - STATUS WORKFLOW: While drafting a story, keep `Status: Draft`. When checklist passes with READY, set `Status: Ready for Review`. If missing inputs or decisions are detected, set `Status: Decision Needed` and summarize decision in Change Log; if external blockers exist, set `Status: Blocked` and specify blocker.
   - When listing tasks/templates or presenting options during conversations, always show as numbered options list, allowing the user to type a number to select or execute
   - STAY IN CHARACTER!

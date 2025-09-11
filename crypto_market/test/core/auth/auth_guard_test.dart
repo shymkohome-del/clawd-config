@@ -5,7 +5,7 @@ import 'package:crypto_market/core/error/domain_errors.dart';
 void main() {
   group('Principal', () {
     test('should create principal with correct properties', () {
-      final principal = const Principal(
+      final principal = Principal(
         id: 'user123',
         email: 'test@example.com',
         roles: ['user', 'premium'],
@@ -19,7 +19,7 @@ void main() {
     });
 
     test('should check roles correctly', () {
-      final principal = const Principal(
+      final principal = Principal(
         id: 'user123',
         email: 'test@example.com',
         roles: ['user', 'moderator'],
@@ -34,8 +34,8 @@ void main() {
     });
 
     test('should validate session expiry', () {
-      final futureExpiry = DateTime.now().add(const Duration(hours: 1));
-      final pastExpiry = DateTime.now().subtract(const Duration(hours: 1));
+      final futureExpiry = DateTime.now().add(Duration(hours: 1));
+      final pastExpiry = DateTime.now().subtract(Duration(hours: 1));
 
       final validPrincipal = Principal(
         id: 'user123',
@@ -49,7 +49,7 @@ void main() {
         sessionExpiry: pastExpiry,
       );
 
-      final noExpiryPrincipal = const Principal(
+      final noExpiryPrincipal = Principal(
         id: 'user123',
         email: 'test@example.com',
       );
@@ -88,10 +88,7 @@ void main() {
       expect(AuthState.isAuthenticated, isFalse);
       expect(AuthState.currentPrincipal, isNull);
 
-      final principal = const Principal(
-        id: 'user123',
-        email: 'test@example.com',
-      );
+      final principal = Principal(id: 'user123', email: 'test@example.com');
 
       AuthState.setPrincipal(principal);
 
@@ -110,7 +107,7 @@ void main() {
       final expiredPrincipal = Principal(
         id: 'user123',
         email: 'test@example.com',
-        sessionExpiry: DateTime.now().subtract(const Duration(hours: 1)),
+        sessionExpiry: DateTime.now().subtract(Duration(hours: 1)),
       );
 
       AuthState.setPrincipal(expiredPrincipal);
@@ -134,7 +131,7 @@ void main() {
           principalId,
           operation,
           maxRequests: 5,
-          timeWindow: const Duration(minutes: 1),
+          timeWindow: Duration(minutes: 1),
         );
         expect(allowed, isTrue);
       }
@@ -150,7 +147,7 @@ void main() {
           principalId,
           operation,
           maxRequests: 3,
-          timeWindow: const Duration(minutes: 1),
+          timeWindow: Duration(minutes: 1),
         );
       }
 
@@ -159,7 +156,7 @@ void main() {
         principalId,
         operation,
         maxRequests: 3,
-        timeWindow: const Duration(minutes: 1),
+        timeWindow: Duration(minutes: 1),
       );
       expect(allowed, isFalse);
     });
@@ -198,10 +195,7 @@ void main() {
     test('should check authentication correctly', () {
       expect(AuthGuard.isAuthenticated(), isFalse);
 
-      final principal = const Principal(
-        id: 'user123',
-        email: 'test@example.com',
-      );
+      final principal = Principal(id: 'user123', email: 'test@example.com');
       AuthState.setPrincipal(principal);
 
       expect(AuthGuard.isAuthenticated(), isTrue);
@@ -213,17 +207,14 @@ void main() {
         throwsA(isA<AuthError>()),
       );
 
-      final principal = const Principal(
-        id: 'user123',
-        email: 'test@example.com',
-      );
+      final principal = Principal(id: 'user123', email: 'test@example.com');
       AuthState.setPrincipal(principal);
 
       expect(() => AuthGuard.requireAuth(operation: 'test'), returnsNormally);
     });
 
     test('should check roles correctly', () {
-      final principal = const Principal(
+      final principal = Principal(
         id: 'user123',
         email: 'test@example.com',
         roles: ['user', 'moderator'],
@@ -237,7 +228,7 @@ void main() {
     });
 
     test('should require roles', () {
-      final principal = const Principal(
+      final principal = Principal(
         id: 'user123',
         email: 'test@example.com',
         roles: ['user'],
@@ -257,10 +248,7 @@ void main() {
     });
 
     test('should check operation permissions', () {
-      final principal = const Principal(
-        id: 'user123',
-        email: 'test@example.com',
-      );
+      final principal = Principal(id: 'user123', email: 'test@example.com');
       AuthState.setPrincipal(principal);
 
       // Operations that don't require auth should pass
@@ -273,10 +261,7 @@ void main() {
     });
 
     test('should enforce security policies', () {
-      final principal = const Principal(
-        id: 'user123',
-        email: 'test@example.com',
-      );
+      final principal = Principal(id: 'user123', email: 'test@example.com');
       AuthState.setPrincipal(principal);
 
       // Should allow operations within policy
@@ -290,7 +275,7 @@ void main() {
       final soonToExpirePrincipal = Principal(
         id: 'user123',
         email: 'test@example.com',
-        sessionExpiry: DateTime.now().add(const Duration(minutes: 10)),
+        sessionExpiry: DateTime.now().add(Duration(minutes: 10)),
       );
       AuthState.setPrincipal(soonToExpirePrincipal);
 
@@ -299,7 +284,7 @@ void main() {
       final validPrincipal = Principal(
         id: 'user123',
         email: 'test@example.com',
-        sessionExpiry: DateTime.now().add(const Duration(hours: 2)),
+        sessionExpiry: DateTime.now().add(Duration(hours: 2)),
       );
       AuthState.setPrincipal(validPrincipal);
 
@@ -310,7 +295,7 @@ void main() {
       final expiredPrincipal = Principal(
         id: 'user123',
         email: 'test@example.com',
-        sessionExpiry: DateTime.now().subtract(const Duration(hours: 1)),
+        sessionExpiry: DateTime.now().subtract(Duration(hours: 1)),
       );
       AuthState.setPrincipal(expiredPrincipal);
 
@@ -321,10 +306,7 @@ void main() {
     test('should get current principal', () {
       expect(() => AuthGuard.getCurrentPrincipal(), throwsA(isA<AuthError>()));
 
-      final principal = const Principal(
-        id: 'user123',
-        email: 'test@example.com',
-      );
+      final principal = Principal(id: 'user123', email: 'test@example.com');
       AuthState.setPrincipal(principal);
 
       expect(AuthGuard.getCurrentPrincipal(), equals(principal));
@@ -342,7 +324,7 @@ void main() {
     test('should provide rate limits for operations', () {
       final authRateLimit = SecurityPolicy.getRateLimit('auth.login');
       expect(authRateLimit?.maxRequests, equals(5));
-      expect(authRateLimit?.timeWindow, equals(const Duration(minutes: 1)));
+      expect(authRateLimit?.timeWindow, equals(Duration(minutes: 1)));
 
       final unknownRateLimit = SecurityPolicy.getRateLimit('unknown.operation');
       expect(unknownRateLimit, isNull);
@@ -378,7 +360,7 @@ void main() {
     });
 
     test('should execute protected operations when authorized', () async {
-      final principal = const Principal(
+      final principal = Principal(
         id: 'user123',
         email: 'test@example.com',
         roles: ['user'],
@@ -397,7 +379,7 @@ void main() {
     });
 
     test('should check role requirements', () async {
-      final principal = const Principal(
+      final principal = Principal(
         id: 'user123',
         email: 'test@example.com',
         roles: ['user'],

@@ -1,44 +1,29 @@
 {
   "canisters": {
     "user_management": {
-      "main": "canisters/user_management/src/main_simple.mo",
+      "main": "canisters/user_management/src/main.mo",
       "type": "motoko",
-      "candid": "canisters/user_management/user_management.did",
-      "declarations": {
-        "output": "lib/core/blockchain/declarations/user_management"
-      }
+      "candid": "canisters/user_management/user_management.did"
     },
     "marketplace": {
-      "main": "canisters/marketplace/src/main_simple.mo",
+      "main": "canisters/marketplace/src/main.mo",
       "type": "motoko",
-      "candid": "canisters/marketplace/marketplace.did",
-      "declarations": {
-        "output": "lib/core/blockchain/declarations/marketplace"
-      }
+      "candid": "canisters/marketplace/marketplace.did"
     },
     "atomic_swap": {
-      "main": "canisters/atomic_swap/src/main_simple.mo",
+      "main": "canisters/atomic_swap/src/main.mo",
       "type": "motoko",
-      "candid": "canisters/atomic_swap/atomic_swap.did",
-      "declarations": {
-        "output": "lib/core/blockchain/declarations/atomic_swap"
-      }
+      "candid": "canisters/atomic_swap/atomic_swap.did"
     },
     "price_oracle": {
-      "main": "canisters/price_oracle/src/main_simple.mo",
+      "main": "canisters/price_oracle/src/main.mo",
       "type": "motoko",
-      "candid": "canisters/price_oracle/price_oracle.did",
-      "declarations": {
-        "output": "lib/core/blockchain/declarations/price_oracle"
-      }
+      "candid": "canisters/price_oracle/price_oracle.did"
     }
   },
   "defaults": {
     "build": {
       "packtool": ""
-    },
-    "replica": {
-      "subnet_type": "system"
     }
   },
   "networks": {

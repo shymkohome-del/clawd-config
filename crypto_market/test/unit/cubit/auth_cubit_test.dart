@@ -187,7 +187,7 @@ void main() {
               password: any(named: 'password'),
               username: any(named: 'username'),
             ),
-          ).thenAnswer((_) async => const Result.err(AuthError.unknown));
+          ).thenAnswer((_) async => Result.err(AuthError.unknown));
         },
         act: (cubit) => cubit.register(
           email: 'existing@example.com',

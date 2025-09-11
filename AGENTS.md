@@ -87,11 +87,9 @@ Branching, commits, PRs
   - Conventional Commits. Story example: `feat(story-<id>): <title>`
   - Commit message must reference the story id on `story/*` branches.
 - PRs:
-  - Base: `develop`. Include story reference (e.g., `story <id>`); validation block injection is retired.
-  - GitHub Copilot Review posts a summary and suggestions by default.
+  - Base: `develop`. Include validation summary and story reference (e.g., `story <id>`).
   - Required checks: Workflow Lint, PR Lint, Flutter CI, QA Gate (see `docs/architecture/development-workflow.md`).
   - Auto‑merge requires `qa:approved`. Actions using `actions/github-script` are banned.
-  - Repo variable `COPILOT_REVIEW_ENABLED` (default `true`) controls legacy comment/approval steps.
 
 Environment activation & commands
 - From repo root, recommended (human):
@@ -115,8 +113,6 @@ Codex Cloud Environment Setup
   - Navigate to app: `cd crypto_market && flutter pub get`
   - Test gates work: `dart format`, `flutter analyze`, `flutter test --no-pub`
 - Setup script integration: `scripts/codex_setup.sh` for Codex Environment Setup Script field
-- Toggles: set `CODEX_SETUP_MOTOKO=true` or `CODEX_SETUP_RUST=true` in environment config for optional DFX/Motoko or Rust installs
-- Verification: run `scripts/codex_verify.sh` to confirm Flutter/Dart, Node.js, and optional tools
 - **FAIL‑FAST**: If Flutter setup fails in Codex Cloud, halt with clear setup instructions
 
 Guardrails (must follow)
@@ -141,7 +137,6 @@ Related references
 - CI gates: `.github/workflows/flutter-ci.yml`
 - Dev ↔ QA flow: `docs/dev-qa-status-flow.md`
 - Development workflow overview: `docs/architecture/development-workflow.md`
-- Release process: `docs/architecture/development-workflow.md#release-process-develop-→-main`
 - Story checklists: `.bmad-core/checklists/story-git-init-checklist.md`, `.bmad-core/checklists/story-dod-checklist.md`
 - Multi‑agent worktrees (optional, advanced): `docs/READY-TO-USE-MULTI-AGENT-SYSTEM.md`
 
@@ -166,8 +161,6 @@ Chat shortcuts (for fast persona actions)
   - `dev *develop [1.2.profile-and-reputation.md](docs/stories/1.2.profile-and-reputation.md)`
   - `qa *review [1.2.profile-and-reputation.md](docs/stories/1.2.profile-and-reputation.md)`
   - `dev *open-pr [3.1.initiate-swap-htlc.md](docs/stories/3.1.initiate-swap-htlc.md)`
-  - `dev *open-pr --base main --head develop` (open release PR)
-  - `dev *label release:approved` (apply release label)
   - `dev *status [0.5.icp-service-layer-bootstrap.md](docs/stories/0.5.icp-service-layer-bootstrap.md)`
 
 Notes

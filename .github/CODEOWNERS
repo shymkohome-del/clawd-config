@@ -1,20 +1,7 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> origin/story/0.9.3-auto-merge
 # Protect workflows and scripts — require DevOps/Maintainers review
 .github/workflows/*    @maintainers @devops
 scripts/*              @maintainers @devops
 
-<<<<<<< HEAD
 # Stories are co-owned by Maintainers/DevOps and the project lead
 docs/stories/*       @maintainers @devops @Vatalion
-=======
-=======
->>>>>>> origin/story/0.9.3-auto-merge
-# Protect workflows and automation scripts
-.github/workflows/*  @Vatalion
-scripts/*            @Vatalion
-docs/stories/*       @Vatalion
->>>>>>> origin/story/0.9.1-workflow-lint-and-flags
 

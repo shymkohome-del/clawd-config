@@ -21,17 +21,8 @@ type OAuthProvider = variant { google; apple; github; facebook };
 
 type LoginResult = variant { ok: User; err: text };
 
-type UserUpdate = record {
-  username: opt text;
-  profileImage: opt text;
-};
-
-type Result = variant { ok: null; err: text };
-
 service : {
   register: (text, text, text) -> (RegisterResult);
   loginWithOAuth: (OAuthProvider, text) -> (LoginResult);
-  getUserProfile: (principal) -> (opt User) query;
-  updateUserProfile: (UserUpdate) -> (Result);
-  updateReputation: (principal, int) -> (Result);
+  getUserProfile: (principal) -> (opt User);
 }

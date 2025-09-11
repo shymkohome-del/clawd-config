@@ -520,7 +520,7 @@ jobs:
 
       - name: Compute CI status and produce validation artifacts
         id: ci_status
-        if: steps.meta.outputs.is_supported == 'true' && vars.COPILOT_REVIEW_ENABLED != 'true'
+        if: steps.meta.outputs.is_supported == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -573,9 +573,9 @@ jobs:
 
           FILES=$(curl -sS -H "authorization: Bearer ${GH_TOKEN}" -H "accept: application/vnd.github+json" \
             "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/files?per_page=100" 2>/dev/null || echo '[]')
-          CHANGED_COUNT=$(echo "$FILES" | jq -r 'if type == "array" then length else 0 end' 2>/dev/null || echo '0')
+          CHANGED_COUNT=$(echo "$FILES" | jq 'if type == "array" then length else 0 end' 2>/dev/null || echo '0')
           SUMMARY_FILES=$(echo "$FILES" | jq -r \
-            'if type == "array" then (.[0:20] // []) | map("- " + .filename + " (" + (.changes|tostring) + " lines)") | join("\n")
+            'if type == "array" then .[0:20] | map("- " + .filename + " (" + (.changes|tostring) + " lines)") | join("\n")
              else "Files list unavailable" end' 2>/dev/null || echo "Files list unavailable")
 
           READY="No"
@@ -642,7 +642,7 @@ jobs:
 
       - name: Auto-approve PR (bot review)
         id: pr_report
-        if: steps.meta.outputs.is_supported == 'true' && inputs.auto_approve && vars.COPILOT_REVIEW_ENABLED == 'false'
+        if: steps.meta.outputs.is_supported == 'true' && inputs.auto_approve
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -703,7 +703,7 @@ jobs:
             "${API}/repos/${OWNER}/${REPO}/pulls/${PR_NUMBER}/files?per_page=100" 2>/dev/null || echo '[]')
           CHANGED_COUNT=$(echo "$FILES" | jq 'if type == "array" then length else 0 end' 2>/dev/null || echo '0')
           SUMMARY_FILES=$(echo "$FILES" | jq -r \
-            'if type == "array" then (.[0:20] // []) | map("- " + .filename + " (" + (.changes|tostring) + " lines)") | join("\n")
+            'if type == "array" then .[0:20] | map("- " + .filename + " (" + (.changes|tostring) + " lines)") | join("\n")
              else "Files list unavailable" end' 2>/dev/null || echo "Files list unavailable")
 
           # Merge readiness evaluation
@@ -794,7 +794,7 @@ jobs:
           echo "checks_all_green=${ALL_GREEN}" >> "$GITHUB_OUTPUT"
 
       - name: Upload validation artifact
-        if: steps.meta.outputs.is_supported == 'true' && vars.COPILOT_REVIEW_ENABLED == 'false'
+        if: steps.meta.outputs.is_supported == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: validation-summary

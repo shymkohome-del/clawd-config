@@ -24,7 +24,7 @@ class AppRouter {
       GoRoute(
         path: '/home',
         name: 'home',
-        builder: (context, state) => const ProtectedRoute(child: HomeScreen()),
+        builder: (context, state) => ProtectedRoute(child: HomeScreen()),
       ),
     ],
   );

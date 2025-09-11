@@ -6,10 +6,7 @@
     "claude-desktop": true,
     "windsurf": true,
     "cursor-global": true,
-    "cursor-workspace": true,
-    "cursor-file": true,
-    "cursor-selection": true
+    "cursor-workspace": true
   },
   "github.copilot.chat.agent.autoFix": true,
-  "chatgpt.openOnStartup": true,
 }
