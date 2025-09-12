@@ -37,8 +37,9 @@ class _EditListingScreenState extends State<EditListingScreen> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.initialTitle);
-    _priceController =
-        TextEditingController(text: widget.initialPrice.toString());
+    _priceController = TextEditingController(
+      text: widget.initialPrice.toString(),
+    );
   }
 
   @override
@@ -78,20 +79,27 @@ class _EditListingScreenState extends State<EditListingScreen> {
           _selectedImage = File(picked.path);
         });
         if (kDebugMode) {
-          logger.logDebug('Selected new image: ${picked.path}',
-              tag: 'EditListing');
+          logger.logDebug(
+            'Selected new image: ${picked.path}',
+            tag: 'EditListing',
+          );
         }
         // Placeholder for IPFS upload
       }
     } catch (e, st) {
       if (kDebugMode) {
-        logger.logDebug('Image pick error: $e',
-            tag: 'EditListing', error: e, stackTrace: st);
+        logger.logDebug(
+          'Image pick error: $e',
+          tag: 'EditListing',
+          error: e,
+          stackTrace: st,
+        );
       }
       if (!mounted) return;
       final l10n = AppLocalizations.of(context);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.errorImagePicker)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.errorImagePicker)));
     }
   }
 
@@ -125,8 +133,10 @@ class _EditListingScreenState extends State<EditListingScreen> {
     if (!mounted) return;
 
     if (kDebugMode) {
-      logger.logDebug('Updating listing ${widget.listingId}',
-          tag: 'EditListing');
+      logger.logDebug(
+        'Updating listing ${widget.listingId}',
+        tag: 'EditListing',
+      );
     }
 
     try {
@@ -141,17 +151,23 @@ class _EditListingScreenState extends State<EditListingScreen> {
       if (kDebugMode) {
         logger.logDebug('Update successful', tag: 'EditListing');
       }
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.editSuccess)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.editSuccess)));
       Navigator.of(context).pop();
     } catch (e, st) {
       if (kDebugMode) {
-        logger.logDebug('Update failed: $e',
-            tag: 'EditListing', error: e, stackTrace: st);
+        logger.logDebug(
+          'Update failed: $e',
+          tag: 'EditListing',
+          error: e,
+          stackTrace: st,
+        );
       }
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l10n.editFailure)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.editFailure)));
     }
   }
 
@@ -186,19 +202,12 @@ class _EditListingScreenState extends State<EditListingScreen> {
             else if (widget.initialImageUrl != null &&
                 widget.initialImageUrl!.isNotEmpty)
               Image.network(widget.initialImageUrl!, height: 200),
-            TextButton(
-              onPressed: _pickImage,
-              child: Text(l10n.replaceImage),
-            ),
+            TextButton(onPressed: _pickImage, child: Text(l10n.replaceImage)),
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _save,
-              child: Text(l10n.saveChanges),
-            ),
+            ElevatedButton(onPressed: _save, child: Text(l10n.saveChanges)),
           ],
         ),
       ),
     );
   }
 }
-

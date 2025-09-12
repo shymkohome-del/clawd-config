@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:crypto_market/core/blockchain/blockchain_service.dart';
+import 'package:crypto_market/core/config/app_config.dart';
 import 'package:crypto_market/core/blockchain/errors.dart';
 import 'package:crypto_market/core/logger/logger.dart';
 import 'package:dio/dio.dart';
@@ -49,10 +50,14 @@ class ICPService {
        _logger = logger;
 
   /// Factory method for backward compatibility with existing code
-  factory ICPService.fromConfig(dynamic config) {
+  factory ICPService.fromConfig(AppConfig config) {
     final dio = Dio();
     final logger = Logger.instance;
-    final blockchainService = BlockchainService(dio: dio, logger: logger);
+    final blockchainService = BlockchainService(
+      config: config,
+      dio: dio,
+      logger: logger,
+    );
 
     return ICPService(blockchainService: blockchainService, logger: logger);
   }

@@ -36,10 +36,20 @@ actionlint -shellcheck=
 
 # Yamllint using Docker image for parity (no local Python needed)
 if command -v docker >/dev/null 2>&1; then
-  echo "[dev-validate] Running yamllint (Docker) on workflows only"
-  docker run --rm -v "$REPO_ROOT":/data cytopia/yamllint -c /data/.yamllint.yml -s /data/.github/workflows
+  # Ensure Docker daemon is running; otherwise fall back
+  if docker ps >/dev/null 2>&1; then
+    echo "[dev-validate] Running yamllint (Docker) on workflows only"
+    docker run --rm -v "$REPO_ROOT":/data cytopia/yamllint -c /data/.yamllint.yml -s /data/.github/workflows
+  else
+    echo "[dev-validate] WARN: Docker installed but daemon not running; falling back to pipx/pip yamllint."
+    USE_DOCKER_YAMLLINT=0
+  fi
 else
   # Fallback: attempt via pipx or pip if Docker absent
+  USE_DOCKER_YAMLLINT=0
+fi
+
+if [[ "${USE_DOCKER_YAMLLINT:-1}" -eq 0 ]]; then
   if command -v pipx >/dev/null 2>&1; then
     echo "[dev-validate] Installing yamllint via pipx (if missing)"
     pipx install --force yamllint==1.35.1 >/dev/null 2>&1 || true
@@ -51,7 +61,8 @@ else
     echo "[dev-validate] Attempting yamllint via pip user install..."
     python3 -m pip install --user -q yamllint==1.35.1 --break-system-packages || true
     if python3 -c 'import yamllint' >/dev/null 2>&1; then
-      "$HOME/.local/bin/yamllint" --strict -c .yamllint.yml .github/workflows
+      # Prefer module invocation to avoid PATH issues on macOS
+      python3 -m yamllint --strict -c .yamllint.yml .github/workflows
     else
       echo "[dev-validate] WARN: yamllint unavailable; skipping"
     fi
@@ -117,6 +128,14 @@ echo "[dev-validate] All local checks passed."
 # Enable if RUN_ACT=true, or auto-run when RUN_ACT=auto (default) and act is available
 RUN_ACT_MODE="${RUN_ACT:-auto}"
 if [[ "$RUN_ACT_MODE" == "true" || ( "$RUN_ACT_MODE" == "auto" && $(command -v act >/dev/null 2>&1; echo $?) -eq 0 ) ]]; then
+  # Skip act if Docker daemon isn't running
+  if command -v docker >/dev/null 2>&1 && ! docker ps >/dev/null 2>&1; then
+    echo "[dev-validate] Docker daemon not running; skipping act runs."
+    RUN_ACT_MODE="skip"
+  fi
+fi
+
+if [[ "$RUN_ACT_MODE" != "skip" && ( "$RUN_ACT_MODE" == "true" || ( "$RUN_ACT_MODE" == "auto" && $(command -v act >/dev/null 2>&1; echo $?) -eq 0 ) ) ]]; then
   if ! command -v act >/dev/null 2>&1; then
     if command -v brew >/dev/null 2>&1; then
       echo "[dev-validate] Installing 'act' via Homebrew..."
@@ -133,11 +152,11 @@ if [[ "$RUN_ACT_MODE" == "true" || ( "$RUN_ACT_MODE" == "auto" && $(command -v a
       echo "[dev-validate] No token available for 'act' (ACT_TOKEN/GITHUB_TOKEN missing). Skipping act runs to avoid false negatives."
       echo "[dev-validate] Hint: export ACT_TOKEN=ghp_xxx to enable realistic act runs."
     else
-    set +e
-    LOG_FILE="$BIN_DIR/act-auto-rebase.log"
-    act workflow_dispatch -W .github/workflows/auto-rebase.yml -j rebase -s GITHUB_TOKEN="$TOKEN" --container-architecture linux/amd64 >"$LOG_FILE" 2>&1
-    ACT_STATUS=$?
-    set -e
+  set +e
+  LOG_FILE="$BIN_DIR/act-auto-rebase.log"
+  act workflow_dispatch -W .github/workflows/auto-rebase.yml -j rebase -s GITHUB_TOKEN="$TOKEN" --container-architecture linux/amd64 >"$LOG_FILE" 2>&1
+  ACT_STATUS=$?
+  set -e
     if [[ $ACT_STATUS -ne 0 ]]; then
         # Treat common private-repo/auth/type issues as non-fatal for local validation
         if grep -qiE 'authentication required|permission denied|could not read Username|Bad credentials|Requires authentication|Resource not accessible by integration|API rate limit exceeded|array \(\[\]\) and object|object and array cannot be added' "$LOG_FILE"; then

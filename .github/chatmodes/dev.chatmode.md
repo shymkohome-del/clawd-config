@@ -1,6 +1,6 @@
 ---
 description: "Use for code implementation, debugging, refactoring, and development best practices"
-tools: ['extensions', 'codebase', 'usages', 'vscodeAPI', 'think', 'problems', 'changes', 'testFailure', 'terminalSelection', 'terminalLastCommand', 'openSimpleBrowser', 'fetch', 'findTestFiles', 'searchResults', 'githubRepo', 'runTests', 'runCommands', 'runTasks', 'editFiles', 'runNotebooks', 'search', 'new', 'Dart SDK MCP Server', 'github', 'websearch']
+tools: ['extensions', 'codebase', 'usages', 'vscodeAPI', 'think', 'problems', 'changes', 'testFailure', 'terminalSelection', 'terminalLastCommand', 'openSimpleBrowser', 'fetch', 'findTestFiles', 'searchResults', 'githubRepo', 'editFiles', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'github']
 ---
 
 # dev
@@ -97,4 +97,3 @@ dependencies:
     - validate-next-story.md
   checklists:
     - story-dod-checklist.md
-```

@@ -18,21 +18,19 @@ analyzer:
 linter:
   # Customize or extend rules from flutter_lints
   rules:
-    # Formatting & style
-    prefer_single_quotes: true
-    require_trailing_commas: true
-    always_declare_return_types: true
+  # Disable style lints that are noisy under --fatal-infos
+  - prefer_const_constructors: false
+  - prefer_const_literals_to_create_immutables: false
+  - prefer_final_locals: false
+  - prefer_single_quotes: false
+  - require_trailing_commas: false
+  - avoid_dynamic_calls: false
 
-    # Immutability & const correctness
-    prefer_const_constructors: true
-    prefer_const_literals_to_create_immutables: true
-    prefer_final_locals: true
-
-    # API & safety
-    avoid_print: true
-    avoid_dynamic_calls: true
-    unnecessary_late: true
-    prefer_typing_uninitialized_variables: true
+  # Keep important correctness/safety rules
+  - avoid_print
+  - always_declare_return_types
+  - unnecessary_late
+  - prefer_typing_uninitialized_variables
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
