@@ -150,10 +150,13 @@ class BlockchainService {
   Future<Map<String, dynamic>> createListing({
     required String title,
     required String description,
-    required String cryptoAsset,
-    required int amount,
-    required int priceInUsd,
-    required List<String> paymentMethods,
+    required int priceUSD,
+    required String cryptoType,
+    required List<String> images,
+    required String category,
+    required String condition,
+    required String location,
+    required List<String> shippingOptions,
   }) async {
     return await _callCanister(
       canisterId: _config.canisterIdMarketplace,
@@ -161,10 +164,13 @@ class BlockchainService {
       args: {
         'title': title,
         'description': description,
-        'cryptoAsset': cryptoAsset,
-        'amount': amount,
-        'priceInUsd': priceInUsd,
-        'paymentMethods': paymentMethods,
+        'priceUSD': priceUSD,
+        'cryptoType': cryptoType,
+        'images': images,
+        'category': category,
+        'condition': condition,
+        'location': location,
+        'shippingOptions': shippingOptions,
       },
     );
   }
