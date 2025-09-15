@@ -47,12 +47,13 @@ jobs:
           
       - name: Get merged branch info
         id: branch_info
+        env:
+          BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
+          BRANCH_REPO: ${{ github.event.pull_request.head.repo.full_name }}
         run: |
           set -euo pipefail
           
           # Get branch name from the merged PR
-          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
-          BRANCH_REPO="${{ github.event.pull_request.head.repo.full_name }}"
           BASE_REPO="${{ github.repository }}"
           
           echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
@@ -88,12 +89,12 @@ jobs:
           fi
 
       - name: Log cleanup action
+        env:
+          BRANCH_NAME: ${{ steps.branch_info.outputs.branch_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
           set -euo pipefail
-          
-          BRANCH_NAME="${{ steps.branch_info.outputs.branch_name }}"
-          PR_NUMBER="${{ github.event.pull_request.number }}"
-          PR_TITLE="${{ github.event.pull_request.title }}"
           
           echo "::notice::Branch cleanup completed for PR #$PR_NUMBER: $PR_TITLE"
           echo "::notice::Branch '$BRANCH_NAME' processed for deletion"
