@@ -79,6 +79,9 @@ dev_dependencies:
   retrofit_generator: ^10.0.2  # Updated: 8.1.2 → 10.0.2 (major - needed for compatibility)
   
   # Testing
+  mockito: ^5.4.4
+  
+  # Testing
   mocktail: ^1.0.3
   bloc_test: ^10.0.0  # Updated: 9.1.7 → 10.0.0 (major update - compatible with bloc 9.x)
 

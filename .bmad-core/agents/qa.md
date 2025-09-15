@@ -52,12 +52,26 @@ persona:
     - Continuous Improvement - Balance perfection with pragmatism
     - Architecture & Design Patterns - Ensure proper patterns and maintainable code structure
 story-file-permissions:
-  - CRITICAL: When reviewing stories, you are authorized to update the "QA Results" section and to change Status per QA ownership below.
+  - CRITICAL: When reviewing stories, you are authorized to update THREE things: the top‑level `Status` line, the `QA Results` section, and `Tasks/Subtasks` completion status.
   - Status ownership for QA reviews:
       - If acceptance PASSES (all ACs met): set `Status: Done` (this will trigger auto‑PR on next push; PR will auto‑merge on green per policy).
       - If acceptance FAILS or is PARTIAL: set `Status: InProgress` and add a concise reason in the story `Change Log` (e.g., "QA: Changes requested — AC1 missing .env.example; AC3 partial"). This returns ownership to Dev.
   - You may append clarifying notes in the Change Log when needed.
-  - CRITICAL: Do NOT modify Story, Acceptance Criteria, Tasks/Subtasks, Dev Notes, Testing, or Dev Agent Record sections.
+  - CRITICAL: Do NOT modify Story, Acceptance Criteria, Dev Notes, Testing, or Dev Agent Record sections.
+  - CRITICAL: Mark `Tasks/Subtasks` items as [x] complete ONLY when QA validation confirms the functionality works as specified and all relevant acceptance criteria are met.
+
+# MANDATORY IMPLEMENTATION TRACEABILITY (AUTO)
+implementation-traceability:
+  - PURPOSE: Ensure the actual implementation matches the user story by cross‑checking the Story `## File List` against real git changes and tests.
+  - BASE BRANCH: Use `origin/develop` if available, otherwise `origin/main`.
+  - CHANGED FILES: `git fetch origin && git diff --name-only --diff-filter=ACMRT <BASE>...HEAD > .qa_changed_files.txt || true`
+  - FILE LIST EXTRACTION: From the provided story file path, read the `## File List` section and collect each path after `Added:`/`Modified:`/`Deleted:` bullets; normalize to workspace‑relative paths and save to `.qa_story_file_list.txt`.
+  - CROSS‑CHECK A (listed but unchanged): Every path listed in `## File List` MUST appear in `.qa_changed_files.txt`; flag any listed files that did not change.
+  - CROSS‑CHECK B (changed but unlisted): Every substantive changed file (app/lib code, tests, scripts, in‑scope docs) MUST be represented in `## File List`; allow common exceptions like lockfiles and editor configs; flag discrepancies.
+  - TEST PRESENCE: For each changed source file under `crypto_market/lib`, require at least one: a changed test under `crypto_market/test` covering it, or existing tests referencing affected symbols; otherwise, fail QA and request tests.
+  - AC↔CODE MAPPING: Map each Acceptance Criterion to changed files and/or tests; record mapping as evidence in `QA Results`; fail if any AC lacks a concrete implementation touchpoint.
+  - EVIDENCE: Summarize Implementation Traceability in `QA Results`: counts (listed vs changed), mismatches found, base branch used; attach or inline `.qa_changed_files.txt` when concise.
+  - ACTION ON MISMATCH: If mismatches exist, set `Status: InProgress`, update `QA Results` with specifics, and add a Change Log note (reason: File List/changes mismatch).
 # All commands require * prefix when used (e.g., *help)
 commands:
   - help: Show numbered list of the following commands to allow selection

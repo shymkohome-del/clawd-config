@@ -4,6 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:crypto_market/features/auth/screens/login_screen.dart';
 import 'package:crypto_market/features/auth/screens/register_screen.dart';
 import 'package:crypto_market/features/auth/cubit/auth_cubit.dart';
+import 'package:crypto_market/features/market/screens/create_listing_screen.dart';
+import 'package:crypto_market/features/market/cubit/create_listing_cubit.dart';
+import 'package:crypto_market/features/market/providers/market_service_provider.dart';
 import 'package:crypto_market/core/routing/protected_route.dart';
 
 /// Main application router configuration
@@ -25,6 +28,18 @@ class AppRouter {
         path: '/home',
         name: 'home',
         builder: (context, state) => ProtectedRoute(child: HomeScreen()),
+      ),
+      GoRoute(
+        path: '/create-listing',
+        name: 'create-listing',
+        builder: (context, state) => ProtectedRoute(
+          child: BlocProvider(
+            create: (context) => CreateListingCubit(
+              marketService: context.read<MarketServiceProvider>(),
+            ),
+            child: const CreateListingScreen(),
+          ),
+        ),
       ),
     ],
   );
@@ -79,6 +94,12 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                 ],
+                const SizedBox(height: 32),
+                ElevatedButton.icon(
+                  onPressed: () => context.go('/create-listing'),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Create Listing'),
+                ),
               ],
             ),
           ),
