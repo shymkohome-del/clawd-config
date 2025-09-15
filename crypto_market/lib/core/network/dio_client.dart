@@ -7,7 +7,7 @@ class DioClient {
   static DioClient get instance => _instance;
 
   final Dio _dio;
-  final Logger _logger = Logger.instance;
+  final Logger _logger = Logger();
 
   DioClient._internal()
     : _dio = Dio(
@@ -35,9 +35,8 @@ class DioClient {
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          _logger.logInfo(
+          _logger.i(
             'Response: ${response.statusCode} ${response.statusMessage}',
-            tag: 'DioClient',
           );
           return handler.next(response);
         },
