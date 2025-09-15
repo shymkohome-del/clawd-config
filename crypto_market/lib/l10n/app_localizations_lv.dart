@@ -290,4 +290,89 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get successGeneric => 'Darbība veiksmīgi pabeigta';
+
+  @override
+  String get createListingTitle => 'Izveidot sludinājumu';
+
+  @override
+  String get descriptionLabel => 'Apraksts';
+
+  @override
+  String get categoryLabel => 'Kategorija';
+
+  @override
+  String get conditionLabel => 'Stāvoklis';
+
+  @override
+  String get locationLabel => 'Atrašanās vieta';
+
+  @override
+  String get cryptoTypeLabel => 'Kriptovalūta';
+
+  @override
+  String get shippingOptionsLabel => 'Piegādes iespējas';
+
+  @override
+  String get imagesLabel => 'Attēli';
+
+  @override
+  String get conditionNew => 'Jauns';
+
+  @override
+  String get conditionUsed => 'Lietots';
+
+  @override
+  String get conditionRefurbished => 'Atjaunots';
+
+  @override
+  String get addImages => 'Pievienot attēlus';
+
+  @override
+  String get removeImage => 'Noņemt attēlu';
+
+  @override
+  String get descriptionRequired => 'Apraksts ir obligāts';
+
+  @override
+  String get categoryRequired => 'Kategorija ir obligāta';
+
+  @override
+  String get locationRequired => 'Atrašanās vieta ir obligāta';
+
+  @override
+  String get cryptoTypeRequired => 'Kriptovalūta ir obligāta';
+
+  @override
+  String get shippingOptionsRequired =>
+      'Vismaz viena piegādes iespēja ir obligāta';
+
+  @override
+  String get createListing => 'Izveidot sludinājumu';
+
+  @override
+  String get creating => 'Izveido...';
+
+  @override
+  String get listingCreatedSuccess => 'Sludinājums veiksmīgi izveidots!';
+
+  @override
+  String get listingCreatedFailure => 'Neizdevās izveidot sludinājumu';
+
+  @override
+  String get descriptionHint => 'Aprakstiet savu preci detalizēti...';
+
+  @override
+  String get titleHint => 'Ko jūs pārdodat?';
+
+  @override
+  String get locationHint => 'Pilsēta, Valsts/Reģions';
+
+  @override
+  String get addShippingOption => 'Pievienot piegādes iespēju';
+
+  @override
+  String get uploadingImages => 'Augšupielādē attēlus...';
+
+  @override
+  String get imageUploadFailed => 'Attēla augšupielāde neizdevās';
 }
