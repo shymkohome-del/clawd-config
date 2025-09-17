@@ -7,11 +7,7 @@ part of 'listing.dart';
 // **************************************************************************
 
 Listing _$ListingFromJson(Map<String, dynamic> json) => Listing(
-<<<<<<< HEAD
-  id: (json['id'] as num).toInt(),
-=======
-  id: Listing._idFromJson(json['id']),
->>>>>>> develop
+id: Listing._idFromJson(json['id']),
   seller: json['seller'] as String,
   title: json['title'] as String,
   description: json['description'] as String,
@@ -30,11 +26,7 @@ Listing _$ListingFromJson(Map<String, dynamic> json) => Listing(
 );
 
 Map<String, dynamic> _$ListingToJson(Listing instance) => <String, dynamic>{
-<<<<<<< HEAD
-  'id': instance.id,
-=======
-  'id': Listing._idToJson(instance.id),
->>>>>>> develop
+'id': Listing._idToJson(instance.id),
   'seller': instance.seller,
   'title': instance.title,
   'description': instance.description,
