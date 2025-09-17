@@ -180,16 +180,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
           min: 1,
           max: 1000000,
         );
-        return result.isValid ? null : result.firstError;
-
-        if (result.isValid) {
-          return null;
-        }
-
         final error = result.firstError;
-        if (error == null) {
-          return null;
-        }
 
         if (error.contains('required')) {
           return l10n.priceRequired;
@@ -231,7 +222,6 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         border: const OutlineInputBorder(),
       ),
       items: _categories.map((category) {
-        return DropdownMenuItem(value: category, child: Text(category));
         return DropdownMenuItem(
           value: category,
           child: Text(_categoryLabel(category, l10n)),
