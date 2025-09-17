@@ -159,7 +159,7 @@ if [[ "$RUN_ACT_MODE" != "skip" && ( "$RUN_ACT_MODE" == "true" || ( "$RUN_ACT_MO
   set -e
     if [[ $ACT_STATUS -ne 0 ]]; then
         # Treat common private-repo/auth/type issues as non-fatal for local validation
-        if grep -qiE 'authentication required|permission denied|could not read Username|Bad credentials|Requires authentication|Resource not accessible by integration|API rate limit exceeded|array \(\[\]\) and object|object and array cannot be added' "$LOG_FILE"; then
+        if grep -qiE 'authentication required|permission denied|could not read Username|Bad credentials|Requires authentication|Resource not accessible by integration|API rate limit exceeded|array \(\[\]\) and object|object and array cannot be added|failed to authorize|failed to fetch oauth token|401 Unauthorized' "$LOG_FILE"; then
           echo "[dev-validate] WARN: act failed due to auth/type issues (likely limited token). Treating as non-fatal."
         else
           echo "[dev-validate] act run failed. See $LOG_FILE"
