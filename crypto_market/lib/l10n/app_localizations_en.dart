@@ -290,4 +290,165 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get successGeneric => 'Operation completed successfully';
+
+  @override
+  String get createListingTitle => 'Create Listing';
+
+  @override
+  String get descriptionLabel => 'Description';
+
+  @override
+  String get categoryLabel => 'Category';
+
+  @override
+  String get conditionLabel => 'Condition';
+
+  @override
+  String get locationLabel => 'Location';
+
+  @override
+  String get cryptoTypeLabel => 'Crypto Currency';
+
+  @override
+  String get shippingOptionsLabel => 'Shipping Options';
+
+  @override
+  String get imagesLabel => 'Images';
+
+  @override
+  String get conditionNew => 'New';
+
+  @override
+  String get conditionUsed => 'Used';
+
+  @override
+  String get conditionRefurbished => 'Refurbished';
+
+  @override
+  String get addImages => 'Add Images';
+
+  @override
+  String get removeImage => 'Remove Image';
+
+  @override
+  String get descriptionRequired => 'Description is required';
+
+  @override
+  String get categoryRequired => 'Category is required';
+
+  @override
+  String get locationRequired => 'Location is required';
+
+  @override
+  String get cryptoTypeRequired => 'Cryptocurrency is required';
+
+  @override
+  String get shippingOptionsRequired =>
+      'At least one shipping option is required';
+
+  @override
+  String get createListing => 'Create Listing';
+
+  @override
+  String get creating => 'Creating...';
+
+  @override
+  String get listingCreatedSuccess => 'Listing created successfully!';
+
+  @override
+  String get listingCreatedFailure => 'Failed to create listing';
+
+  @override
+  String get descriptionHint => 'Describe your item in detail...';
+
+  @override
+  String get titleHint => 'What are you selling?';
+
+  @override
+  String get locationHint => 'City, State/Country';
+
+  @override
+  String get addShippingOption => 'Add shipping option';
+
+  @override
+  String get uploadingImages => 'Uploading images...';
+
+  @override
+  String get imageUploadFailed => 'Image upload failed';
+
+  @override
+  String get searchListingsTitle => 'Browse Listings';
+
+  @override
+  String get searchPlaceholder => 'Search listings by keyword';
+
+  @override
+  String get searchFieldLabel => 'Search';
+
+  @override
+  String get filtersTitle => 'Filters';
+
+  @override
+  String get filterPriceMin => 'Min price (USD)';
+
+  @override
+  String get filterPriceMax => 'Max price (USD)';
+
+  @override
+  String get filterLocationLabel => 'Location';
+
+  @override
+  String get filterConditionLabel => 'Condition';
+
+  @override
+  String get filterSortLabel => 'Sort by';
+
+  @override
+  String get filtersApply => 'Apply filters';
+
+  @override
+  String get filtersClear => 'Clear filters';
+
+  @override
+  String get filtersApplied => 'Filters applied';
+
+  @override
+  String get filtersCleared => 'Filters cleared';
+
+  @override
+  String get searchNoResults =>
+      'No listings match your filters yet. Adjust your search or try again later.';
+
+  @override
+  String get sortNewest => 'Newest first';
+
+  @override
+  String get sortPriceLowHigh => 'Price: Low to High';
+
+  @override
+  String get sortPriceHighLow => 'Price: High to Low';
+
+  @override
+  String get categoryElectronics => 'Electronics';
+
+  @override
+  String get categoryFashion => 'Fashion';
+
+  @override
+  String get categoryHomeGarden => 'Home & Garden';
+
+  @override
+  String get categorySports => 'Sports';
+
+  @override
+  String get categoryBooks => 'Books';
+
+  @override
+  String get categoryAutomotive => 'Automotive';
+
+  @override
+  String get categoryCollectibles => 'Collectibles';
+
+  @override
+  String get categoryOther => 'Other';
 }

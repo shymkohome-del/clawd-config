@@ -1,0 +1,216 @@
+name: Cleanup Merged Branches
+
+on:
+  # Trigger when PRs are closed
+  pull_request:
+    types: [closed]
+    branches: [develop, main]
+
+  # Manual trigger for bulk cleanup
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run - show branches that would be deleted without deleting them'
+        required: false
+        type: boolean
+        default: false
+      days_old:
+        description: 'Delete merged branches older than N days (default: 7)'
+        required: false
+        type: string
+        default: '7'
+      pattern:
+        description: 'Branch pattern to clean (default: story/** feature/**)'
+        required: false
+        type: string
+        default: 'story/** feature/**'
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup-on-merge:
+    name: Auto-cleanup on PR merge
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get merged branch info
+        id: branch_info
+        env:
+          BRANCH_NAME: ${{ github.event.pull_request.head.ref }}
+          BRANCH_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          set -euo pipefail
+
+          # Get branch name from the merged PR
+          BASE_REPO="${{ github.repository }}"
+
+          echo "branch_name=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+          echo "branch_repo=$BRANCH_REPO" >> "$GITHUB_OUTPUT"
+          echo "base_repo=$BASE_REPO" >> "$GITHUB_OUTPUT"
+          echo "is_fork=$([[ '$BRANCH_REPO' != '$BASE_REPO' ]] && echo 'true' || echo 'false')" >> "$GITHUB_OUTPUT"
+
+          echo "Branch: $BRANCH_NAME"
+          echo "Branch repo: $BRANCH_REPO"
+          echo "Base repo: $BASE_REPO"
+          echo "Is fork: $([[ '$BRANCH_REPO' != '$BASE_REPO' ]] && echo 'true' || echo 'false')"
+
+      - name: Delete merged branch (same repo only)
+        if: steps.branch_info.outputs.is_fork == 'false'
+        run: |
+          set -euo pipefail
+
+          BRANCH_NAME="${{ steps.branch_info.outputs.branch_name }}"
+
+          # Only delete story/** and feature/** branches
+          if [[ "$BRANCH_NAME" =~ ^(story|feature)/ ]]; then
+            echo "✅ Deleting merged branch: $BRANCH_NAME"
+
+            # Delete the remote branch
+            if git ls-remote --heads origin "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
+              git push origin --delete "$BRANCH_NAME"
+              echo "🗑️ Deleted remote branch: $BRANCH_NAME"
+            else
+              echo "ℹ️ Branch $BRANCH_NAME already deleted or doesn't exist"
+            fi
+          else
+            echo "ℹ️ Skipping deletion - branch $BRANCH_NAME doesn't match cleanup patterns"
+          fi
+
+      - name: Log cleanup action
+        env:
+          BRANCH_NAME: ${{ steps.branch_info.outputs.branch_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          set -euo pipefail
+
+          echo "::notice::Branch cleanup completed for PR #$PR_NUMBER: $PR_TITLE"
+          echo "::notice::Branch '$BRANCH_NAME' processed for deletion"
+
+  bulk-cleanup:
+    name: Bulk cleanup merged branches
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          set -euo pipefail
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Find and cleanup merged branches
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          DRY_RUN="${{ inputs.dry_run }}"
+          DAYS_OLD="${{ inputs.days_old }}"
+          PATTERN="${{ inputs.pattern }}"
+
+          echo "🔍 Finding merged branches to cleanup..."
+          echo "Days old threshold: $DAYS_OLD"
+          echo "Branch patterns: $PATTERN"
+          echo "Dry run: $DRY_RUN"
+
+          # Get all remote branches
+          git fetch --all --prune
+
+          # Convert pattern to grep-compatible regex
+          GREP_PATTERN=$(echo "$PATTERN" | sed 's/\*\*/.*/' | sed 's/\*/[^\/]*/' | sed 's/ /|/')
+
+          # Find merged branches matching patterns
+          MERGED_BRANCHES=()
+          while IFS= read -r branch; do
+            # Skip if empty
+            [[ -z "$branch" ]] && continue
+
+            # Remove origin/ prefix
+            branch="${branch#origin/}"
+
+            # Skip protected branches
+            [[ "$branch" =~ ^(develop|main|master)$ ]] && continue
+
+            # Check if matches pattern
+            if echo "$branch" | grep -qE "^($GREP_PATTERN)$"; then
+              # Check if merged into develop
+              if git merge-base --is-ancestor "origin/$branch" origin/develop 2>/dev/null; then
+                # Check if old enough
+                BRANCH_DATE=$(git log -1 --format=%ct "origin/$branch" 2>/dev/null || echo "0")
+                CUTOFF_DATE=$(($(date +%s) - DAYS_OLD * 86400))
+
+                if [[ "$BRANCH_DATE" -lt "$CUTOFF_DATE" ]]; then
+                  MERGED_BRANCHES+=("$branch")
+                fi
+              fi
+            fi
+          done < <(git branch -r --format='%(refname:short)' | grep -v HEAD)
+
+          echo "📋 Found ${#MERGED_BRANCHES[@]} branches to cleanup:"
+          for branch in "${MERGED_BRANCHES[@]}"; do
+            echo "  - $branch"
+          done
+
+          if [[ "$DRY_RUN" == "true" ]]; then
+            echo "🔍 DRY RUN: Would delete ${#MERGED_BRANCHES[@]} branches"
+            exit 0
+          fi
+
+          if [[ ${#MERGED_BRANCHES[@]} -eq 0 ]]; then
+            echo "✅ No branches to cleanup"
+            exit 0
+          fi
+
+          # Delete branches
+          echo "🗑️ Deleting merged branches..."
+          for branch in "${MERGED_BRANCHES[@]}"; do
+            echo "Deleting: $branch"
+            if git push origin --delete "$branch" 2>/dev/null; then
+              echo "  ✅ Deleted: $branch"
+            else
+              echo "  ⚠️ Failed to delete: $branch (may already be deleted)"
+            fi
+          done
+
+          echo "🎉 Cleanup completed!"
+
+  notify-cleanup:
+    name: Notify cleanup results
+    runs-on: ubuntu-latest
+    needs: [cleanup-on-merge, bulk-cleanup]
+    if: always() && (needs.cleanup-on-merge.result != 'skipped' || needs.bulk-cleanup.result != 'skipped')
+    steps:
+      - name: Summary
+        run: |
+          set -euo pipefail
+
+          echo "## Branch Cleanup Summary" >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ "${{ needs.cleanup-on-merge.result }}" != "skipped" ]]; then
+            echo "- **Auto-cleanup on merge**: ${{ needs.cleanup-on-merge.result }}" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if [[ "${{ needs.bulk-cleanup.result }}" != "skipped" ]]; then
+            echo "- **Bulk cleanup**: ${{ needs.bulk-cleanup.result }}" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "✅ Branch cleanup workflow completed" >> "$GITHUB_STEP_SUMMARY"

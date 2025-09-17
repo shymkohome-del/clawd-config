@@ -99,5 +99,58 @@
   "errorBusinessMarketClosed": "Tirgus pašlaik ir slēgts",
   "errorBusinessInvalidOperation": "Šī darbība nav atļauta",
   "errorBusinessRateLimitExceeded": "Pieprasījumu limits pārsniegts. Lūdzu mēģiniet vēlāk",
-  "successGeneric": "Darbība veiksmīgi pabeigta"
+  "successGeneric": "Darbība veiksmīgi pabeigta",
+  "createListingTitle": "Izveidot sludinājumu",
+  "descriptionLabel": "Apraksts",
+  "categoryLabel": "Kategorija",
+  "conditionLabel": "Stāvoklis",
+  "locationLabel": "Atrašanās vieta",
+  "cryptoTypeLabel": "Kriptovalūta",
+  "shippingOptionsLabel": "Piegādes iespējas",
+  "imagesLabel": "Attēli",
+  "conditionNew": "Jauns",
+  "conditionUsed": "Lietots",
+  "conditionRefurbished": "Atjaunots",
+  "addImages": "Pievienot attēlus",
+  "removeImage": "Noņemt attēlu",
+  "descriptionRequired": "Apraksts ir obligāts",
+  "categoryRequired": "Kategorija ir obligāta",
+  "locationRequired": "Atrašanās vieta ir obligāta",
+  "cryptoTypeRequired": "Kriptovalūta ir obligāta",
+  "shippingOptionsRequired": "Vismaz viena piegādes iespēja ir obligāta",
+  "createListing": "Izveidot sludinājumu",
+  "creating": "Izveido...",
+  "listingCreatedSuccess": "Sludinājums veiksmīgi izveidots!",
+  "listingCreatedFailure": "Neizdevās izveidot sludinājumu",
+  "descriptionHint": "Aprakstiet savu preci detalizēti...",
+  "titleHint": "Ko jūs pārdodat?",
+  "locationHint": "Pilsēta, Valsts/Reģions",
+  "addShippingOption": "Pievienot piegādes iespēju",
+  "uploadingImages": "Augšupielādē attēlus...",
+  "imageUploadFailed": "Attēla augšupielāde neizdevās"
+  ,"searchListingsTitle": "Pārlūkot sludinājumus"
+  ,"searchPlaceholder": "Meklēt sludinājumus pēc atslēgvārdiem"
+  ,"searchFieldLabel": "Meklēt"
+  ,"filtersTitle": "Filtri"
+  ,"filterPriceMin": "Min. cena (USD)"
+  ,"filterPriceMax": "Maks. cena (USD)"
+  ,"filterLocationLabel": "Atrašanās vieta"
+  ,"filterConditionLabel": "Stāvoklis"
+  ,"filterSortLabel": "Kārtot pēc"
+  ,"filtersApply": "Pielietot filtrus"
+  ,"filtersClear": "Notīrīt filtrus"
+  ,"filtersApplied": "Filtri piemēroti"
+  ,"filtersCleared": "Filtri notīrīti"
+  ,"searchNoResults": "Nevienam sludinājumam neatbilst izvēlētie filtri. Precizējiet meklēšanu vai mēģiniet vēlreiz."
+  ,"sortNewest": "Jaunākie sākumā"
+  ,"sortPriceLowHigh": "Cena: no zemākās uz augstāko"
+  ,"sortPriceHighLow": "Cena: no augstākās uz zemāko"
+  ,"categoryElectronics": "Elektronika"
+  ,"categoryFashion": "Mode"
+  ,"categoryHomeGarden": "Māja un dārzs"
+  ,"categorySports": "Sports"
+  ,"categoryBooks": "Grāmatas"
+  ,"categoryAutomotive": "Auto"
+  ,"categoryCollectibles": "Kolekcijas"
+  ,"categoryOther": "Cits"
 }

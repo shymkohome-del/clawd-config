@@ -99,5 +99,58 @@
   "errorBusinessMarketClosed": "Market is currently closed",
   "errorBusinessInvalidOperation": "This operation is not allowed",
   "errorBusinessRateLimitExceeded": "Rate limit exceeded. Please try again later",
-  "successGeneric": "Operation completed successfully"
+  "successGeneric": "Operation completed successfully",
+  "createListingTitle": "Create Listing",
+  "descriptionLabel": "Description",
+  "categoryLabel": "Category",
+  "conditionLabel": "Condition",
+  "locationLabel": "Location",
+  "cryptoTypeLabel": "Crypto Currency",
+  "shippingOptionsLabel": "Shipping Options",
+  "imagesLabel": "Images",
+  "conditionNew": "New",
+  "conditionUsed": "Used",
+  "conditionRefurbished": "Refurbished",
+  "addImages": "Add Images",
+  "removeImage": "Remove Image",
+  "descriptionRequired": "Description is required",
+  "categoryRequired": "Category is required",
+  "locationRequired": "Location is required",
+  "cryptoTypeRequired": "Cryptocurrency is required",
+  "shippingOptionsRequired": "At least one shipping option is required",
+  "createListing": "Create Listing",
+  "creating": "Creating...",
+  "listingCreatedSuccess": "Listing created successfully!",
+  "listingCreatedFailure": "Failed to create listing",
+  "descriptionHint": "Describe your item in detail...",
+  "titleHint": "What are you selling?",
+  "locationHint": "City, State/Country",
+  "addShippingOption": "Add shipping option",
+  "uploadingImages": "Uploading images...",
+  "imageUploadFailed": "Image upload failed"
+  ,"searchListingsTitle": "Browse Listings"
+  ,"searchPlaceholder": "Search listings by keyword"
+  ,"searchFieldLabel": "Search"
+  ,"filtersTitle": "Filters"
+  ,"filterPriceMin": "Min price (USD)"
+  ,"filterPriceMax": "Max price (USD)"
+  ,"filterLocationLabel": "Location"
+  ,"filterConditionLabel": "Condition"
+  ,"filterSortLabel": "Sort by"
+  ,"filtersApply": "Apply filters"
+  ,"filtersClear": "Clear filters"
+  ,"filtersApplied": "Filters applied"
+  ,"filtersCleared": "Filters cleared"
+  ,"searchNoResults": "No listings match your filters yet. Adjust your search or try again later."
+  ,"sortNewest": "Newest first"
+  ,"sortPriceLowHigh": "Price: Low to High"
+  ,"sortPriceHighLow": "Price: High to Low"
+  ,"categoryElectronics": "Electronics"
+  ,"categoryFashion": "Fashion"
+  ,"categoryHomeGarden": "Home & Garden"
+  ,"categorySports": "Sports"
+  ,"categoryBooks": "Books"
+  ,"categoryAutomotive": "Automotive"
+  ,"categoryCollectibles": "Collectibles"
+  ,"categoryOther": "Other"
 }

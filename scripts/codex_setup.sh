@@ -82,11 +82,37 @@ if [[ "$CODEX_SETUP_MOTOKO" == "true" ]]; then
     echo 'export PATH="$HOME/.local/share/dfx/bin:$PATH"' >> "$SHELL_RC"
   fi
   export PATH="$DFX_BIN:$PATH"
+  
+  # Ensure Motoko compiler is available in DFX installation
   if command -v dfx >/dev/null 2>&1; then
     echo "✓ DFX: $(dfx --version)"
+    
+    # Check if moc is directly available
+    if command -v moc >/dev/null 2>&1; then
+      echo "✓ Motoko: $(moc --version)"
+    else
+      echo "ℹ Motoko compiler (moc) not in PATH"
+      echo "  Modern DFX versions download Motoko on-demand during canister builds"
+      echo "  This is normal - Motoko will be available when needed by DFX commands"
+      
+      # Try to make moc available by testing with a minimal project
+      echo "  Testing Motoko availability via DFX..."
+      if command -v timeout >/dev/null 2>&1; then
+        TEMP_DIR=$(mktemp -d)
+        cd "$TEMP_DIR"
+        dfx new motoko_test --type=motoko --no-frontend >/dev/null 2>&1 || echo "  Could not create test project"
+        # This may trigger Motoko download, but we don't want to wait for full setup
+        timeout 30s dfx canister create --all 2>/dev/null || echo "  DFX will download Motoko when first needed"
+        cd - >/dev/null
+        rm -rf "$TEMP_DIR" 2>/dev/null || true
+      fi
+    fi
   fi
+  
   if command -v moc >/dev/null 2>&1; then
     echo "✓ Motoko: $(moc --version)"
+  else
+    echo "⚠ Motoko compiler (moc) not found - DFX may need manual configuration"
   fi
 fi
 

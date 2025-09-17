@@ -1,0 +1,140 @@
+// ic-repl test suite for marketplace search/filter logic
+// Deploys canister, seeds sample listings, and asserts core query behaviors.
+
+import "mo:base/Principal";
+
+identity alice;
+identity bob;
+
+let market = call "deploy marketplace";
+
+// Seed listings across categories, prices, locations, and conditions
+identity alice;
+call market.createListing(record {
+  title = "Ledger Nano X";
+  description = "Ledger hardware wallet with Bluetooth";
+  priceUSD = 199 : nat64;
+  cryptoType = "BTC";
+  images = vec { "ipfs://ledger" };
+  category = "electronics";
+  condition = variant { new };
+  location = "Riga";
+  shippingOptions = vec { "Courier" };
+});
+let ledgerListing = _["ok"];
+let ledgerId = ledgerListing["id"];
+
+call market.createListing(record {
+  title = "Coldcard Mk4";
+  description = "Advanced Bitcoin hardware wallet";
+  priceUSD = 329 : nat64;
+  cryptoType = "BTC";
+  images = vec { "ipfs://coldcard" };
+  category = "electronics";
+  condition = variant { used };
+  location = "Tallinn";
+  shippingOptions = vec { "Courier" };
+});
+
+identity bob;
+call market.createListing(record {
+  title = "Ethereum Programming Guide";
+  description = "Comprehensive smart contract reference";
+  priceUSD = 49 : nat64;
+  cryptoType = "ETH";
+  images = vec { "ipfs://book" };
+  category = "books";
+  condition = variant { used };
+  location = "Riga";
+  shippingOptions = vec { "Post" };
+});
+
+call market.createListing(record {
+  title = "Vintage Leather Jacket";
+  description = "Retro style jacket in great condition";
+  priceUSD = 189 : nat64;
+  cryptoType = "ICP";
+  images = vec { "ipfs://jacket" };
+  category = "fashion";
+  condition = variant { refurbished };
+  location = "Vilnius";
+  shippingOptions = vec { "Courier" };
+});
+
+// Keyword search should match Ledger listing only
+call market.getListings(record {
+  query = opt "ledger";
+  category = null;
+  minPrice = null;
+  maxPrice = null;
+  location = null;
+  condition = null;
+}, 0, 10);
+let keywordResults = _["ok"];
+assert keywordResults["totalCount"] == 1;
+assert keywordResults["hasMore"] == false;
+assert keywordResults["listings"][0]["id"] == ledgerId;
+
+// Category + price range filters should narrow to Coldcard listing
+call market.getListings(record {
+  query = null;
+  category = opt "electronics";
+  minPrice = opt 300 : nat64;
+  maxPrice = opt 400 : nat64;
+  location = null;
+  condition = null;
+}, 0, 10);
+let electronicsResults = _["ok"];
+assert electronicsResults["totalCount"] == 1;
+assert electronicsResults["hasMore"] == false;
+assert electronicsResults["listings"][0]["title"] == "Coldcard Mk4";
+
+// Location filter should be case-insensitive and match both Riga listings
+call market.getListings(record {
+  query = null;
+  category = null;
+  minPrice = null;
+  maxPrice = null;
+  location = opt "riga";
+  condition = null;
+}, 0, 10);
+let locationResults = _["ok"];
+assert locationResults["totalCount"] == 2;
+
+// Condition filter should isolate refurbished items
+call market.getListings(record {
+  query = null;
+  category = null;
+  minPrice = null;
+  maxPrice = null;
+  location = null;
+  condition = opt variant { refurbished };
+}, 0, 10);
+let conditionResults = _["ok"];
+assert conditionResults["totalCount"] == 1;
+assert conditionResults["listings"][0]["title"] == "Vintage Leather Jacket";
+
+// Pagination state: limit smaller than total should flag hasMore
+call market.getListings(record {
+  query = null;
+  category = null;
+  minPrice = null;
+  maxPrice = null;
+  location = null;
+  condition = null;
+}, 0, 2);
+let pageOne = _["ok"];
+assert pageOne["totalCount"] == 4;
+assert pageOne["hasMore"] == true;
+
+call market.getListings(record {
+  query = null;
+  category = null;
+  minPrice = null;
+  maxPrice = null;
+  location = null;
+  condition = null;
+}, 2, 2);
+let pageTwo = _["ok"];
+assert pageTwo["totalCount"] == 4;
+assert pageTwo["hasMore"] == false;

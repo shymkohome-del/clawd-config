@@ -84,7 +84,30 @@ case $EXIT_CODE in
       exit 10
     fi
     
-    note "✅ Success! PR merged and develop branch synced"
+    # Clean up the original branch if it was a story/feature branch
+    if [[ -n "$ORIGINAL_BRANCH" && "$ORIGINAL_BRANCH" =~ ^(story|feature)/ ]]; then
+      note "Cleaning up merged branch: $ORIGINAL_BRANCH"
+      
+      # Check if branch still exists locally
+      if git show-ref --verify --quiet "refs/heads/$ORIGINAL_BRANCH"; then
+        note "Deleting local branch: $ORIGINAL_BRANCH"
+        git branch -d "$ORIGINAL_BRANCH" 2>/dev/null || {
+          note "WARNING: Could not delete local branch $ORIGINAL_BRANCH (may have unmerged changes)"
+          note "Use 'git branch -D $ORIGINAL_BRANCH' to force delete if needed"
+        }
+      fi
+      
+      # Check if remote branch still exists (GitHub Actions should have deleted it)
+      if git ls-remote --heads origin "$ORIGINAL_BRANCH" 2>/dev/null | grep -q "$ORIGINAL_BRANCH"; then
+        note "WARNING: Remote branch $ORIGINAL_BRANCH still exists"
+        note "GitHub Actions should have cleaned this up automatically"
+        note "You can manually delete with: git push origin --delete $ORIGINAL_BRANCH"
+      else
+        note "✅ Remote branch $ORIGINAL_BRANCH was cleaned up automatically"
+      fi
+    fi
+    
+    note "✅ Success! PR merged, develop branch synced, and cleanup completed"
     note "Current branch: $(git branch --show-current 2>/dev/null || echo 'unknown')"
     note "Latest commit: $(git log --oneline -1 2>/dev/null || echo 'unknown')"
     

@@ -290,4 +290,165 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get successGeneric => 'Darbība veiksmīgi pabeigta';
+
+  @override
+  String get createListingTitle => 'Izveidot sludinājumu';
+
+  @override
+  String get descriptionLabel => 'Apraksts';
+
+  @override
+  String get categoryLabel => 'Kategorija';
+
+  @override
+  String get conditionLabel => 'Stāvoklis';
+
+  @override
+  String get locationLabel => 'Atrašanās vieta';
+
+  @override
+  String get cryptoTypeLabel => 'Kriptovalūta';
+
+  @override
+  String get shippingOptionsLabel => 'Piegādes iespējas';
+
+  @override
+  String get imagesLabel => 'Attēli';
+
+  @override
+  String get conditionNew => 'Jauns';
+
+  @override
+  String get conditionUsed => 'Lietots';
+
+  @override
+  String get conditionRefurbished => 'Atjaunots';
+
+  @override
+  String get addImages => 'Pievienot attēlus';
+
+  @override
+  String get removeImage => 'Noņemt attēlu';
+
+  @override
+  String get descriptionRequired => 'Apraksts ir obligāts';
+
+  @override
+  String get categoryRequired => 'Kategorija ir obligāta';
+
+  @override
+  String get locationRequired => 'Atrašanās vieta ir obligāta';
+
+  @override
+  String get cryptoTypeRequired => 'Kriptovalūta ir obligāta';
+
+  @override
+  String get shippingOptionsRequired =>
+      'Vismaz viena piegādes iespēja ir obligāta';
+
+  @override
+  String get createListing => 'Izveidot sludinājumu';
+
+  @override
+  String get creating => 'Izveido...';
+
+  @override
+  String get listingCreatedSuccess => 'Sludinājums veiksmīgi izveidots!';
+
+  @override
+  String get listingCreatedFailure => 'Neizdevās izveidot sludinājumu';
+
+  @override
+  String get descriptionHint => 'Aprakstiet savu preci detalizēti...';
+
+  @override
+  String get titleHint => 'Ko jūs pārdodat?';
+
+  @override
+  String get locationHint => 'Pilsēta, Valsts/Reģions';
+
+  @override
+  String get addShippingOption => 'Pievienot piegādes iespēju';
+
+  @override
+  String get uploadingImages => 'Augšupielādē attēlus...';
+
+  @override
+  String get imageUploadFailed => 'Attēla augšupielāde neizdevās';
+
+  @override
+  String get searchListingsTitle => 'Pārlūkot sludinājumus';
+
+  @override
+  String get searchPlaceholder => 'Meklēt sludinājumus pēc atslēgvārdiem';
+
+  @override
+  String get searchFieldLabel => 'Meklēt';
+
+  @override
+  String get filtersTitle => 'Filtri';
+
+  @override
+  String get filterPriceMin => 'Min. cena (USD)';
+
+  @override
+  String get filterPriceMax => 'Maks. cena (USD)';
+
+  @override
+  String get filterLocationLabel => 'Atrašanās vieta';
+
+  @override
+  String get filterConditionLabel => 'Stāvoklis';
+
+  @override
+  String get filterSortLabel => 'Kārtot pēc';
+
+  @override
+  String get filtersApply => 'Pielietot filtrus';
+
+  @override
+  String get filtersClear => 'Notīrīt filtrus';
+
+  @override
+  String get filtersApplied => 'Filtri piemēroti';
+
+  @override
+  String get filtersCleared => 'Filtri notīrīti';
+
+  @override
+  String get searchNoResults =>
+      'Nevienam sludinājumam neatbilst izvēlētie filtri. Precizējiet meklēšanu vai mēģiniet vēlreiz.';
+
+  @override
+  String get sortNewest => 'Jaunākie sākumā';
+
+  @override
+  String get sortPriceLowHigh => 'Cena: no zemākās uz augstāko';
+
+  @override
+  String get sortPriceHighLow => 'Cena: no augstākās uz zemāko';
+
+  @override
+  String get categoryElectronics => 'Elektronika';
+
+  @override
+  String get categoryFashion => 'Mode';
+
+  @override
+  String get categoryHomeGarden => 'Māja un dārzs';
+
+  @override
+  String get categorySports => 'Sports';
+
+  @override
+  String get categoryBooks => 'Grāmatas';
+
+  @override
+  String get categoryAutomotive => 'Auto';
+
+  @override
+  String get categoryCollectibles => 'Kolekcijas';
+
+  @override
+  String get categoryOther => 'Cits';
 }

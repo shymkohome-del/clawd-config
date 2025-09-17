@@ -47,12 +47,13 @@ if [[ "$CODEX_SETUP_MOTOKO" == "true" ]]; then
   if command -v dfx >/dev/null 2>&1; then
     dfx --version
   else
-    echo "⚠ dfx not found"
+    echo "❌ dfx not found"
+    status=1
   fi
   if command -v moc >/dev/null 2>&1; then
     moc --version
   else
-    echo "⚠ moc not found"
+    echo "ℹ moc not directly available (modern DFX downloads Motoko on-demand)"
   fi
 fi
 

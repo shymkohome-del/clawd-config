@@ -23,7 +23,44 @@ Our setup script ensures:
 - ✅ Run `flutter doctor` to verify setup
 - ✅ Install project dependencies with `flutter pub get`
 - ✅ Test development tools (format, analyze, test)
+- ✅ **Optional Motoko/DFX support** when `CODEX_SETUP_MOTOKO=true`
+- ✅ **Optional Rust toolchain** when `CODEX_SETUP_RUST=true`
 - ✅ Provide clear status feedback
+
+## Environment Toggles
+
+The setup script supports optional language toolchains via environment variables:
+
+### `CODEX_SETUP_MOTOKO` (default: `false`)
+When set to `true`, installs DFX and Motoko compiler for Internet Computer development:
+- Installs DFX ≥ v0.15.x from internetcomputer.org
+- Ensures Motoko compiler (`moc`) is accessible
+- Adds DFX bin directory to PATH
+
+### `CODEX_SETUP_RUST` (default: `false`)  
+When set to `true`, installs Rust toolchain:
+- Installs rustc and cargo via rustup
+- Adds Rust bin directory to PATH
+- Use only if canister development requires Rust
+
+### Usage in Codex Environment
+1. Set environment variables in your Codex Environment settings
+2. Add to "Environment Variables" section:
+   - `CODEX_SETUP_MOTOKO=true` (if needed)
+   - `CODEX_SETUP_RUST=true` (if needed)
+3. The setup script will detect these and install accordingly
+
+### Verification
+Use the included verification script to check installed tools:
+```bash
+bash scripts/codex_verify.sh
+```
+
+This will validate:
+- Flutter/Dart (required)
+- Node.js ≥ v18 (required)
+- DFX/Motoko (if `CODEX_SETUP_MOTOKO=true`)
+- Rust toolchain (if `CODEX_SETUP_RUST=true`)
 
 ## How to Apply (Step-by-Step)
 

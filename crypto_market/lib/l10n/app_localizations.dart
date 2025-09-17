@@ -625,6 +625,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Operation completed successfully'**
   String get successGeneric;
+
+  /// No description provided for @createListingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Listing'**
+  String get createListingTitle;
+
+  /// No description provided for @descriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get descriptionLabel;
+
+  /// No description provided for @categoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get categoryLabel;
+
+  /// No description provided for @conditionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition'**
+  String get conditionLabel;
+
+  /// No description provided for @locationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get locationLabel;
+
+  /// No description provided for @cryptoTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Crypto Currency'**
+  String get cryptoTypeLabel;
+
+  /// No description provided for @shippingOptionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Shipping Options'**
+  String get shippingOptionsLabel;
+
+  /// No description provided for @imagesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Images'**
+  String get imagesLabel;
+
+  /// No description provided for @conditionNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get conditionNew;
+
+  /// No description provided for @conditionUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Used'**
+  String get conditionUsed;
+
+  /// No description provided for @conditionRefurbished.
+  ///
+  /// In en, this message translates to:
+  /// **'Refurbished'**
+  String get conditionRefurbished;
+
+  /// No description provided for @addImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Images'**
+  String get addImages;
+
+  /// No description provided for @removeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Image'**
+  String get removeImage;
+
+  /// No description provided for @descriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Description is required'**
+  String get descriptionRequired;
+
+  /// No description provided for @categoryRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Category is required'**
+  String get categoryRequired;
+
+  /// No description provided for @locationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Location is required'**
+  String get locationRequired;
+
+  /// No description provided for @cryptoTypeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Cryptocurrency is required'**
+  String get cryptoTypeRequired;
+
+  /// No description provided for @shippingOptionsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one shipping option is required'**
+  String get shippingOptionsRequired;
+
+  /// No description provided for @createListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Listing'**
+  String get createListing;
+
+  /// No description provided for @creating.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating...'**
+  String get creating;
+
+  /// No description provided for @listingCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing created successfully!'**
+  String get listingCreatedSuccess;
+
+  /// No description provided for @listingCreatedFailure.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create listing'**
+  String get listingCreatedFailure;
+
+  /// No description provided for @descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe your item in detail...'**
+  String get descriptionHint;
+
+  /// No description provided for @titleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What are you selling?'**
+  String get titleHint;
+
+  /// No description provided for @locationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'City, State/Country'**
+  String get locationHint;
+
+  /// No description provided for @addShippingOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Add shipping option'**
+  String get addShippingOption;
+
+  /// No description provided for @uploadingImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading images...'**
+  String get uploadingImages;
+
+  /// No description provided for @imageUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Image upload failed'**
+  String get imageUploadFailed;
+
+  /// No description provided for @searchListingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse Listings'**
+  String get searchListingsTitle;
+
+  /// No description provided for @searchPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search listings by keyword'**
+  String get searchPlaceholder;
+
+  /// No description provided for @searchFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchFieldLabel;
+
+  /// No description provided for @filtersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filtersTitle;
+
+  /// No description provided for @filterPriceMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Min price (USD)'**
+  String get filterPriceMin;
+
+  /// No description provided for @filterPriceMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Max price (USD)'**
+  String get filterPriceMax;
+
+  /// No description provided for @filterLocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get filterLocationLabel;
+
+  /// No description provided for @filterConditionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition'**
+  String get filterConditionLabel;
+
+  /// No description provided for @filterSortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get filterSortLabel;
+
+  /// No description provided for @filtersApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply filters'**
+  String get filtersApply;
+
+  /// No description provided for @filtersClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get filtersClear;
+
+  /// No description provided for @filtersApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters applied'**
+  String get filtersApplied;
+
+  /// No description provided for @filtersCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters cleared'**
+  String get filtersCleared;
+
+  /// No description provided for @searchNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings match your filters yet. Adjust your search or try again later.'**
+  String get searchNoResults;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first'**
+  String get sortNewest;
+
+  /// No description provided for @sortPriceLowHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: Low to High'**
+  String get sortPriceLowHigh;
+
+  /// No description provided for @sortPriceHighLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: High to Low'**
+  String get sortPriceHighLow;
+
+  /// No description provided for @categoryElectronics.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronics'**
+  String get categoryElectronics;
+
+  /// No description provided for @categoryFashion.
+  ///
+  /// In en, this message translates to:
+  /// **'Fashion'**
+  String get categoryFashion;
+
+  /// No description provided for @categoryHomeGarden.
+  ///
+  /// In en, this message translates to:
+  /// **'Home & Garden'**
+  String get categoryHomeGarden;
+
+  /// No description provided for @categorySports.
+  ///
+  /// In en, this message translates to:
+  /// **'Sports'**
+  String get categorySports;
+
+  /// No description provided for @categoryBooks.
+  ///
+  /// In en, this message translates to:
+  /// **'Books'**
+  String get categoryBooks;
+
+  /// No description provided for @categoryAutomotive.
+  ///
+  /// In en, this message translates to:
+  /// **'Automotive'**
+  String get categoryAutomotive;
+
+  /// No description provided for @categoryCollectibles.
+  ///
+  /// In en, this message translates to:
+  /// **'Collectibles'**
+  String get categoryCollectibles;
+
+  /// No description provided for @categoryOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get categoryOther;
 }
 
 class _AppLocalizationsDelegate

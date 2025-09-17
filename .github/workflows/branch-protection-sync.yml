@@ -1,115 +1,31 @@
-name: Branch Protection Sync
+name: Branch Protection Sync (Disabled - Missing PAT)
 
 on:
   workflow_dispatch:
-  schedule:
-    # Run daily at 6 AM UTC to ensure branch protection stays in sync
-    - cron: '0 6 * * *'
-  push:
-    branches:
-      - develop
-    paths:
-      - '.github/workflows/**'
+  # Disabled due to missing BRANCH_PROTECTION_PAT secret
+  # schedule:
+  #   # Run daily at 6 AM UTC to ensure branch protection stays in sync
+  #   - cron: '0 6 * * *'
+  # push:
+  #   branches:
+  #     - develop
+  #   paths:
+  #     - '.github/workflows/**'
 
 permissions:
   contents: read
   actions: read
 
 jobs:
-  sync-protection:
-    name: Sync Branch Protection Rules
+  disabled:
+    name: Workflow Disabled - Missing Secret
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
-      - name: Test Secret and Sync Branch Protection
-        env:
-          GH_TOKEN: ${{ secrets.BRANCH_PROTECTION_PAT }}
-        shell: bash
+      - name: Missing BRANCH_PROTECTION_PAT Secret
         run: |
-          set -euo pipefail
-
-          echo "🔍 Testing secret access and authentication..."
-
-          # Check if secret is available
-          if [[ -z "${GH_TOKEN:-}" ]]; then
-            echo "❌ BRANCH_PROTECTION_PAT secret is not set or empty"
-            echo "Please ensure the secret is properly configured in repository settings"
-            exit 1
-          fi
-
-          echo "✅ Secret is available (length: ${#GH_TOKEN})"
-
-          # Test basic GitHub API access
-          echo "🔐 Testing GitHub API authentication..."
-          if ! USER=$(gh api user --jq '.login' 2>/dev/null); then
-            echo "❌ GitHub API authentication failed with BRANCH_PROTECTION_PAT"
-            echo "Please verify the PAT has correct permissions"
-            exit 1
-          fi
-
-          echo "✅ Authenticated as: $USER"
-
-          # Test repository access
-          echo "📁 Testing repository access..."
-          if ! REPO_INFO=$(gh api repos/"${GITHUB_REPOSITORY}" --jq '.full_name' 2>/dev/null); then
-            echo "❌ Repository access failed"
-            exit 1
-          fi
-
-          echo "✅ Repository access confirmed: $REPO_INFO"
-
-          echo "🛡️ Testing branch protection access..."
-
-          # Get repository components
-          OWNER="${GITHUB_REPOSITORY%%/*}"
-          REPO="${GITHUB_REPOSITORY#*/}"
-
-          # Test if we can access branch protection settings
-          if ! CURRENT=$(gh api repos/"${OWNER}"/"${REPO}"/branches/develop/protection/required_status_checks --jq '.contexts' 2>/dev/null); then
-            echo "❌ Cannot access branch protection settings"
-            echo "Please verify the PAT has 'repo' scope and admin permissions"
-            exit 1
-          fi
-
-          echo "✅ Branch protection access confirmed"
-          echo "Current contexts: $CURRENT"
-
-          echo "🔧 Proceeding with branch protection sync..."
-
-          # Define required contexts from our workflows
-          REQUIRED_CONTEXTS=(
-            "QA Gate / qa-approved"      # From qa-gate.yml
-            "build-and-test"            # From flutter-ci.yml
-            "pr-lint"                   # From pr-lint.yml
-            "lint"                      # From workflow-lint.yml
-          )
-
-          echo "Expected required contexts:"
-          printf ' - %s\n' "${REQUIRED_CONTEXTS[@]}"
-
-          # Build the new contexts JSON array
-          NEW_CONTEXTS_JSON=$(printf '%s\n' "${REQUIRED_CONTEXTS[@]}" | jq -R . | jq -s .)
-          echo "New contexts JSON: $NEW_CONTEXTS_JSON"
-
-          # Compare and update if different
-          if [[ "$CURRENT" != "$NEW_CONTEXTS_JSON" ]]; then
-            echo "🔄 Updating branch protection contexts..."
-            echo '{"strict":true,"contexts":'$NEW_CONTEXTS_JSON'}' | \
-              gh api repos/"${OWNER}"/"${REPO}"/branches/develop/protection/required_status_checks \
-              -X PATCH --input -
-            echo "✅ Branch protection contexts updated successfully"
-          else
-            echo "✅ Branch protection contexts are already in sync"
-          fi
-
-          # Final validation
-          echo "🔍 Final validation..."
-          UPDATED=$(gh api repos/"${OWNER}"/"${REPO}"/branches/develop/protection/required_status_checks --jq '.contexts')
-          echo "Final contexts: $UPDATED"
-
-          echo "🎉 Branch protection sync completed successfully!"
+          echo "❌ This workflow is disabled because BRANCH_PROTECTION_PAT secret is not configured"
+          echo "ℹ️  To enable this workflow:"
+          echo "   1. Create a Personal Access Token with 'repo' scope"
+          echo "   2. Add it as a repository secret named 'BRANCH_PROTECTION_PAT'"
+          echo "   3. Re-enable the workflow triggers in this file"
+          echo "✅ Workflow completed (no-op)"
