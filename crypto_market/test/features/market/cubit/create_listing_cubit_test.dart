@@ -47,7 +47,7 @@ void main() {
         build: () {
           when(
             mockMarketService.createListing(any),
-          ).thenAnswer((_) async => {'id': 123});
+          ).thenAnswer((_) async => {'id': '123'});
           return cubit;
         },
         act: (cubit) => cubit.createListing(testRequest),
@@ -56,7 +56,7 @@ void main() {
           isA<CreateListingSuccess>().having(
             (state) => state.listingId,
             'listingId',
-            123,
+            '123',
           ),
         ],
         verify: (_) {
@@ -86,9 +86,11 @@ void main() {
       blocTest<CreateListingCubit, CreateListingState>(
         'does not emit new states when already submitting',
         build: () {
-          when(
-            mockMarketService.createListing(any),
-          ).thenAnswer((_) async => {'id': 123});
+          when(mockMarketService.createListing(any)).thenAnswer(
+            (_) async => {
+              'ok': {'id': '123'},
+            },
+          );
           return cubit;
         },
         seed: () => CreateListingState.submitting(),
@@ -113,7 +115,7 @@ void main() {
           isA<CreateListingSuccess>().having(
             (state) => state.listingId,
             'listingId',
-            0,
+            '',
           ),
         ],
       );

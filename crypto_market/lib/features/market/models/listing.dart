@@ -27,7 +27,8 @@ enum ListingStatus {
 /// Listing model representing marketplace items for sale
 @JsonSerializable()
 class Listing {
-  final int id;
+  @JsonKey(fromJson: Listing._idFromJson, toJson: Listing._idToJson)
+  final String id;
   final String seller; // Principal text representation
   final String title;
   final String description;
@@ -64,9 +65,18 @@ class Listing {
 
   Map<String, dynamic> toJson() => _$ListingToJson(this);
 
+  static String _idFromJson(Object? value) {
+    if (value == null) {
+      return '';
+    }
+    return value.toString();
+  }
+
+  static String _idToJson(String value) => value;
+
   /// Create a copy of this listing with updated fields
   Listing copyWith({
-    int? id,
+    String? id,
     String? seller,
     String? title,
     String? description,

@@ -2,96 +2,118 @@ service : {
   createListing : (record {
     title: text;
     description: text;
-    cryptoAsset: text;
-    amount: nat64;
-    priceInUsd: nat64;
-    paymentMethods: vec text;
+    priceUSD: nat64;
+    cryptoType: text;
+    images: vec text;
+    category: text;
+    condition: variant { new; used; refurbished };
+    location: text;
+    shippingOptions: vec text;
   }) -> (variant { ok : record {
     id: text;
     seller: principal;
     title: text;
     description: text;
-    cryptoAsset: text;
-    amount: nat64;
-    priceInUsd: nat64;
-    paymentMethods: vec text;
-    isActive: bool;
+    priceUSD: nat64;
+    cryptoType: text;
+    images: vec text;
+    category: text;
+    condition: variant { new; used; refurbished };
+    location: text;
+    shippingOptions: vec text;
+    status: variant { active; pending; sold; cancelled };
     createdAt: nat64;
     updatedAt: nat64;
   }; err : text });
-  
+
   getListing : (text) -> (variant { ok : record {
     id: text;
     seller: principal;
     title: text;
     description: text;
-    cryptoAsset: text;
-    amount: nat64;
-    priceInUsd: nat64;
-    paymentMethods: vec text;
-    isActive: bool;
+    priceUSD: nat64;
+    cryptoType: text;
+    images: vec text;
+    category: text;
+    condition: variant { new; used; refurbished };
+    location: text;
+    shippingOptions: vec text;
+    status: variant { active; pending; sold; cancelled };
     createdAt: nat64;
     updatedAt: nat64;
   }; err : text }) query;
-  
+
   updateListing : (text, record {
     title: opt text;
     description: opt text;
-    amount: opt nat64;
-    priceInUsd: opt nat64;
-    paymentMethods: opt vec text;
-    isActive: opt bool;
+    priceUSD: opt nat64;
+    cryptoType: opt text;
+    images: opt vec text;
+    category: opt text;
+    condition: opt variant { new; used; refurbished };
+    location: opt text;
+    shippingOptions: opt vec text;
+    status: opt variant { active; pending; sold; cancelled };
   }) -> (variant { ok : record {
     id: text;
     seller: principal;
     title: text;
     description: text;
-    cryptoAsset: text;
-    amount: nat64;
-    priceInUsd: nat64;
-    paymentMethods: vec text;
-    isActive: bool;
+    priceUSD: nat64;
+    cryptoType: text;
+    images: vec text;
+    category: text;
+    condition: variant { new; used; refurbished };
+    location: text;
+    shippingOptions: vec text;
+    status: variant { active; pending; sold; cancelled };
     createdAt: nat64;
     updatedAt: nat64;
   }; err : text });
-  
+
   deleteListing : (text) -> (variant { ok : (); err : text });
-  
-  searchListings : (record {
-    cryptoAsset: opt text;
-    minAmount: opt nat64;
-    maxAmount: opt nat64;
+
+  getListings : (record {
+    query: opt text;
+    category: opt text;
     minPrice: opt nat64;
     maxPrice: opt nat64;
-    paymentMethod: opt text;
+    location: opt text;
+    condition: opt variant { new; used; refurbished };
   }, nat, nat) -> (variant { ok : record {
     listings: vec record {
       id: text;
       seller: principal;
       title: text;
       description: text;
-      cryptoAsset: text;
-      amount: nat64;
-      priceInUsd: nat64;
-      paymentMethods: vec text;
-      isActive: bool;
+      priceUSD: nat64;
+      cryptoType: text;
+      images: vec text;
+      category: text;
+      condition: variant { new; used; refurbished };
+      location: text;
+      shippingOptions: vec text;
+      status: variant { active; pending; sold; cancelled };
       createdAt: nat64;
       updatedAt: nat64;
     };
     totalCount: nat;
     hasMore: bool;
   }; err : text }) query;
-  
+
   getUserListings : (principal) -> (vec record {
     id: text;
     seller: principal;
     title: text;
     description: text;
-    cryptoAsset: text;
-    amount: nat64;
-    priceInUsd: nat64;
-    paymentMethods: vec text;
-    isActive: bool;
+    priceUSD: nat64;
+    cryptoType: text;
+    images: vec text;
+    category: text;
+    condition: variant { new; used; refurbished };
+    location: text;
+    shippingOptions: vec text;
+    status: variant { active; pending; sold; cancelled };
     createdAt: nat64;
     updatedAt: nat64;
   }) query;
