@@ -375,4 +375,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get imageUploadFailed => 'Image upload failed';
+
+  @override
+  String get searchListingsTitle => 'Browse Listings';
+
+  @override
+  String get searchPlaceholder => 'Search listings by keyword';
+
+  @override
+  String get searchFieldLabel => 'Search';
+
+  @override
+  String get filtersTitle => 'Filters';
+
+  @override
+  String get filterPriceMin => 'Min price (USD)';
+
+  @override
+  String get filterPriceMax => 'Max price (USD)';
+
+  @override
+  String get filterLocationLabel => 'Location';
+
+  @override
+  String get filterConditionLabel => 'Condition';
+
+  @override
+  String get filterSortLabel => 'Sort by';
+
+  @override
+  String get filtersApply => 'Apply filters';
+
+  @override
+  String get filtersClear => 'Clear filters';
+
+  @override
+  String get filtersApplied => 'Filters applied';
+
+  @override
+  String get filtersCleared => 'Filters cleared';
+
+  @override
+  String get searchNoResults =>
+      'No listings match your filters yet. Adjust your search or try again later.';
+
+  @override
+  String get sortNewest => 'Newest first';
+
+  @override
+  String get sortPriceLowHigh => 'Price: Low to High';
+
+  @override
+  String get sortPriceHighLow => 'Price: High to Low';
+
+  @override
+  String get categoryElectronics => 'Electronics';
+
+  @override
+  String get categoryFashion => 'Fashion';
+
+  @override
+  String get categoryHomeGarden => 'Home & Garden';
+
+  @override
+  String get categorySports => 'Sports';
+
+  @override
+  String get categoryBooks => 'Books';
+
+  @override
+  String get categoryAutomotive => 'Automotive';
+
+  @override
+  String get categoryCollectibles => 'Collectibles';
+
+  @override
+  String get categoryOther => 'Other';
 }

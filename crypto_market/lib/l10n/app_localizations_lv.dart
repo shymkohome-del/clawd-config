@@ -375,4 +375,80 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get imageUploadFailed => 'Attēla augšupielāde neizdevās';
+
+  @override
+  String get searchListingsTitle => 'Pārlūkot sludinājumus';
+
+  @override
+  String get searchPlaceholder => 'Meklēt sludinājumus pēc atslēgvārdiem';
+
+  @override
+  String get searchFieldLabel => 'Meklēt';
+
+  @override
+  String get filtersTitle => 'Filtri';
+
+  @override
+  String get filterPriceMin => 'Min. cena (USD)';
+
+  @override
+  String get filterPriceMax => 'Maks. cena (USD)';
+
+  @override
+  String get filterLocationLabel => 'Atrašanās vieta';
+
+  @override
+  String get filterConditionLabel => 'Stāvoklis';
+
+  @override
+  String get filterSortLabel => 'Kārtot pēc';
+
+  @override
+  String get filtersApply => 'Pielietot filtrus';
+
+  @override
+  String get filtersClear => 'Notīrīt filtrus';
+
+  @override
+  String get filtersApplied => 'Filtri piemēroti';
+
+  @override
+  String get filtersCleared => 'Filtri notīrīti';
+
+  @override
+  String get searchNoResults =>
+      'Nevienam sludinājumam neatbilst izvēlētie filtri. Precizējiet meklēšanu vai mēģiniet vēlreiz.';
+
+  @override
+  String get sortNewest => 'Jaunākie sākumā';
+
+  @override
+  String get sortPriceLowHigh => 'Cena: no zemākās uz augstāko';
+
+  @override
+  String get sortPriceHighLow => 'Cena: no augstākās uz zemāko';
+
+  @override
+  String get categoryElectronics => 'Elektronika';
+
+  @override
+  String get categoryFashion => 'Mode';
+
+  @override
+  String get categoryHomeGarden => 'Māja un dārzs';
+
+  @override
+  String get categorySports => 'Sports';
+
+  @override
+  String get categoryBooks => 'Grāmatas';
+
+  @override
+  String get categoryAutomotive => 'Auto';
+
+  @override
+  String get categoryCollectibles => 'Kolekcijas';
+
+  @override
+  String get categoryOther => 'Cits';
 }

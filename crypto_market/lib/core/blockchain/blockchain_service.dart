@@ -197,18 +197,46 @@ class BlockchainService {
     required String listingId,
     String? title,
     String? description,
-    int? amount,
-    int? priceInUsd,
-    List<String>? paymentMethods,
-    bool? isActive,
+    int? priceUSD,
+    String? cryptoType,
+    List<String>? images,
+    String? category,
+    String? condition,
+    String? location,
+    List<String>? shippingOptions,
+    String? status,
   }) async {
     final updateArgs = <String, dynamic>{};
-    if (title != null) updateArgs['title'] = [title];
-    if (description != null) updateArgs['description'] = [description];
-    if (amount != null) updateArgs['amount'] = [amount];
-    if (priceInUsd != null) updateArgs['priceInUsd'] = [priceInUsd];
-    if (paymentMethods != null) updateArgs['paymentMethods'] = [paymentMethods];
-    if (isActive != null) updateArgs['isActive'] = [isActive];
+    if (title != null) {
+      updateArgs['title'] = [title];
+    }
+    if (description != null) {
+      updateArgs['description'] = [description];
+    }
+    if (priceUSD != null) {
+      updateArgs['priceUSD'] = [priceUSD];
+    }
+    if (cryptoType != null) {
+      updateArgs['cryptoType'] = [cryptoType];
+    }
+    if (images != null) {
+      updateArgs['images'] = [images];
+    }
+    if (category != null) {
+      updateArgs['category'] = [category];
+    }
+    if (condition != null) {
+      updateArgs['condition'] = [condition];
+    }
+    if (location != null) {
+      updateArgs['location'] = [location];
+    }
+    if (shippingOptions != null) {
+      updateArgs['shippingOptions'] = [shippingOptions];
+    }
+    if (status != null) {
+      updateArgs['status'] = [status];
+    }
 
     return await _callCanister(
       canisterId: _config.canisterIdMarketplace,
@@ -217,27 +245,39 @@ class BlockchainService {
     );
   }
 
-  Future<Map<String, dynamic>> searchListings({
-    String? cryptoAsset,
-    int? minAmount,
-    int? maxAmount,
+  Future<Map<String, dynamic>> getListings({
+    String? query,
+    String? category,
     int? minPrice,
     int? maxPrice,
-    String? paymentMethod,
+    String? location,
+    String? condition,
     int offset = 0,
     int limit = 20,
   }) async {
     final filters = <String, dynamic>{};
-    if (cryptoAsset != null) filters['cryptoAsset'] = [cryptoAsset];
-    if (minAmount != null) filters['minAmount'] = [minAmount];
-    if (maxAmount != null) filters['maxAmount'] = [maxAmount];
-    if (minPrice != null) filters['minPrice'] = [minPrice];
-    if (maxPrice != null) filters['maxPrice'] = [maxPrice];
-    if (paymentMethod != null) filters['paymentMethod'] = [paymentMethod];
+    if (query != null && query.isNotEmpty) {
+      filters['query'] = query;
+    }
+    if (category != null && category.isNotEmpty) {
+      filters['category'] = category;
+    }
+    if (minPrice != null) {
+      filters['minPrice'] = minPrice;
+    }
+    if (maxPrice != null) {
+      filters['maxPrice'] = maxPrice;
+    }
+    if (location != null && location.isNotEmpty) {
+      filters['location'] = location;
+    }
+    if (condition != null && condition.isNotEmpty) {
+      filters['condition'] = condition;
+    }
 
     return await _callCanister(
       canisterId: _config.canisterIdMarketplace,
-      method: 'searchListings',
+      method: 'getListings',
       args: {'filters': filters, 'offset': offset, 'limit': limit},
       isQuery: true,
     );

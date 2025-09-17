@@ -2,17 +2,23 @@ import Principal "mo:base/Principal";
 
 module {
   public type ListingId = Text;
-  
+
+  public type ListingCondition = { #new; #used; #refurbished };
+  public type ListingStatus = { #active; #pending; #sold; #cancelled };
+
   public type Listing = {
     id : ListingId;
     seller : Principal;
     title : Text;
     description : Text;
-    cryptoAsset : Text; // e.g., "BTC", "ETH", "ICP"
-    amount : Nat64; // in smallest units (satoshis, wei, etc.)
-    priceInUsd : Nat64; // price in USD cents
-    paymentMethods : [Text]; // supported payment methods
-    isActive : Bool;
+    priceUSD : Nat64;
+    cryptoType : Text;
+    images : [Text];
+    category : Text;
+    condition : ListingCondition;
+    location : Text;
+    shippingOptions : [Text];
+    status : ListingStatus;
     createdAt : Nat64;
     updatedAt : Nat64;
   };
@@ -20,28 +26,35 @@ module {
   public type CreateListingRequest = {
     title : Text;
     description : Text;
-    cryptoAsset : Text;
-    amount : Nat64;
-    priceInUsd : Nat64;
-    paymentMethods : [Text];
+    priceUSD : Nat64;
+    cryptoType : Text;
+    images : [Text];
+    category : Text;
+    condition : ListingCondition;
+    location : Text;
+    shippingOptions : [Text];
   };
 
   public type UpdateListingRequest = {
     title : ?Text;
     description : ?Text;
-    amount : ?Nat64;
-    priceInUsd : ?Nat64;
-    paymentMethods : ?[Text];
-    isActive : ?Bool;
+    priceUSD : ?Nat64;
+    cryptoType : ?Text;
+    images : ?[Text];
+    category : ?Text;
+    condition : ?ListingCondition;
+    location : ?Text;
+    shippingOptions : ?[Text];
+    status : ?ListingStatus;
   };
 
   public type SearchFilters = {
-    cryptoAsset : ?Text;
-    minAmount : ?Nat64;
-    maxAmount : ?Nat64;
+    query : ?Text;
+    category : ?Text;
     minPrice : ?Nat64;
     maxPrice : ?Nat64;
-    paymentMethod : ?Text;
+    location : ?Text;
+    condition : ?ListingCondition;
   };
 
   public type SearchResult = {

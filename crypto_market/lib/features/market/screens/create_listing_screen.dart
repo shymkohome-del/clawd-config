@@ -180,13 +180,31 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
           min: 1,
           max: 1000000,
         );
-        return result.isValid ? null : result.firstError;
+
+        if (result.isValid) {
+          return null;
+        }
+
+        final error = result.firstError;
+        if (error == null) {
+          return null;
+        }
+
+        if (error.contains('required')) {
+          return l10n.priceRequired;
+        }
+        if (error.contains('at least') || error.contains('positive')) {
+          return l10n.pricePositive;
+        }
+
+        return error;
       },
     );
   }
 
   Widget _buildCryptoTypeDropdown(AppLocalizations l10n) {
     return DropdownButtonFormField<String>(
+      key: const ValueKey('create_listing_crypto_dropdown'),
       initialValue: _selectedCryptoType,
       decoration: InputDecoration(
         labelText: l10n.cryptoTypeLabel,
@@ -205,13 +223,17 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
   Widget _buildCategoryDropdown(AppLocalizations l10n) {
     return DropdownButtonFormField<String>(
+      key: const ValueKey('create_listing_category_dropdown'),
       initialValue: _selectedCategory,
       decoration: InputDecoration(
         labelText: l10n.categoryLabel,
         border: const OutlineInputBorder(),
       ),
       items: _categories.map((category) {
-        return DropdownMenuItem(value: category, child: Text(category));
+        return DropdownMenuItem(
+          value: category,
+          child: Text(_categoryLabel(category, l10n)),
+        );
       }).toList(),
       onChanged: (value) {
         setState(() {
@@ -223,6 +245,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
   Widget _buildConditionDropdown(AppLocalizations l10n) {
     return DropdownButtonFormField<ListingCondition>(
+      key: const ValueKey('create_listing_condition_dropdown'),
       initialValue: _selectedCondition,
       decoration: InputDecoration(
         labelText: l10n.conditionLabel,
@@ -248,6 +271,34 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
         });
       },
     );
+  }
+
+  String _categoryLabel(String category, AppLocalizations l10n) {
+    final normalized = category
+        .toLowerCase()
+        .replaceAll('&', '')
+        .replaceAll(' ', '_');
+    switch (normalized) {
+      case 'electronics':
+        return l10n.categoryElectronics;
+      case 'fashion':
+        return l10n.categoryFashion;
+      case 'home__garden':
+      case 'home_garden':
+        return l10n.categoryHomeGarden;
+      case 'sports':
+        return l10n.categorySports;
+      case 'books':
+        return l10n.categoryBooks;
+      case 'automotive':
+        return l10n.categoryAutomotive;
+      case 'collectibles':
+        return l10n.categoryCollectibles;
+      case 'other':
+        return l10n.categoryOther;
+      default:
+        return category;
+    }
   }
 
   Widget _buildLocationField(AppLocalizations l10n) {
@@ -402,6 +453,7 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
 
   Widget _buildSubmitButton(AppLocalizations l10n, bool isSubmitting) {
     return ElevatedButton(
+      key: const ValueKey('create_listing_submit_button'),
       onPressed: isSubmitting ? null : _submitForm,
       child: isSubmitting
           ? Row(

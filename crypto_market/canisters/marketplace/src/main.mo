@@ -1,4 +1,5 @@
 import Array "mo:base/Array";
+import Char "mo:base/Char";
 import HashMap "mo:base/HashMap";
 import Iter "mo:base/Iter";
 import Nat "mo:base/Nat";
@@ -44,20 +45,23 @@ actor MarketplaceCanister {
   };
 
   private func validateCreateListing(req : Types.CreateListingRequest) : ?Text {
-    if (Text.size(req.title) < 5 or Text.size(req.title) > 100) {
+    if (Text.size(req.title) < 3 or Text.size(req.title) > 100) {
       return ?"title_invalid_length";
     };
     if (Text.size(req.description) < 10 or Text.size(req.description) > 1000) {
       return ?"description_invalid_length";
     };
-    if (req.amount == 0) {
-      return ?"amount_must_be_positive";
-    };
-    if (req.priceInUsd == 0) {
+    if (req.priceUSD == 0) {
       return ?"price_must_be_positive";
     };
-    if (Array.size(req.paymentMethods) == 0) {
-      return ?"payment_methods_required";
+    if (Text.size(req.category) == 0) {
+      return ?"category_required";
+    };
+    if (Text.size(req.location) == 0) {
+      return ?"location_required";
+    };
+    if (Array.size(req.shippingOptions) == 0) {
+      return ?"shipping_options_required";
     };
     null
   };
@@ -98,11 +102,14 @@ actor MarketplaceCanister {
       seller = caller;
       title = req.title;
       description = req.description;
-      cryptoAsset = req.cryptoAsset;
-      amount = req.amount;
-      priceInUsd = req.priceInUsd;
-      paymentMethods = req.paymentMethods;
-      isActive = true;
+      priceUSD = req.priceUSD;
+      cryptoType = req.cryptoType;
+      images = req.images;
+      category = req.category;
+      condition = req.condition;
+      location = req.location;
+      shippingOptions = req.shippingOptions;
+      status = #active;
       createdAt = now;
       updatedAt = now;
     };
@@ -131,11 +138,14 @@ actor MarketplaceCanister {
           seller = existing.seller;
           title = Option.get(req.title, existing.title);
           description = Option.get(req.description, existing.description);
-          cryptoAsset = existing.cryptoAsset; // immutable
-          amount = Option.get(req.amount, existing.amount);
-          priceInUsd = Option.get(req.priceInUsd, existing.priceInUsd);
-          paymentMethods = Option.get(req.paymentMethods, existing.paymentMethods);
-          isActive = Option.get(req.isActive, existing.isActive);
+          priceUSD = Option.get(req.priceUSD, existing.priceUSD);
+          cryptoType = Option.get(req.cryptoType, existing.cryptoType);
+          images = Option.get(req.images, existing.images);
+          category = Option.get(req.category, existing.category);
+          condition = Option.get(req.condition, existing.condition);
+          location = Option.get(req.location, existing.location);
+          shippingOptions = Option.get(req.shippingOptions, existing.shippingOptions);
+          status = Option.get(req.status, existing.status);
           createdAt = existing.createdAt;
           updatedAt = nowMillis();
         };
@@ -162,55 +172,72 @@ actor MarketplaceCanister {
     }
   };
 
-  public query func searchListings(filters : Types.SearchFilters, offset : Nat, limit : Nat) : async Types.SearchListingsResult {
+  private func toLower(text : Text) : Text {
+    Text.map(text, func(c : Char) : Char {
+      Char.toLower(c)
+    })
+  };
+
+  public query func getListings(filters : Types.SearchFilters, offset : Nat, limit : Nat) : async Types.SearchListingsResult {
     let maxLimit = 50;
     let actualLimit = if (limit > maxLimit) maxLimit else limit;
-    
-    // Get all listings and filter
+
     let allListings = Iter.toArray(listings.vals());
     let filtered = Array.filter<Types.Listing>(allListings, func(listing) {
-      if (not listing.isActive) return false;
-      
-      // Apply filters
-      switch (filters.cryptoAsset) {
-        case (?asset) { if (listing.cryptoAsset != asset) return false; };
-        case null {};
-      };
-      
-      switch (filters.minAmount) {
-        case (?min) { if (listing.amount < min) return false; };
-        case null {};
-      };
-      
-      switch (filters.maxAmount) {
-        case (?max) { if (listing.amount > max) return false; };
-        case null {};
-      };
-      
-      switch (filters.minPrice) {
-        case (?min) { if (listing.priceInUsd < min) return false; };
-        case null {};
-      };
-      
-      switch (filters.maxPrice) {
-        case (?max) { if (listing.priceInUsd > max) return false; };
-        case null {};
-      };
-      
-      switch (filters.paymentMethod) {
-        case (?method) { 
-          if (not Array.find<Text>(listing.paymentMethods, func(pm) { pm == method }) != null) return false;
+      if (listing.status != #active) return false;
+
+      switch (filters.query) {
+        case (?q) {
+          let queryLower = toLower(q);
+          let titleLower = toLower(listing.title);
+          let descriptionLower = toLower(listing.description);
+          let locationLower = toLower(listing.location);
+
+          if (
+            not Text.contains(titleLower, #text(queryLower)) and
+            not Text.contains(descriptionLower, #text(queryLower)) and
+            not Text.contains(locationLower, #text(queryLower))
+          ) {
+            return false;
+          };
         };
         case null {};
       };
-      
+
+      switch (filters.category) {
+        case (?category) { if (listing.category != category) return false; };
+        case null {};
+      };
+
+      switch (filters.location) {
+        case (?location) {
+          let locationLower = toLower(location);
+          if (not Text.contains(toLower(listing.location), #text(locationLower))) return false;
+        };
+        case null {};
+      };
+
+      switch (filters.condition) {
+        case (?condition) { if (listing.condition != condition) return false; };
+        case null {};
+      };
+
+      switch (filters.minPrice) {
+        case (?min) { if (listing.priceUSD < min) return false; };
+        case null {};
+      };
+
+      switch (filters.maxPrice) {
+        case (?max) { if (listing.priceUSD > max) return false; };
+        case null {};
+      };
+
       true
     });
-    
+
     let totalCount = Array.size(filtered);
     let hasMore = offset + actualLimit < totalCount;
-    
-    // Apply pagination
+
     let startIndex = offset;
     let endIndex = Nat.min(startIndex + actualLimit, totalCount);
     let paginatedListings = if (startIndex >= totalCount) {
@@ -218,14 +245,12 @@ actor MarketplaceCanister {
     } else {
       Array.subArray<Types.Listing>(filtered, startIndex, endIndex - startIndex)
     };
-    
-    let result : Types.SearchResult = {
+
+    #ok({
       listings = paginatedListings;
       totalCount = totalCount;
       hasMore = hasMore;
-    };
-    
-    #ok(result)
+    })
   };
 
   public query func getUserListings(user : Principal) : async [Types.Listing] {
