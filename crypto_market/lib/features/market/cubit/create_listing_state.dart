@@ -5,7 +5,6 @@ abstract class CreateListingState {
 
   factory CreateListingState.initial() = CreateListingInitial;
   factory CreateListingState.submitting() = CreateListingSubmitting;
-<<<<<<< HEAD
   factory CreateListingState.success({required String listingId}) =
       CreateListingSuccess;
   factory CreateListingState.failure(String error) = CreateListingFailure;
