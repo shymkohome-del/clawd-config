@@ -32,15 +32,10 @@ class CreateListingCubit extends Cubit<CreateListingState> {
       );
 
       // Extract listing ID from result
-<<<<<<< HEAD
-      final listingId = result['id'] ?? result['listingId'] ?? 0;
-      emit(CreateListingState.success(listingId: listingId as int));
-=======
       final payload = _unwrapCanisterPayload(result);
       final rawListingId = payload['id'] ?? payload['listingId'];
       final listingId = rawListingId == null ? '' : rawListingId.toString();
       emit(CreateListingState.success(listingId: listingId));
->>>>>>> develop
     } catch (error) {
       Logger.instance.logError(
         'Failed to create listing: ${request.title}',
@@ -57,8 +52,6 @@ class CreateListingCubit extends Cubit<CreateListingState> {
     emit(CreateListingState.initial());
   }
 }
-<<<<<<< HEAD
-=======
 
 Map<String, dynamic> _unwrapCanisterPayload(Map<String, dynamic> raw) {
   final okValue = raw['ok'];
@@ -67,4 +60,3 @@ Map<String, dynamic> _unwrapCanisterPayload(Map<String, dynamic> raw) {
   }
   return raw;
 }
->>>>>>> develop
