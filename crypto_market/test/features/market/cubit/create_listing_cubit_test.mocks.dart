@@ -3,12 +3,25 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+<<<<<<< HEAD
 import 'dart:async' as _i3;
 
 import 'package:crypto_market/features/market/models/create_listing_request.dart'
     as _i4;
 import 'package:crypto_market/features/market/providers/market_service_provider.dart'
     as _i2;
+=======
+import 'dart:async' as _i4;
+
+import 'package:crypto_market/features/market/models/create_listing_request.dart'
+    as _i5;
+import 'package:crypto_market/features/market/models/search_filters.dart'
+    as _i6;
+import 'package:crypto_market/features/market/models/search_listings_result.dart'
+    as _i2;
+import 'package:crypto_market/features/market/providers/market_service_provider.dart'
+    as _i3;
+>>>>>>> develop
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -25,15 +38,29 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+<<<<<<< HEAD
 /// A class which mocks [MarketService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockMarketService extends _i1.Mock implements _i2.MarketService {
+=======
+class _FakeSearchListingsResult_0 extends _i1.SmartFake
+    implements _i2.SearchListingsResult {
+  _FakeSearchListingsResult_0(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
+/// A class which mocks [MarketService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockMarketService extends _i1.Mock implements _i3.MarketService {
+>>>>>>> develop
   MockMarketService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
+<<<<<<< HEAD
   _i3.Future<Map<String, dynamic>> createListing(
     _i4.CreateListingRequest? request,
   ) =>
@@ -47,6 +74,21 @@ class MockMarketService extends _i1.Mock implements _i2.MarketService {
 
   @override
   _i3.Future<void> updateListing({
+=======
+  _i4.Future<Map<String, dynamic>> createListing(
+    _i5.CreateListingRequest? request,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#createListing, [request]),
+            returnValue: _i4.Future<Map<String, dynamic>>.value(
+              <String, dynamic>{},
+            ),
+          )
+          as _i4.Future<Map<String, dynamic>>);
+
+  @override
+  _i4.Future<void> updateListing({
+>>>>>>> develop
     required String? listingId,
     required String? title,
     required int? priceInUsd,
@@ -59,8 +101,43 @@ class MockMarketService extends _i1.Mock implements _i2.MarketService {
               #priceInUsd: priceInUsd,
               #imagePath: imagePath,
             }),
+<<<<<<< HEAD
             returnValue: _i3.Future<void>.value(),
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
           as _i3.Future<void>);
+=======
+            returnValue: _i4.Future<void>.value(),
+            returnValueForMissingStub: _i4.Future<void>.value(),
+          )
+          as _i4.Future<void>);
+
+  @override
+  _i4.Future<_i2.SearchListingsResult> searchListings({
+    String? query,
+    _i6.SearchFilters? filters = const _i6.SearchFilters(),
+    int? page = 0,
+    int? limit = 20,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#searchListings, [], {
+              #query: query,
+              #filters: filters,
+              #page: page,
+              #limit: limit,
+            }),
+            returnValue: _i4.Future<_i2.SearchListingsResult>.value(
+              _FakeSearchListingsResult_0(
+                this,
+                Invocation.method(#searchListings, [], {
+                  #query: query,
+                  #filters: filters,
+                  #page: page,
+                  #limit: limit,
+                }),
+              ),
+            ),
+          )
+          as _i4.Future<_i2.SearchListingsResult>);
+>>>>>>> develop
 }

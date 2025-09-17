@@ -3,6 +3,9 @@ import 'package:crypto_market/core/blockchain/icp_service.dart';
 import 'package:crypto_market/core/logger/logger.dart';
 import 'package:crypto_market/features/market/models/create_listing_request.dart';
 import 'package:crypto_market/features/market/models/listing.dart';
+import 'package:crypto_market/features/market/models/search_filters.dart';
+import 'package:crypto_market/features/market/models/search_listings_result.dart';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 
 /// Abstraction for market-related operations to enable mocking in tests.
@@ -13,6 +16,12 @@ abstract class MarketService {
     required String title,
     required int priceInUsd,
     String? imagePath,
+  });
+  Future<SearchListingsResult> searchListings({
+    String? query,
+    SearchFilters filters = const SearchFilters(),
+    int page = 0,
+    int limit = 20,
   });
 }
 
@@ -82,7 +91,53 @@ class MarketServiceProvider implements MarketService {
     await _blockchainService.updateListing(
       listingId: listingId,
       title: title,
-      priceInUsd: priceInUsd,
+      priceUSD: priceInUsd,
     );
+  }
+
+  @override
+  Future<SearchListingsResult> searchListings({
+    String? query,
+    SearchFilters filters = const SearchFilters(),
+    int page = 0,
+    int limit = 20,
+  }) async {
+    final stopwatch = Stopwatch()..start();
+    final filterPayload = filters.toRequestPayload();
+    try {
+      final response = await _blockchainService.getListings(
+        query: query,
+        category: filterPayload['category'] as String?,
+        minPrice: filterPayload['minPrice'] as int?,
+        maxPrice: filterPayload['maxPrice'] as int?,
+        location: filterPayload['location'] as String?,
+        condition: filterPayload['condition'] as String?,
+        offset: page * limit,
+        limit: limit,
+      );
+
+      final result = SearchListingsResult.fromMap(response);
+
+      if (kDebugMode) {
+        Logger.instance.logDebug(
+          'Search completed in ${stopwatch.elapsedMilliseconds}ms – ${result.listings.length} results (total: ${result.totalCount})',
+          tag: 'MarketServiceProvider',
+        );
+      }
+
+      return result;
+    } catch (error, stackTrace) {
+      if (kDebugMode) {
+        Logger.instance.logError(
+          'Search failed for query "$query" with filters ${filters.toDebugString()}',
+          tag: 'MarketServiceProvider',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
+      rethrow;
+    } finally {
+      stopwatch.stop();
+    }
   }
 }

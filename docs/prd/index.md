@@ -29,6 +29,7 @@
   - [4. Functional Requirements](./4-functional-requirements.md)
     - [4.1 User Management](./4-functional-requirements.md#41-user-management)
     - [4.2 Trading Functions](./4-functional-requirements.md#42-trading-functions)
+    - [Feature PRD: Search & Filter Listings](./feature-search-filtering.md)
     - [4.3 Atomic Swap Implementation](./4-functional-requirements.md#43-atomic-swap-implementation)
     - [4.4 Payment Methods](./4-functional-requirements.md#44-payment-methods)
     - [4.5 Communication System](./4-functional-requirements.md#45-communication-system)

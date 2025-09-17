@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 import 'package:bloc_test/bloc_test.dart';
+=======
+>>>>>>> develop
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,6 +30,10 @@ void main() {
 
     Widget createTestWidget() {
       return MaterialApp(
+<<<<<<< HEAD
+=======
+        locale: const Locale('en'),
+>>>>>>> develop
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -53,9 +60,23 @@ void main() {
         findsNWidgets(5),
       ); // title, description, price, location, shipping
       expect(
+<<<<<<< HEAD
         find.byType(DropdownButtonFormField),
         findsNWidgets(3),
       ); // crypto, category, condition
+=======
+        find.byKey(const ValueKey('create_listing_crypto_dropdown')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('create_listing_category_dropdown')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const ValueKey('create_listing_condition_dropdown')),
+        findsOneWidget,
+      );
+>>>>>>> develop
 
       // Verify field labels
       expect(find.text('Title'), findsOneWidget);
@@ -79,7 +100,14 @@ void main() {
       await tester.pumpWidget(createTestWidget());
 
       // Try to submit empty form
+<<<<<<< HEAD
       final submitButton = find.text('Create Listing').last;
+=======
+      final submitButton = find.byKey(
+        const ValueKey('create_listing_submit_button'),
+      );
+      await tester.ensureVisible(submitButton);
+>>>>>>> develop
       await tester.tap(submitButton);
       await tester.pumpAndSettle();
 
@@ -110,11 +138,22 @@ void main() {
         find.byType(TextFormField).at(4),
         'Standard Shipping',
       );
+<<<<<<< HEAD
+=======
+      await tester.ensureVisible(find.byIcon(Icons.add));
+>>>>>>> develop
       await tester.tap(find.byIcon(Icons.add));
       await tester.pump();
 
       // Submit the form
+<<<<<<< HEAD
       final submitButton = find.text('Create Listing').last;
+=======
+      final submitButton = find.byKey(
+        const ValueKey('create_listing_submit_button'),
+      );
+      await tester.ensureVisible(submitButton);
+>>>>>>> develop
       await tester.tap(submitButton);
       await tester.pump();
 
@@ -149,26 +188,43 @@ void main() {
     });
 
     testWidgets('shows success message on successful creation', (tester) async {
+<<<<<<< HEAD
       whenListen(
         mockCubit,
         Stream.fromIterable([
           CreateListingState.initial(),
           CreateListingState.submitting(),
           CreateListingState.success(listingId: 123),
+=======
+      when(mockCubit.stream).thenAnswer(
+        (_) => Stream.fromIterable([
+          CreateListingState.initial(),
+          CreateListingState.submitting(),
+          CreateListingState.success(listingId: 'listing-123'),
+>>>>>>> develop
         ]),
       );
 
       await tester.pumpWidget(createTestWidget());
       await tester.pump(); // Process the success state
+<<<<<<< HEAD
+=======
+      await tester.pump(const Duration(seconds: 1));
+>>>>>>> develop
 
       // Verify success message
       expect(find.text('Listing created successfully!'), findsOneWidget);
     });
 
     testWidgets('shows error dialog on failure', (tester) async {
+<<<<<<< HEAD
       whenListen(
         mockCubit,
         Stream.fromIterable([
+=======
+      when(mockCubit.stream).thenAnswer(
+        (_) => Stream.fromIterable([
+>>>>>>> develop
           CreateListingState.initial(),
           CreateListingState.submitting(),
           CreateListingState.failure('Network error'),
@@ -189,6 +245,10 @@ void main() {
 
       // Add first shipping option
       await tester.enterText(find.byType(TextFormField).at(4), 'Standard');
+<<<<<<< HEAD
+=======
+      await tester.ensureVisible(find.byIcon(Icons.add));
+>>>>>>> develop
       await tester.tap(find.byIcon(Icons.add));
       await tester.pump();
 
@@ -203,6 +263,10 @@ void main() {
       expect(find.byIcon(Icons.delete), findsNWidgets(2));
 
       // Remove first option
+<<<<<<< HEAD
+=======
+      await tester.ensureVisible(find.byIcon(Icons.delete).first);
+>>>>>>> develop
       await tester.tap(find.byIcon(Icons.delete).first);
       await tester.pump();
 
@@ -213,14 +277,25 @@ void main() {
 
     testWidgets('changes dropdown values', (tester) async {
       await tester.pumpWidget(createTestWidget());
+<<<<<<< HEAD
 
       // Change crypto type
       await tester.tap(find.byType(DropdownButtonFormField).first);
+=======
+      final context = tester.element(find.byType(CreateListingScreen));
+      final l10n = AppLocalizations.of(context);
+
+      // Change crypto type
+      await tester.tap(
+        find.byKey(const ValueKey('create_listing_crypto_dropdown')),
+      );
+>>>>>>> develop
       await tester.pumpAndSettle();
       await tester.tap(find.text('ETH').last);
       await tester.pumpAndSettle();
 
       // Change category
+<<<<<<< HEAD
       await tester.tap(find.byType(DropdownButtonFormField).at(1));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Fashion').last);
@@ -230,12 +305,32 @@ void main() {
       await tester.tap(find.byType(DropdownButtonFormField).at(2));
       await tester.pumpAndSettle();
       await tester.tap(find.text('New').last);
+=======
+      await tester.tap(
+        find.byKey(const ValueKey('create_listing_category_dropdown')),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.categoryFashion).last);
+      await tester.pumpAndSettle();
+
+      // Change condition
+      await tester.tap(
+        find.byKey(const ValueKey('create_listing_condition_dropdown')),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.conditionNew).last);
+>>>>>>> develop
       await tester.pumpAndSettle();
 
       // The dropdowns should show the selected values
       expect(find.text('ETH'), findsOneWidget);
+<<<<<<< HEAD
       expect(find.text('Fashion'), findsOneWidget);
       expect(find.text('New'), findsOneWidget);
+=======
+      expect(find.text(l10n.categoryFashion), findsOneWidget);
+      expect(find.text(l10n.conditionNew), findsOneWidget);
+>>>>>>> develop
     });
 
     testWidgets('shows validation errors for invalid inputs', (tester) async {
@@ -245,7 +340,14 @@ void main() {
       await tester.enterText(find.byType(TextFormField).at(2), '-5');
 
       // Try to submit
+<<<<<<< HEAD
       final submitButton = find.text('Create Listing').last;
+=======
+      final submitButton = find.byKey(
+        const ValueKey('create_listing_submit_button'),
+      );
+      await tester.ensureVisible(submitButton);
+>>>>>>> develop
       await tester.tap(submitButton);
       await tester.pumpAndSettle();
 

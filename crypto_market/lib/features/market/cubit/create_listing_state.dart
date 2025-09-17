@@ -5,7 +5,11 @@ abstract class CreateListingState {
 
   factory CreateListingState.initial() = CreateListingInitial;
   factory CreateListingState.submitting() = CreateListingSubmitting;
+<<<<<<< HEAD
   factory CreateListingState.success({required int listingId}) =
+=======
+  factory CreateListingState.success({required String listingId}) =
+>>>>>>> develop
       CreateListingSuccess;
   factory CreateListingState.failure(String error) = CreateListingFailure;
 }
@@ -20,7 +24,11 @@ class CreateListingSubmitting extends CreateListingState {
 
 class CreateListingSuccess extends CreateListingState {
   const CreateListingSuccess({required this.listingId});
+<<<<<<< HEAD
   final int listingId;
+=======
+  final String listingId;
+>>>>>>> develop
 }
 
 class CreateListingFailure extends CreateListingState {

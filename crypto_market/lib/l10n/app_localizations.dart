@@ -793,6 +793,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Image upload failed'**
   String get imageUploadFailed;
+
+  /// No description provided for @searchListingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse Listings'**
+  String get searchListingsTitle;
+
+  /// No description provided for @searchPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search listings by keyword'**
+  String get searchPlaceholder;
+
+  /// No description provided for @searchFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchFieldLabel;
+
+  /// No description provided for @filtersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filtersTitle;
+
+  /// No description provided for @filterPriceMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Min price (USD)'**
+  String get filterPriceMin;
+
+  /// No description provided for @filterPriceMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Max price (USD)'**
+  String get filterPriceMax;
+
+  /// No description provided for @filterLocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get filterLocationLabel;
+
+  /// No description provided for @filterConditionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Condition'**
+  String get filterConditionLabel;
+
+  /// No description provided for @filterSortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get filterSortLabel;
+
+  /// No description provided for @filtersApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply filters'**
+  String get filtersApply;
+
+  /// No description provided for @filtersClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get filtersClear;
+
+  /// No description provided for @filtersApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters applied'**
+  String get filtersApplied;
+
+  /// No description provided for @filtersCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters cleared'**
+  String get filtersCleared;
+
+  /// No description provided for @searchNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No listings match your filters yet. Adjust your search or try again later.'**
+  String get searchNoResults;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest first'**
+  String get sortNewest;
+
+  /// No description provided for @sortPriceLowHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: Low to High'**
+  String get sortPriceLowHigh;
+
+  /// No description provided for @sortPriceHighLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: High to Low'**
+  String get sortPriceHighLow;
+
+  /// No description provided for @categoryElectronics.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronics'**
+  String get categoryElectronics;
+
+  /// No description provided for @categoryFashion.
+  ///
+  /// In en, this message translates to:
+  /// **'Fashion'**
+  String get categoryFashion;
+
+  /// No description provided for @categoryHomeGarden.
+  ///
+  /// In en, this message translates to:
+  /// **'Home & Garden'**
+  String get categoryHomeGarden;
+
+  /// No description provided for @categorySports.
+  ///
+  /// In en, this message translates to:
+  /// **'Sports'**
+  String get categorySports;
+
+  /// No description provided for @categoryBooks.
+  ///
+  /// In en, this message translates to:
+  /// **'Books'**
+  String get categoryBooks;
+
+  /// No description provided for @categoryAutomotive.
+  ///
+  /// In en, this message translates to:
+  /// **'Automotive'**
+  String get categoryAutomotive;
+
+  /// No description provided for @categoryCollectibles.
+  ///
+  /// In en, this message translates to:
+  /// **'Collectibles'**
+  String get categoryCollectibles;
+
+  /// No description provided for @categoryOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get categoryOther;
 }
 
 class _AppLocalizationsDelegate
