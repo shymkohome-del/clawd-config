@@ -66,6 +66,64 @@ actor MarketplaceCanister {
     null
   };
 
+  private func validateUpdateListing(req : Types.UpdateListingRequest) : ?Text {
+    switch (req.title) {
+      case (?title) {
+        if (Text.size(title) < 3 or Text.size(title) > 100) {
+          return ?"title_invalid_length";
+        };
+      };
+      case null {};
+    };
+
+    switch (req.description) {
+      case (?description) {
+        if (Text.size(description) < 10 or Text.size(description) > 1000) {
+          return ?"description_invalid_length";
+        };
+      };
+      case null {};
+    };
+
+    switch (req.priceUSD) {
+      case (?price) {
+        if (price == 0) {
+          return ?"price_must_be_positive";
+        };
+      };
+      case null {};
+    };
+
+    switch (req.category) {
+      case (?category) {
+        if (Text.size(category) == 0) {
+          return ?"category_required";
+        };
+      };
+      case null {};
+    };
+
+    switch (req.location) {
+      case (?location) {
+        if (Text.size(location) == 0) {
+          return ?"location_required";
+        };
+      };
+      case null {};
+    };
+
+    switch (req.shippingOptions) {
+      case (?options) {
+        if (Array.size(options) == 0) {
+          return ?"shipping_options_required";
+        };
+      };
+      case null {};
+    };
+
+    null
+  };
+
   private func addUserListing(user : Principal, listingId : Types.ListingId) {
     switch (userListings.get(user)) {
       case (?existing) {
@@ -132,7 +190,12 @@ actor MarketplaceCanister {
         if (existing.seller != caller) {
           return #err("unauthorized");
         };
-        
+
+        switch (validateUpdateListing(req)) {
+          case (?error) { return #err(error); };
+          case null {};
+        };
+
         let updated : Types.Listing = {
           id = existing.id;
           seller = existing.seller;
@@ -149,7 +212,7 @@ actor MarketplaceCanister {
           createdAt = existing.createdAt;
           updatedAt = nowMillis();
         };
-        
+
         listings.put(listingId, updated);
         #ok(updated)
       };
