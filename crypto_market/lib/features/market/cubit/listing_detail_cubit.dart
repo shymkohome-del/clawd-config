@@ -26,7 +26,9 @@ class ListingDetailCubit extends Cubit<ListingDetailState> {
       return;
     }
 
-    emit(state.copyWith(status: ListingDetailStatus.loading, errorMessage: null));
+    emit(
+      state.copyWith(status: ListingDetailStatus.loading, errorMessage: null),
+    );
 
     try {
       Logger.instance.logDebug(
@@ -56,7 +58,9 @@ class ListingDetailCubit extends Cubit<ListingDetailState> {
       );
 
       // Fetch seller profile
-      final sellerProfileResult = await _userService.getUserProfile(listing.seller);
+      final sellerProfileResult = await _userService.getUserProfile(
+        listing.seller,
+      );
 
       if (sellerProfileResult.isErr) {
         Logger.instance.logWarn(

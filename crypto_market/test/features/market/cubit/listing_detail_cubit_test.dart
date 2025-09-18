@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockMarketService extends Mock implements MarketService {}
+
 class MockUserService extends Mock implements UserService {}
 
 void main() {

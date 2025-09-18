@@ -55,10 +55,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
           PopupMenuButton<String>(
             onSelected: (value) => _handleMenuAction(value, context),
             itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'report',
-                child: Text(l10n.reportListing),
-              ),
+              PopupMenuItem(value: 'report', child: Text(l10n.reportListing)),
             ],
           ),
         ],
@@ -105,10 +102,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _loadListing,
-                child: Text(l10n.retry),
-              ),
+              ElevatedButton(onPressed: _loadListing, child: Text(l10n.retry)),
             ],
           ),
         );
@@ -171,7 +165,11 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.image_not_supported, size: 64, color: Colors.grey),
+              const Icon(
+                Icons.image_not_supported,
+                size: 64,
+                color: Colors.grey,
+              ),
               const SizedBox(height: 8),
               Text(
                 l10n.noImagesAvailable,
@@ -212,7 +210,7 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                           child: CircularProgressIndicator(
                             value: loadingProgress.expectedTotalBytes != null
                                 ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
+                                      loadingProgress.expectedTotalBytes!
                                 : null,
                           ),
                         );
@@ -292,9 +290,9 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
       children: [
         Text(
           listing.title,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         Text(
@@ -308,9 +306,9 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
           const SizedBox(height: 4),
           Text(
             'Accepts ${listing.cryptoType}',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
           ),
         ],
       ],
@@ -327,15 +325,12 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
       children: [
         Text(
           l10n.descriptionLabel,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        Text(
-          listing.description,
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
+        Text(listing.description, style: Theme.of(context).textTheme.bodyLarge),
       ],
     );
   }
@@ -358,9 +353,9 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
       children: [
         Text(
           l10n.sellerInfo,
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         InkWell(
@@ -375,7 +370,9 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                   child: Text(
                     userProfile?.displayName.isNotEmpty == true
                         ? userProfile!.displayName[0].toUpperCase()
-                        : listing.seller.isNotEmpty ? listing.seller[0].toUpperCase() : '?',
+                        : listing.seller.isNotEmpty
+                        ? listing.seller[0].toUpperCase()
+                        : '?',
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
@@ -392,36 +389,28 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
                           ),
                           const SizedBox(width: 8),
                           if (userProfile?.kycVerified == true)
-                            Icon(
-                              Icons.verified,
-                              color: Colors.blue,
-                              size: 16,
-                            ),
+                            Icon(Icons.verified, color: Colors.blue, size: 16),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                            size: 16,
-                          ),
+                          Icon(Icons.star, color: Colors.amber, size: 16),
                           const SizedBox(width: 4),
                           Text(
                             '${l10n.sellerReputation}: $reputation',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: reputationColor,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: reputationColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                           const SizedBox(width: 8),
                           if (reputation > 0)
                             Text(
                               '($reputationText)',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Colors.grey[600],
-                              ),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: Colors.grey[600]),
                             ),
                         ],
                       ),
@@ -487,8 +476,8 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
           listing.condition == ListingCondition.newCondition
               ? Icons.new_releases
               : listing.condition == ListingCondition.used
-                  ? Icons.history
-                  : Icons.settings_backup_restore,
+              ? Icons.history
+              : Icons.settings_backup_restore,
           size: 20,
           color: Colors.grey[600],
         ),
@@ -580,16 +569,15 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
   }
 
   void _buyNow(BuildContext context) {
-    Logger.instance.logDebug(
-      'Buy Now clicked',
-      tag: 'ListingDetailScreen',
-    );
+    Logger.instance.logDebug('Buy Now clicked', tag: 'ListingDetailScreen');
 
     final state = context.read<ListingDetailCubit>().state;
     if (state.listing != null) {
       // Navigate to swap initiation flow
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Buy Now functionality - initiating swap...')),
+        const SnackBar(
+          content: Text('Buy Now functionality - initiating swap...'),
+        ),
       );
     }
   }

@@ -30,9 +30,7 @@ void main() {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en'),
-      ],
+      supportedLocales: const [Locale('en')],
       home: BlocProvider<ListingDetailCubit>.value(
         value: cubit,
         child: ListingDetailScreen(listingId: listingId),
@@ -77,7 +75,9 @@ void main() {
       expect(find.text('Retry'), findsOneWidget);
     });
 
-    testWidgets('displays listing not found when listing is null', (tester) async {
+    testWidgets('displays listing not found when listing is null', (
+      tester,
+    ) async {
       when(() => cubit.state).thenReturn(
         const ListingDetailState(
           status: ListingDetailStatus.success,
@@ -92,7 +92,9 @@ void main() {
       expect(find.text('Listing not found'), findsOneWidget);
     });
 
-    testWidgets('displays listing content when loading succeeds', (tester) async {
+    testWidgets('displays listing content when loading succeeds', (
+      tester,
+    ) async {
       final testListing = Listing(
         id: 'test-listing-id',
         seller: 'test-seller',
@@ -129,7 +131,9 @@ void main() {
       expect(find.text('Contact Seller'), findsOneWidget);
     });
 
-    testWidgets('displays placeholder when no images available', (tester) async {
+    testWidgets('displays placeholder when no images available', (
+      tester,
+    ) async {
       final testListing = Listing(
         id: 'test-listing-id',
         seller: 'test-seller',
@@ -219,44 +223,52 @@ void main() {
       expect(find.byIcon(Icons.share), findsOneWidget);
     });
 
-    testWidgets('shows Buy Now and Contact Seller buttons with proper styling', (tester) async {
-      final testListing = Listing(
-        id: 'test-listing-id',
-        seller: 'test-seller',
-        title: 'Test Item',
-        description: 'This is a test item description',
-        priceUSD: 100,
-        cryptoType: 'BTC',
-        images: [],
-        category: 'Electronics',
-        condition: ListingCondition.newCondition,
-        location: 'New York, NY',
-        shippingOptions: ['Standard'],
-        status: ListingStatus.active,
-        createdAt: DateTime(2024, 1, 1).millisecondsSinceEpoch,
-        updatedAt: DateTime(2024, 1, 1).millisecondsSinceEpoch,
-      );
+    testWidgets(
+      'shows Buy Now and Contact Seller buttons with proper styling',
+      (tester) async {
+        final testListing = Listing(
+          id: 'test-listing-id',
+          seller: 'test-seller',
+          title: 'Test Item',
+          description: 'This is a test item description',
+          priceUSD: 100,
+          cryptoType: 'BTC',
+          images: [],
+          category: 'Electronics',
+          condition: ListingCondition.newCondition,
+          location: 'New York, NY',
+          shippingOptions: ['Standard'],
+          status: ListingStatus.active,
+          createdAt: DateTime(2024, 1, 1).millisecondsSinceEpoch,
+          updatedAt: DateTime(2024, 1, 1).millisecondsSinceEpoch,
+        );
 
-      when(() => cubit.state).thenReturn(
-        ListingDetailState(
-          status: ListingDetailStatus.success,
-          listing: testListing,
-        ),
-      );
+        when(() => cubit.state).thenReturn(
+          ListingDetailState(
+            status: ListingDetailStatus.success,
+            listing: testListing,
+          ),
+        );
 
-      await tester.pumpWidget(buildSubject(listingId: testListingId));
-      await tester.pump();
+        await tester.pumpWidget(buildSubject(listingId: testListingId));
+        await tester.pump();
 
-      // Find Buy Now button (should be prominent)
-      final buyNowButton = find.widgetWithText(ElevatedButton, 'Buy Now');
-      expect(buyNowButton, findsOneWidget);
+        // Find Buy Now button (should be prominent)
+        final buyNowButton = find.widgetWithText(ElevatedButton, 'Buy Now');
+        expect(buyNowButton, findsOneWidget);
 
-      // Find Contact Seller button (should be outlined)
-      final contactSellerButton = find.widgetWithText(OutlinedButton, 'Contact Seller');
-      expect(contactSellerButton, findsOneWidget);
-    });
+        // Find Contact Seller button (should be outlined)
+        final contactSellerButton = find.widgetWithText(
+          OutlinedButton,
+          'Contact Seller',
+        );
+        expect(contactSellerButton, findsOneWidget);
+      },
+    );
 
-    testWidgets('displays seller reputation with proper styling', (tester) async {
+    testWidgets('displays seller reputation with proper styling', (
+      tester,
+    ) async {
       final testListing = Listing(
         id: 'test-listing-id',
         seller: 'test-seller',
@@ -502,7 +514,8 @@ class _MockAppLocalizations implements AppLocalizations {
   String get confirmUpdateTitle => 'Update Listing?';
 
   @override
-  String get confirmUpdateMessage => 'Are you sure you want to update this listing?';
+  String get confirmUpdateMessage =>
+      'Are you sure you want to update this listing?';
 
   @override
   String get confirmUpdateYes => 'Update';
@@ -544,7 +557,8 @@ class _MockAppLocalizations implements AppLocalizations {
   String get errorAuthUserNotFound => 'User not found';
 
   @override
-  String get errorAuthEmailExists => 'An account with this email already exists';
+  String get errorAuthEmailExists =>
+      'An account with this email already exists';
 
   @override
   String get errorAuthWeakPassword => 'Password is too weak';
@@ -553,25 +567,30 @@ class _MockAppLocalizations implements AppLocalizations {
   String get errorAuthAccountLocked => 'Account is temporarily locked';
 
   @override
-  String get errorAuthSessionExpired => 'Your session has expired. Please log in again';
+  String get errorAuthSessionExpired =>
+      'Your session has expired. Please log in again';
 
   @override
   String get errorAuthInvalidToken => 'Invalid authentication token';
 
   @override
-  String get errorAuthPrincipalMismatch => 'Principal mismatch in ICP authentication';
+  String get errorAuthPrincipalMismatch =>
+      'Principal mismatch in ICP authentication';
 
   @override
-  String get errorAuthRegistrationFailed => 'Registration failed. Please try again';
+  String get errorAuthRegistrationFailed =>
+      'Registration failed. Please try again';
 
   @override
   String get errorAuthLoginFailed => 'Login failed';
 
   @override
-  String get errorAuthInsufficientPrivileges => 'Insufficient privileges to perform this action';
+  String get errorAuthInsufficientPrivileges =>
+      'Insufficient privileges to perform this action';
 
   @override
-  String get errorNetworkConnectionTimeout => 'Connection timeout. Please check your internet connection';
+  String get errorNetworkConnectionTimeout =>
+      'Connection timeout. Please check your internet connection';
 
   @override
   String get errorNetworkNoInternet => 'No internet connection available';
@@ -580,10 +599,12 @@ class _MockAppLocalizations implements AppLocalizations {
   String get errorNetworkServerError => 'Server error occurred';
 
   @override
-  String get errorNetworkCanisterUnavailable => 'ICP canister is currently unavailable';
+  String get errorNetworkCanisterUnavailable =>
+      'ICP canister is currently unavailable';
 
   @override
-  String get errorNetworkRateLimitExceeded => 'Too many requests. Please wait and try again';
+  String get errorNetworkRateLimitExceeded =>
+      'Too many requests. Please wait and try again';
 
   @override
   String get errorNetworkInvalidResponse => 'Invalid response from server';
@@ -604,7 +625,8 @@ class _MockAppLocalizations implements AppLocalizations {
   String errorValidationRange(Object field) => '$field is out of range';
 
   @override
-  String get errorBusinessInsufficientBalance => 'Insufficient balance for this transaction';
+  String get errorBusinessInsufficientBalance =>
+      'Insufficient balance for this transaction';
 
   @override
   String get errorBusinessMarketClosed => 'Market is currently closed';
@@ -613,7 +635,8 @@ class _MockAppLocalizations implements AppLocalizations {
   String get errorBusinessInvalidOperation => 'This operation is not allowed';
 
   @override
-  String get errorBusinessRateLimitExceeded => 'Rate limit exceeded. Please try again later';
+  String get errorBusinessRateLimitExceeded =>
+      'Rate limit exceeded. Please try again later';
 
   @override
   String get successGeneric => 'Operation completed successfully';
@@ -670,7 +693,8 @@ class _MockAppLocalizations implements AppLocalizations {
   String get cryptoTypeRequired => 'Cryptocurrency is required';
 
   @override
-  String get shippingOptionsRequired => 'At least one shipping option is required';
+  String get shippingOptionsRequired =>
+      'At least one shipping option is required';
 
   @override
   String get createListing => 'Create Listing';
@@ -742,7 +766,8 @@ class _MockAppLocalizations implements AppLocalizations {
   String get filtersCleared => 'Filters cleared';
 
   @override
-  String get searchNoResults => 'No listings match your filters yet. Adjust your search or try again later.';
+  String get searchNoResults =>
+      'No listings match your filters yet. Adjust your search or try again later.';
 
   @override
   String get sortNewest => 'Newest first';
