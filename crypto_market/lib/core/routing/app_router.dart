@@ -2,10 +2,13 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:crypto_market/features/auth/screens/login_screen.dart';
 import 'package:crypto_market/features/auth/screens/register_screen.dart';
+import 'package:crypto_market/features/auth/providers/user_service_provider.dart';
 import 'package:crypto_market/features/market/cubit/create_listing_cubit.dart';
+import 'package:crypto_market/features/market/cubit/listing_detail_cubit.dart';
 import 'package:crypto_market/features/market/cubit/search_listings_cubit.dart';
 import 'package:crypto_market/features/market/providers/market_service_provider.dart';
 import 'package:crypto_market/features/market/screens/create_listing_screen.dart';
+import 'package:crypto_market/features/market/screens/listing_detail_screen.dart';
 import 'package:crypto_market/features/market/screens/search_screen.dart';
 import 'package:crypto_market/core/routing/protected_route.dart';
 
@@ -45,6 +48,19 @@ class AppRouter {
               marketService: context.read<MarketServiceProvider>(),
             ),
             child: const CreateListingScreen(),
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '/listing/:id',
+        name: 'listing-detail',
+        builder: (context, state) => ProtectedRoute(
+          child: BlocProvider(
+            create: (context) => ListingDetailCubit(
+              marketService: context.read<MarketServiceProvider>(),
+              userService: context.read<UserServiceProvider>(),
+            ),
+            child: ListingDetailScreen(listingId: state.pathParameters['id']!),
           ),
         ),
       ),

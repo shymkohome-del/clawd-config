@@ -896,6 +896,114 @@ abstract class AppLocalizations {
   /// **'Price: High to Low'**
   String get sortPriceHighLow;
 
+  /// No description provided for @listingDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing Details'**
+  String get listingDetailTitle;
+
+  /// No description provided for @contactSeller.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Seller'**
+  String get contactSeller;
+
+  /// No description provided for @reportListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Listing'**
+  String get reportListing;
+
+  /// No description provided for @shareListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Share Listing'**
+  String get shareListing;
+
+  /// No description provided for @sellerInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Seller Information'**
+  String get sellerInfo;
+
+  /// No description provided for @sellerReputation.
+  ///
+  /// In en, this message translates to:
+  /// **'Reputation'**
+  String get sellerReputation;
+
+  /// No description provided for @sellerLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get sellerLocation;
+
+  /// No description provided for @memberSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Member since'**
+  String get memberSince;
+
+  /// No description provided for @viewProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'View Profile'**
+  String get viewProfile;
+
+  /// No description provided for @noImagesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No images available'**
+  String get noImagesAvailable;
+
+  /// No description provided for @imageGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Image Gallery'**
+  String get imageGallery;
+
+  /// No description provided for @previous.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get previous;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @imageOf.
+  ///
+  /// In en, this message translates to:
+  /// **'of'**
+  String get imageOf;
+
+  /// No description provided for @loadingListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading listing...'**
+  String get loadingListing;
+
+  /// No description provided for @listingNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing not found'**
+  String get listingNotFound;
+
+  /// No description provided for @errorLoadingListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading listing'**
+  String get errorLoadingListing;
+
+  /// No description provided for @buyNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Now'**
+  String get buyNow;
+
   /// No description provided for @categoryElectronics.
   ///
   /// In en, this message translates to:
