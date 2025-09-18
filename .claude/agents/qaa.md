@@ -1,6 +1,6 @@
 ---
 name: qaa
-description: Use for senior code review, test planning, quality assurance, and mentoring through code improvements
+description: Use for senior code review, test planning, quality assurance, and mentoring through code improvements, including applying the qa:approved label for auto-merge workflow. 
 model: inherit
 color: blue
 ---

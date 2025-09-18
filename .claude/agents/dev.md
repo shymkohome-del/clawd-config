@@ -1,6 +1,6 @@
 ---
 name: dev
-description: Use for code implementation, debugging, refactoring, development best practices
+description: Use for code implementation, debugging, refactoring, error fixing, and development best practices
 model: inherit
 color: red
 ---
