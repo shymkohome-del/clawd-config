@@ -49,20 +49,22 @@ void main() {
         ),
       ),
     );
-  } on AppConfigValidationError catch (e) {
+  } on AppConfigValidationError catch (_) {
     // For testing purposes, create a minimal config to test navigation
-    final testConfig = AppConfig.tryLoad(defines: {
-      'OAUTH_GOOGLE_CLIENT_ID': 'test_client_id',
-      'OAUTH_GOOGLE_CLIENT_SECRET': 'test_client_secret',
-      'OAUTH_APPLE_TEAM_ID': 'test_team_id',
-      'OAUTH_APPLE_KEY_ID': 'test_key_id',
-      'IPFS_NODE_URL': 'https://ipfs.io',
-      'IPFS_GATEWAY_URL': 'https://ipfs.io',
-      'CANISTER_ID_MARKETPLACE': 'test_marketplace_id',
-      'CANISTER_ID_USER_MANAGEMENT': 'test_user_management_id',
-      'CANISTER_ID_ATOMIC_SWAP': 'test_atomic_swap_id',
-      'CANISTER_ID_PRICE_ORACLE': 'test_price_oracle_id',
-    });
+    final testConfig = AppConfig.tryLoad(
+      defines: {
+        'OAUTH_GOOGLE_CLIENT_ID': 'test_client_id',
+        'OAUTH_GOOGLE_CLIENT_SECRET': 'test_client_secret',
+        'OAUTH_APPLE_TEAM_ID': 'test_team_id',
+        'OAUTH_APPLE_KEY_ID': 'test_key_id',
+        'IPFS_NODE_URL': 'https://ipfs.io',
+        'IPFS_GATEWAY_URL': 'https://ipfs.io',
+        'CANISTER_ID_MARKETPLACE': 'test_marketplace_id',
+        'CANISTER_ID_USER_MANAGEMENT': 'test_user_management_id',
+        'CANISTER_ID_ATOMIC_SWAP': 'test_atomic_swap_id',
+        'CANISTER_ID_PRICE_ORACLE': 'test_price_oracle_id',
+      },
+    );
     final icpService = ICPService.fromConfig(testConfig);
     runApp(
       MultiRepositoryProvider(
@@ -136,7 +138,7 @@ class ConfigErrorApp extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.configErrorTitle),
+          title: Text(AppLocalizations.of(context).configErrorTitle),
         ),
         body: Center(child: Text(message)),
       ),
