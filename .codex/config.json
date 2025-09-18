@@ -1,0 +1,42 @@
+{
+  "model": "gpt-5-mini",
+  "mcpServers": {
+    "playwright": {
+      "url": "http://localhost:8931/sse"
+    },
+    "context7": {
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "openai-websearch-mcp": {
+      "command": "uvx",
+      "args": [
+        "openai-websearch-mcp"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "<YOUR_OPENAI_API_KEY>",
+        "OPENAI_DEFAULT_MODEL": "gpt-5-mini"
+      }
+    },
+    "dart": {
+      "command": "dart",
+      "args": [
+        "mcp-server",
+        "--experimental-mcp-server",
+        "--force-roots-fallback"
+      ]
+    },
+    "vscode-mcp-server": {
+      "command": "npx",
+      "args": [
+        "mcp-remote@next",
+        "http://localhost:3000/mcp"
+      ]
+    },
+    "github": {
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${env:GITHUB_MCP_PAT}"
+      }
+    }
+  }
+}
