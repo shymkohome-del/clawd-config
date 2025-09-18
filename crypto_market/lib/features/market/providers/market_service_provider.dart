@@ -8,10 +8,27 @@ import 'package:crypto_market/features/market/models/search_listings_result.dart
 import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 
+/// Result type for update operations
+sealed class UpdateListingResult {
+  const UpdateListingResult();
+}
+
+class UpdateListingSuccess extends UpdateListingResult {
+  final Listing listing;
+
+  const UpdateListingSuccess(this.listing);
+}
+
+class UpdateListingFailure extends UpdateListingResult {
+  final String error;
+
+  const UpdateListingFailure(this.error);
+}
+
 /// Abstraction for market-related operations to enable mocking in tests.
 abstract class MarketService {
   Future<Map<String, dynamic>> createListing(CreateListingRequest request);
-  Future<void> updateListing({
+  Future<UpdateListingResult> updateListing({
     required String listingId,
     required String title,
     required int priceInUsd,
@@ -83,17 +100,43 @@ class MarketServiceProvider implements MarketService {
   }
 
   @override
-  Future<void> updateListing({
+  Future<UpdateListingResult> updateListing({
     required String listingId,
     required String title,
     required int priceInUsd,
     String? imagePath,
   }) async {
-    await _blockchainService.updateListing(
-      listingId: listingId,
-      title: title,
-      priceUSD: priceInUsd,
-    );
+    try {
+      Logger.instance.logDebug(
+        'Updating listing: $listingId',
+        tag: 'MarketServiceProvider',
+      );
+
+      final result = await _blockchainService.updateListing(
+        listingId: listingId,
+        title: title,
+        priceUSD: priceInUsd,
+        images: imagePath != null ? [imagePath] : null,
+      );
+
+      final payload = _unwrapCanisterPayload(result);
+      final updatedListing = Listing.fromJson(payload);
+
+      Logger.instance.logInfo(
+        'Listing updated successfully: $listingId',
+        tag: 'MarketServiceProvider',
+      );
+
+      return UpdateListingSuccess(updatedListing);
+    } catch (e) {
+      Logger.instance.logError(
+        'Failed to update listing: $listingId',
+        tag: 'MarketServiceProvider',
+        error: e,
+      );
+
+      return UpdateListingFailure(e.toString());
+    }
   }
 
   @override
@@ -177,5 +220,14 @@ class MarketServiceProvider implements MarketService {
       );
       rethrow;
     }
+  }
+
+  /// Helper to unwrap canister response payload
+  Map<String, dynamic> _unwrapCanisterPayload(Map<String, dynamic> raw) {
+    final okValue = raw['ok'];
+    if (okValue is Map<String, dynamic>) {
+      return okValue;
+    }
+    return raw;
   }
 }
