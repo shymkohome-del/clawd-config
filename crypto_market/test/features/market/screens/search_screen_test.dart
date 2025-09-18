@@ -129,4 +129,49 @@ void main() {
     final appliedFilters = captured.last as SearchFilters;
     expect(appliedFilters.category, 'Electronics');
   });
+
+  testWidgets('listing tile has onTap callback for navigation', (tester) async {
+    const listing = Listing(
+      id: 'listing-123',
+      seller: 'principal-1',
+      title: 'Test Hardware Wallet',
+      description: 'A test hardware wallet',
+      priceUSD: 299,
+      cryptoType: 'BTC',
+      images: <String>[],
+      category: 'electronics',
+      condition: ListingCondition.newCondition,
+      location: 'Riga',
+      shippingOptions: <String>['Courier'],
+      status: ListingStatus.active,
+      createdAt: 1,
+      updatedAt: 1,
+    );
+
+    when(cubit.state).thenReturn(
+      const SearchListingsState(
+        status: SearchStatus.success,
+        listings: <Listing>[listing],
+      ),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: BlocProvider<SearchListingsCubit>.value(
+          value: cubit,
+          child: const SearchScreen(),
+        ),
+      ),
+    );
+
+    // Find the listing tile
+    final listingTile = find.byType(ListTile);
+    expect(listingTile, findsOneWidget);
+
+    // Verify the tile is tappable by checking it has the onTap callback
+    final listTile = tester.widget<ListTile>(listingTile);
+    expect(listTile.onTap, isNotNull);
+  });
 }

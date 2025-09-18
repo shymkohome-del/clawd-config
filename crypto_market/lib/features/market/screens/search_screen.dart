@@ -8,6 +8,7 @@ import 'package:crypto_market/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 /// Screen responsible for searching and filtering marketplace listings
 class SearchScreen extends StatefulWidget {
@@ -466,6 +467,17 @@ class _ListingTile extends StatelessWidget {
         priceLabel,
         style: Theme.of(context).textTheme.titleMedium,
       ),
+      onTap: () {
+        context.go('/listing/${listing.id}');
+      },
+      tileColor: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      enableFeedback: true,
+      hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
+      focusColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+      selectedTileColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.16),
     );
   }
 }

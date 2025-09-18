@@ -429,6 +429,60 @@ class AppLocalizationsLv extends AppLocalizations {
   String get sortPriceHighLow => 'Cena: no augstākās uz zemāko';
 
   @override
+  String get listingDetailTitle => 'Sludinājuma informācija';
+
+  @override
+  String get contactSeller => 'Sazināties ar pārdevēju';
+
+  @override
+  String get reportListing => 'Ziņot par sludinājumu';
+
+  @override
+  String get shareListing => 'Kopīgot sludinājumu';
+
+  @override
+  String get sellerInfo => 'Pārdevēja informācija';
+
+  @override
+  String get sellerReputation => 'Reputācija';
+
+  @override
+  String get sellerLocation => 'Atrašanās vieta';
+
+  @override
+  String get memberSince => 'Biedrs kopš';
+
+  @override
+  String get viewProfile => 'Skatīt profilu';
+
+  @override
+  String get noImagesAvailable => 'Attēli nav pieejami';
+
+  @override
+  String get imageGallery => 'Attēlu galerija';
+
+  @override
+  String get previous => 'Iepriekšējais';
+
+  @override
+  String get next => 'Nākamais';
+
+  @override
+  String get imageOf => 'no';
+
+  @override
+  String get loadingListing => 'Ielādē sludinājumu...';
+
+  @override
+  String get listingNotFound => 'Sludinājums nav atrasts';
+
+  @override
+  String get errorLoadingListing => 'Kļūda ielādējot sludinājumu';
+
+  @override
+  String get buyNow => 'Pirkt tagad';
+
+  @override
   String get categoryElectronics => 'Elektronika';
 
   @override

@@ -429,6 +429,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortPriceHighLow => 'Price: High to Low';
 
   @override
+  String get listingDetailTitle => 'Listing Details';
+
+  @override
+  String get contactSeller => 'Contact Seller';
+
+  @override
+  String get reportListing => 'Report Listing';
+
+  @override
+  String get shareListing => 'Share Listing';
+
+  @override
+  String get sellerInfo => 'Seller Information';
+
+  @override
+  String get sellerReputation => 'Reputation';
+
+  @override
+  String get sellerLocation => 'Location';
+
+  @override
+  String get memberSince => 'Member since';
+
+  @override
+  String get viewProfile => 'View Profile';
+
+  @override
+  String get noImagesAvailable => 'No images available';
+
+  @override
+  String get imageGallery => 'Image Gallery';
+
+  @override
+  String get previous => 'Previous';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get imageOf => 'of';
+
+  @override
+  String get loadingListing => 'Loading listing...';
+
+  @override
+  String get listingNotFound => 'Listing not found';
+
+  @override
+  String get errorLoadingListing => 'Error loading listing';
+
+  @override
+  String get buyNow => 'Buy Now';
+
+  @override
   String get categoryElectronics => 'Electronics';
 
   @override

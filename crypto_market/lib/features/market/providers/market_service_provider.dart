@@ -23,6 +23,7 @@ abstract class MarketService {
     int page = 0,
     int limit = 20,
   });
+  Future<Listing?> getListingById(String listingId);
 }
 
 /// Implementation of MarketService using ICP blockchain
@@ -138,6 +139,43 @@ class MarketServiceProvider implements MarketService {
       rethrow;
     } finally {
       stopwatch.stop();
+    }
+  }
+
+  @override
+  Future<Listing?> getListingById(String listingId) async {
+    try {
+      Logger.instance.logDebug(
+        'Fetching listing by ID: $listingId',
+        tag: 'MarketServiceProvider',
+      );
+
+      final response = await _blockchainService.getListing(listingId);
+
+      if (response == null) {
+        Logger.instance.logWarn(
+          'Listing not found: $listingId',
+          tag: 'MarketServiceProvider',
+        );
+        return null;
+      }
+
+      final listing = Listing.fromJson(response);
+
+      Logger.instance.logDebug(
+        'Successfully fetched listing: ${listing.title}',
+        tag: 'MarketServiceProvider',
+      );
+
+      return listing;
+    } catch (error, stackTrace) {
+      Logger.instance.logError(
+        'Failed to fetch listing: $listingId',
+        tag: 'MarketServiceProvider',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      rethrow;
     }
   }
 }
