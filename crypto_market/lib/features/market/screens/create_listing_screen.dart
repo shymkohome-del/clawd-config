@@ -180,8 +180,15 @@ class _CreateListingScreenState extends State<CreateListingScreen> {
           min: 1,
           max: 1000000,
         );
+
+        if (result.isValid) {
+          return null;
+        }
+
         final error = result.firstError;
-        if (error == null) return null;
+        if (error == null) {
+          return null;
+        }
 
         if (error.contains('required')) {
           return l10n.priceRequired;
