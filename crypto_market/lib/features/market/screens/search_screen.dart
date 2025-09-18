@@ -471,13 +471,13 @@ class _ListingTile extends StatelessWidget {
         context.go('/listing/${listing.id}');
       },
       tileColor: Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       enableFeedback: true,
       hoverColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.08),
       focusColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
-      selectedTileColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.16),
+      selectedTileColor: Theme.of(
+        context,
+      ).colorScheme.primary.withValues(alpha: 0.16),
     );
   }
 }
