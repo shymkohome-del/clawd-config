@@ -92,7 +92,11 @@ void main() {
 class TestAuthCubit extends AuthCubit {
   final AuthState _testState;
 
-  TestAuthCubit(this._testState) : super(authService: MockAuthService());
+  TestAuthCubit(this._testState)
+    : super(
+        authService: MockAuthService(),
+        navigatorKey: GlobalKey<NavigatorState>(),
+      );
 
   @override
   AuthState get state => _testState;

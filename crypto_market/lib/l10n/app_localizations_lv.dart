@@ -505,4 +505,390 @@ class AppLocalizationsLv extends AppLocalizations {
 
   @override
   String get categoryOther => 'Cits';
+
+  @override
+  String get paymentMethods => 'Maksājumu Metodes';
+
+  @override
+  String get managePaymentMethods => 'Pārvaldīt Maksājumu Metodes';
+
+  @override
+  String get paymentMethodsDescription =>
+      'Pievienojiet un pārvaldiet savas maksājumu metodes drošām transakcijām.';
+
+  @override
+  String get addPaymentMethod => 'Pievienot Maksājuma Metodi';
+
+  @override
+  String get editPaymentMethod => 'Rediģēt Maksājuma Metodi';
+
+  @override
+  String get noPaymentMethods => 'Nav Maksājumu Metožu';
+
+  @override
+  String get addPaymentMethodPrompt =>
+      'Pievienojiet maksājuma metodi, lai sāktu veikt drošas transakcijas.';
+
+  @override
+  String get selectPaymentType => 'Izvēlieties Maksājuma Veidu';
+
+  @override
+  String get bankTransfer => 'Bankas Pārskaitījums';
+
+  @override
+  String get bankTransferDescription =>
+      'Tiešs pārskaitījums no bankas uz banku';
+
+  @override
+  String get digitalWallet => 'Digitālais Maciņš';
+
+  @override
+  String get digitalWalletDescription => 'PayPal, Wise, Venmo, utt.';
+
+  @override
+  String get cash => 'Skaidra Nauda';
+
+  @override
+  String get cashDescription => 'Tikšanās ar skaidras naudas maksājumu';
+
+  @override
+  String get accountNumber => 'Konta Numurs';
+
+  @override
+  String get accountNumberHint => 'Ievadiet konta numuru';
+
+  @override
+  String get accountNumberRequired => 'Konta numurs ir obligāts';
+
+  @override
+  String get routingNumber => 'Maršrutēšanas Numurs';
+
+  @override
+  String get routingNumberHint => 'Ievadiet maršrutēšanas numuru';
+
+  @override
+  String get routingNumberRequired => 'Maršrutēšanas numurs ir obligāts';
+
+  @override
+  String get accountHolderName => 'Konta Īpašnieka Vārds';
+
+  @override
+  String get accountHolderNameHint => 'Ievadiet konta īpašnieka vārdu';
+
+  @override
+  String get accountHolderNameRequired => 'Konta īpašnieka vārds ir obligāts';
+
+  @override
+  String get bankName => 'Bankas Nosaukums';
+
+  @override
+  String get bankNameHint => 'Ievadiet bankas nosaukumu';
+
+  @override
+  String get bankNameRequired => 'Bankas nosaukums ir obligāts';
+
+  @override
+  String get swiftCode => 'SWIFT Kods';
+
+  @override
+  String get swiftCodeHint => 'Ievadiet SWIFT/BIC kodu (neobligāts)';
+
+  @override
+  String get iban => 'IBAN';
+
+  @override
+  String get ibanHint => 'Ievadiet IBAN numuru (neobligāts)';
+
+  @override
+  String get walletId => 'Maciņa ID';
+
+  @override
+  String get walletIdHint => 'Ievadiet maciņa ID vai e-pastu';
+
+  @override
+  String get walletIdRequired => 'Maciņa ID ir obligāts';
+
+  @override
+  String get provider => 'Pakalpojuma Sniedzējs';
+
+  @override
+  String get providerHint => 'piem., PayPal, Wise, Venmo';
+
+  @override
+  String get providerRequired => 'Pakalpojuma sniedzējs ir obligāts';
+
+  @override
+  String get emailHint => 'Ievadiet e-pasta adresi';
+
+  @override
+  String get phoneNumber => 'Tālruņa Numurs';
+
+  @override
+  String get phoneNumberHint => 'Ievadiet tālruņa numuru';
+
+  @override
+  String get accountName => 'Konta Nosaukums';
+
+  @override
+  String get accountNameHint => 'Ievadiet konta nosaukumu (neobligāts)';
+
+  @override
+  String get meetingLocation => 'Tikšanās Vieta';
+
+  @override
+  String get meetingLocationHint => 'Ievadiet tikšanās vietu';
+
+  @override
+  String get meetingLocationRequired => 'Tikšanās vieta ir obligāta';
+
+  @override
+  String get preferredTime => 'Vēlamais Laiks';
+
+  @override
+  String get preferredTimeHint => 'Ievadiet vēlamo tikšanās laiku';
+
+  @override
+  String get preferredTimeRequired => 'Vēlamais laiks ir obligāts';
+
+  @override
+  String get contactInfo => 'Kontaktinformācija';
+
+  @override
+  String get contactInfoHint => 'E-pasts vai tālruņa numurs';
+
+  @override
+  String get contactInfoRequired => 'Kontaktinformācija ir obligāta';
+
+  @override
+  String get specialInstructions => 'Speciālas Norādes';
+
+  @override
+  String get specialInstructionsHint => 'Īpašas prasības (neobligāts)';
+
+  @override
+  String get optional => 'Neobligāts';
+
+  @override
+  String get cancel => 'Atcelt';
+
+  @override
+  String get save => 'Saglabāt';
+
+  @override
+  String get edit => 'Rediģēt';
+
+  @override
+  String get delete => 'Dzēst';
+
+  @override
+  String get deletePaymentMethod => 'Dzēst Maksājuma Metodi';
+
+  @override
+  String get deletePaymentMethodConfirmation =>
+      'Vai tiešām vēlaties dzēst šo maksājuma metodi? Šī darbība ir neatgriezeniska.';
+
+  @override
+  String get verified => 'Apstiprināts';
+
+  @override
+  String get pending => 'Gaida apstiprinājumu';
+
+  @override
+  String get rejected => 'Noraidīts';
+
+  @override
+  String get lastUsed => 'Pēdējo Reizi Izmantots';
+
+  @override
+  String get paymentProof => 'Maksājuma Apliecinājums';
+
+  @override
+  String get submitPaymentProof => 'Iesniegt Maksājuma Apliecinājumu';
+
+  @override
+  String get paymentProofDescription =>
+      'Augšupielādējiet savas maksājuma apliecinājumu, lai pabeigtu transakciju.';
+
+  @override
+  String get paymentProofSecurityNote =>
+      'Jūsu apliecinājums tiks droši glabāts IPFS un koplietots tikai ar transakcijas otru pusi.';
+
+  @override
+  String get selectProofType => 'Izvēlieties Apliecinājuma Veidu';
+
+  @override
+  String get receipt => 'Čeks';
+
+  @override
+  String get transactionId => 'Transakcijas ID';
+
+  @override
+  String get photo => 'Foto';
+
+  @override
+  String get confirmation => 'Apstiprinājums';
+
+  @override
+  String get uploadProof => 'Augšupielādēt Apliecinājumu';
+
+  @override
+  String get uploadReceiptOrPhoto => 'Augšupielādēt Čeku vai Foto';
+
+  @override
+  String get uploadInstructions =>
+      'Uzņemiet foto vai augšupielādējiet čeku/transakcijas apstiprinājumu';
+
+  @override
+  String get retake => 'Noņemt vēlreiz';
+
+  @override
+  String get chooseAnother => 'Izvēlēties citu';
+
+  @override
+  String get transactionDetails => 'Transakcijas Detaļas';
+
+  @override
+  String get transactionIdHint => 'Ievadiet transakcijas ID (ja piemērojams)';
+
+  @override
+  String get transactionIdRequired => 'Transakcijas ID ir obligāts';
+
+  @override
+  String get additionalNotes => 'Papildu Piezīmes';
+
+  @override
+  String get additionalNotesHint => 'Jebkura papildu informācija (neobligāts)';
+
+  @override
+  String get submitProof => 'Iesniegt Apliecinājumu';
+
+  @override
+  String get pleaseUploadImage =>
+      'Lūdzu augšupielādējiet attēlu kā apliecinājumu';
+
+  @override
+  String get imagePickerError => 'Kļūda atlasot attēlu';
+
+  @override
+  String get paymentProofSubmitted =>
+      'Maksājuma apliecinājums veiksmīgi iesniegts';
+
+  @override
+  String get paymentProofSubmitError =>
+      'Neizdevās iesniegt maksājuma apliecinājumu';
+
+  @override
+  String get buyFlowTitle => 'Pirkt sludinājumu';
+
+  @override
+  String get buyFlowCancelButton => 'Atcelt';
+
+  @override
+  String get buyFlowErrorMessage => 'Izpildot pirkumu radās kļūda';
+
+  @override
+  String get buyFlowErrorRetry => 'Mēģināt vēlreiz';
+
+  @override
+  String get buyFlowPriceTitle => 'Apstiprināt cenu';
+
+  @override
+  String get buyFlowPriceDescription =>
+      'Pirms turpināt, pārskatiet pašreizējo cenu un kriptovalūtas konversijas kursu.';
+
+  @override
+  String get buyFlowConfirmTitle => 'Apstiprināt pirkumu';
+
+  @override
+  String get buyFlowConfirmDescription =>
+      'Lūdzu pārskatiet savas pirkuma detaļas zemāk pirms turpināt ar maksājumu.';
+
+  @override
+  String get buyFlowConfirmListing => 'Sludinājums';
+
+  @override
+  String get buyFlowConfirmSeller => 'Pārdevējs';
+
+  @override
+  String get buyFlowUsdAmount => 'USD summa';
+
+  @override
+  String get buyFlowCryptoAmount => 'Kripto summa';
+
+  @override
+  String get buyFlowPaymentTitle => 'Drošs maksājums';
+
+  @override
+  String get buyFlowPaymentDescription =>
+      'Jūsu maksājums tiks nodrošināts caur atomārās apmaiņas līgumu, lai aizsargātu gan pircēju, gan pārdevēju.';
+
+  @override
+  String get buyFlowPaymentGenerating => 'Ģenerē drošu maksājumu...';
+
+  @override
+  String get buyFlowConfirmButton => 'Apstiprināt pirkumu';
+
+  @override
+  String get buyFlowCompleteTitle => 'Pirkums veiksmīgs';
+
+  @override
+  String get buyFlowCompleteSuccess => 'Jūsu pirkums ir veiksmīgi uzsākts!';
+
+  @override
+  String buyFlowCompleteSwapCreated(Object swapId) {
+    return 'Apmaiņas ID: $swapId';
+  }
+
+  @override
+  String get buyFlowCompleteNextSteps => 'Nākamās darbības';
+
+  @override
+  String buyFlowCompleteStep1(Object seller) {
+    return 'Sazinieties ar $seller, lai vienotu maksājuma detaļas';
+  }
+
+  @override
+  String get buyFlowCompleteStep2 =>
+      'Veiciet maksājumu un iesniedziet apliecinājumu';
+
+  @override
+  String get buyFlowCompleteStep3 =>
+      'Pārdevējs atbrīvos kriptovalūtu pēc maksājuma apstiprināšanas';
+
+  @override
+  String get buyFlowBackButton => 'Atpakaļ';
+
+  @override
+  String get buyFlowNextButton => 'Tālāk';
+
+  @override
+  String get buyFlowErrorTitle => 'Kļūda';
+
+  @override
+  String get buyFlowErrorCancel => 'Atcelt';
+
+  @override
+  String get buyFlowStepPrice => 'Cena';
+
+  @override
+  String get buyFlowStepConfirm => 'Apstiprināt';
+
+  @override
+  String get buyFlowStepPayment => 'Maksājums';
+
+  @override
+  String get buyFlowStepCompletion => 'Pabeigt';
+
+  @override
+  String get buyFlowRefreshButton => 'Atjaunot';
+
+  @override
+  String get buyFlowExchangeRate => 'Mainīgais kurss';
+
+  @override
+  String get buyFlowPriceStaleWarning =>
+      'Cena var būt novecojusi. Pieskarieties, lai atjauninātu.';
+
+  @override
+  String get buyFlowLastUpdated => 'Pēdējoreiz atjaunināts';
 }

@@ -505,4 +505,386 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get categoryOther => 'Other';
+
+  @override
+  String get paymentMethods => 'Payment Methods';
+
+  @override
+  String get managePaymentMethods => 'Manage Payment Methods';
+
+  @override
+  String get paymentMethodsDescription =>
+      'Add and manage your payment methods for secure transactions.';
+
+  @override
+  String get addPaymentMethod => 'Add Payment Method';
+
+  @override
+  String get editPaymentMethod => 'Edit Payment Method';
+
+  @override
+  String get noPaymentMethods => 'No Payment Methods';
+
+  @override
+  String get addPaymentMethodPrompt =>
+      'Add a payment method to start making secure transactions.';
+
+  @override
+  String get selectPaymentType => 'Select Payment Type';
+
+  @override
+  String get bankTransfer => 'Bank Transfer';
+
+  @override
+  String get bankTransferDescription => 'Direct bank to bank transfer';
+
+  @override
+  String get digitalWallet => 'Digital Wallet';
+
+  @override
+  String get digitalWalletDescription => 'PayPal, Wise, Venmo, etc.';
+
+  @override
+  String get cash => 'Cash';
+
+  @override
+  String get cashDescription => 'In-person cash payment';
+
+  @override
+  String get accountNumber => 'Account Number';
+
+  @override
+  String get accountNumberHint => 'Enter your account number';
+
+  @override
+  String get accountNumberRequired => 'Account number is required';
+
+  @override
+  String get routingNumber => 'Routing Number';
+
+  @override
+  String get routingNumberHint => 'Enter routing number';
+
+  @override
+  String get routingNumberRequired => 'Routing number is required';
+
+  @override
+  String get accountHolderName => 'Account Holder Name';
+
+  @override
+  String get accountHolderNameHint => 'Enter account holder name';
+
+  @override
+  String get accountHolderNameRequired => 'Account holder name is required';
+
+  @override
+  String get bankName => 'Bank Name';
+
+  @override
+  String get bankNameHint => 'Enter bank name';
+
+  @override
+  String get bankNameRequired => 'Bank name is required';
+
+  @override
+  String get swiftCode => 'SWIFT Code';
+
+  @override
+  String get swiftCodeHint => 'Enter SWIFT/BIC code (optional)';
+
+  @override
+  String get iban => 'IBAN';
+
+  @override
+  String get ibanHint => 'Enter IBAN number (optional)';
+
+  @override
+  String get walletId => 'Wallet ID';
+
+  @override
+  String get walletIdHint => 'Enter wallet ID or email';
+
+  @override
+  String get walletIdRequired => 'Wallet ID is required';
+
+  @override
+  String get provider => 'Provider';
+
+  @override
+  String get providerHint => 'e.g., PayPal, Wise, Venmo';
+
+  @override
+  String get providerRequired => 'Provider is required';
+
+  @override
+  String get emailHint => 'Enter email address';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get phoneNumberHint => 'Enter phone number';
+
+  @override
+  String get accountName => 'Account Name';
+
+  @override
+  String get accountNameHint => 'Enter account name (optional)';
+
+  @override
+  String get meetingLocation => 'Meeting Location';
+
+  @override
+  String get meetingLocationHint => 'Enter meeting location';
+
+  @override
+  String get meetingLocationRequired => 'Meeting location is required';
+
+  @override
+  String get preferredTime => 'Preferred Time';
+
+  @override
+  String get preferredTimeHint => 'Enter preferred meeting time';
+
+  @override
+  String get preferredTimeRequired => 'Preferred time is required';
+
+  @override
+  String get contactInfo => 'Contact Information';
+
+  @override
+  String get contactInfoHint => 'Email or phone number';
+
+  @override
+  String get contactInfoRequired => 'Contact information is required';
+
+  @override
+  String get specialInstructions => 'Special Instructions';
+
+  @override
+  String get specialInstructionsHint => 'Any special requirements (optional)';
+
+  @override
+  String get optional => 'Optional';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get deletePaymentMethod => 'Delete Payment Method';
+
+  @override
+  String get deletePaymentMethodConfirmation =>
+      'Are you sure you want to delete this payment method? This action cannot be undone.';
+
+  @override
+  String get verified => 'Verified';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String get rejected => 'Rejected';
+
+  @override
+  String get lastUsed => 'Last Used';
+
+  @override
+  String get paymentProof => 'Payment Proof';
+
+  @override
+  String get submitPaymentProof => 'Submit Payment Proof';
+
+  @override
+  String get paymentProofDescription =>
+      'Upload proof of your payment to complete the transaction.';
+
+  @override
+  String get paymentProofSecurityNote =>
+      'Your proof will be securely stored on IPFS and only shared with the transaction counterparty.';
+
+  @override
+  String get selectProofType => 'Select Proof Type';
+
+  @override
+  String get receipt => 'Receipt';
+
+  @override
+  String get transactionId => 'Transaction ID';
+
+  @override
+  String get photo => 'Photo';
+
+  @override
+  String get confirmation => 'Confirmation';
+
+  @override
+  String get uploadProof => 'Upload Proof';
+
+  @override
+  String get uploadReceiptOrPhoto => 'Upload Receipt or Photo';
+
+  @override
+  String get uploadInstructions =>
+      'Take a photo or upload a receipt/transaction confirmation';
+
+  @override
+  String get retake => 'Retake';
+
+  @override
+  String get chooseAnother => 'Choose Another';
+
+  @override
+  String get transactionDetails => 'Transaction Details';
+
+  @override
+  String get transactionIdHint => 'Enter transaction ID (if applicable)';
+
+  @override
+  String get transactionIdRequired => 'Transaction ID is required';
+
+  @override
+  String get additionalNotes => 'Additional Notes';
+
+  @override
+  String get additionalNotesHint => 'Any additional information (optional)';
+
+  @override
+  String get submitProof => 'Submit Proof';
+
+  @override
+  String get pleaseUploadImage => 'Please upload an image as proof';
+
+  @override
+  String get imagePickerError => 'Error selecting image';
+
+  @override
+  String get paymentProofSubmitted => 'Payment proof submitted successfully';
+
+  @override
+  String get paymentProofSubmitError => 'Failed to submit payment proof';
+
+  @override
+  String get buyFlowTitle => 'Buy Listing';
+
+  @override
+  String get buyFlowCancelButton => 'Cancel';
+
+  @override
+  String get buyFlowErrorMessage => 'An error occurred during the buy process';
+
+  @override
+  String get buyFlowErrorRetry => 'Retry';
+
+  @override
+  String get buyFlowPriceTitle => 'Confirm Price';
+
+  @override
+  String get buyFlowPriceDescription =>
+      'Review the current price and cryptocurrency conversion rate before proceeding.';
+
+  @override
+  String get buyFlowConfirmTitle => 'Confirm Purchase';
+
+  @override
+  String get buyFlowConfirmDescription =>
+      'Please review your purchase details below before proceeding to payment.';
+
+  @override
+  String get buyFlowConfirmListing => 'Listing';
+
+  @override
+  String get buyFlowConfirmSeller => 'Seller';
+
+  @override
+  String get buyFlowUsdAmount => 'USD Amount';
+
+  @override
+  String get buyFlowCryptoAmount => 'Crypto Amount';
+
+  @override
+  String get buyFlowPaymentTitle => 'Secure Payment';
+
+  @override
+  String get buyFlowPaymentDescription =>
+      'Your payment will be secured through an atomic swap contract to protect both buyer and seller.';
+
+  @override
+  String get buyFlowPaymentGenerating => 'Generating secure payment...';
+
+  @override
+  String get buyFlowConfirmButton => 'Confirm Purchase';
+
+  @override
+  String get buyFlowCompleteTitle => 'Purchase Successful';
+
+  @override
+  String get buyFlowCompleteSuccess =>
+      'Your purchase has been initiated successfully!';
+
+  @override
+  String buyFlowCompleteSwapCreated(Object swapId) {
+    return 'Swap ID: $swapId';
+  }
+
+  @override
+  String get buyFlowCompleteNextSteps => 'Next Steps';
+
+  @override
+  String buyFlowCompleteStep1(Object seller) {
+    return 'Contact $seller to arrange payment';
+  }
+
+  @override
+  String get buyFlowCompleteStep2 => 'Complete payment and submit proof';
+
+  @override
+  String get buyFlowCompleteStep3 =>
+      'Seller will release cryptocurrency upon payment confirmation';
+
+  @override
+  String get buyFlowBackButton => 'Back';
+
+  @override
+  String get buyFlowNextButton => 'Next';
+
+  @override
+  String get buyFlowErrorTitle => 'Error';
+
+  @override
+  String get buyFlowErrorCancel => 'Cancel';
+
+  @override
+  String get buyFlowStepPrice => 'Price';
+
+  @override
+  String get buyFlowStepConfirm => 'Confirm';
+
+  @override
+  String get buyFlowStepPayment => 'Payment';
+
+  @override
+  String get buyFlowStepCompletion => 'Complete';
+
+  @override
+  String get buyFlowRefreshButton => 'Refresh';
+
+  @override
+  String get buyFlowExchangeRate => 'Exchange Rate';
+
+  @override
+  String get buyFlowPriceStaleWarning =>
+      'Price may be stale. Tap refresh to update.';
+
+  @override
+  String get buyFlowLastUpdated => 'Last Updated';
 }

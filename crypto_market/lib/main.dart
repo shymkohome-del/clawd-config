@@ -37,6 +37,7 @@ void main() {
             BlocProvider<AuthCubit>(
               create: (context) => AuthCubit(
                 authService: RepositoryProvider.of<AuthService>(context),
+                navigatorKey: GlobalKey<NavigatorState>(),
               )..checkSession(), // Check for existing session on app start
             ),
             BlocProvider<ProfileCubit>(
@@ -87,6 +88,7 @@ void main() {
             BlocProvider<AuthCubit>(
               create: (context) => AuthCubit(
                 authService: RepositoryProvider.of<AuthService>(context),
+                navigatorKey: GlobalKey<NavigatorState>(),
               ),
             ),
             BlocProvider<ProfileCubit>(

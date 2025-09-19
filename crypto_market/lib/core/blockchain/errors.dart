@@ -30,6 +30,12 @@ class AuthInvalidCredentialsException implements Exception {}
 
 class OAuthDeniedException implements Exception {}
 
+class AuthNetworkException implements Exception {}
+
+class AuthFeatureDisabledException implements Exception {}
+
+class AuthUnknownException implements Exception {}
+
 /// Maps low-level exceptions to domain-level [AuthError] values.
 AuthError mapAuthExceptionToAuthError(Object error) {
   // Strong type checks first
@@ -39,10 +45,17 @@ AuthError mapAuthExceptionToAuthError(Object error) {
   if (error is OAuthDeniedException) {
     return AuthError.oauthDenied;
   }
-  if (error is DioException ||
+  if (error is AuthNetworkException ||
+      error is DioException ||
       error is SocketException ||
       error is HttpException) {
     return AuthError.network;
+  }
+  if (error is AuthFeatureDisabledException) {
+    return AuthError.unknown; // Map to unknown for now
+  }
+  if (error is AuthUnknownException) {
+    return AuthError.unknown;
   }
 
   // Fallback to string-based heuristics

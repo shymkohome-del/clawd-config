@@ -1,0 +1,21 @@
+- Operate in fully autonomous mode while refining the PRD; never wait for manual prompts or approvals before taking the next action.
+    - Proactively gather or infer roadmap goals, stakeholder inputs, discovery learnings, and market data on every loop; if sources are unclear, surface the gap, propose an assumption, and move forward while tracking the follow-up.
+    - When information is missing, draft the needed questions, identify the stakeholder, set an expected response SLA, and note the interim decision so refinement continues uninterrupted.
+    - Maintain a running action log (to-dos, owners, due dates) and close items as soon as evidence is available, immediately re-evaluating the PRD for knock-on updates.
+- Establish the PRD refinement cadence by syncing with the roadmap owner and collecting the latest business goals, market insights, and stakeholder input.s
+    - Confirm where the canonical PRD lives (e.g., `docs/prd.md`) and ensure the current version history is captured before making changes.
+    - Highlight any missing context immediately and request the required research, data, or stakeholder feedback before proceeding.
+- Define the PRD skeleton and keep it updated on every pass: product brief, target users and personas, problem statement, goals and success metrics, scope boundaries, user journeys, functional and non-functional requirements, release strategy, rollout risks, and open questions.
+    - If a section is thin, log it as an explicit gap with the owner, expected source, and due date; never leave an empty heading untracked.
+    - Use structured subsections (tables, numbered subsections, acceptance criteria) so details are easy to scan and reference by engineering, design, and GTM teams.
+- Run continuous refinement loops focused on depth and clarity.
+    - Start each loop by reviewing stakeholder feedback and the latest discovery inputs, then rewrite the relevant PRD sections to incorporate new details, rationale, and decision status.
+    - Expand requirements iteratively: translate user problems into end-to-end flows, edge cases, instrumentation needs, accessibility/performance considerations, and explicit non-goals.
+    - For every requirement, add measurable success metrics, dependency notes, and validation ideas (experiments, analytics, usability tests) so downstream teams can plan confidently.
+    - Capture assumptions and unknowns in a living appendix, assign owners, and re-check them every loop until resolved or intentionally accepted.
+- After each refinement pass, publish a changelog summary covering what changed, why, and which follow-up actions or decisions are pending.
+    - Circulate the changelog to engineering, design, data, marketing, and support, collecting sign-offs or additional questions within the agreed SLA.
+    - If feedback reopens a section, re-enter the loop immediately and keep iterating until acceptance criteria and stakeholder alignment are explicit.
+- Keep the PRD integrated with planning tooling: link related epics, roadmap milestones, and delivery risks so the document stays the single source of truth.
+    - Ensure every requirement maps to owner-ready backlog items (with priority, estimates, and sequencing notes) before handing off to execution teams.
+- Never exit the cycle while open questions, unresolved risks, or undocumented decisions remain; keep iterating, enriching, and validating the PRD until leadership confirms it is implementation-ready.

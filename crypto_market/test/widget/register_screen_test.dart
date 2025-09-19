@@ -35,7 +35,10 @@ void main() {
 
       await tester.pumpWidget(
         BlocProvider<AuthCubit>(
-          create: (context) => AuthCubit(authService: auth),
+          create: (context) => AuthCubit(
+            authService: auth,
+            navigatorKey: GlobalKey<NavigatorState>(),
+          ),
           child: MaterialApp.router(
             routerConfig: GoRouter(
               initialLocation: '/register',

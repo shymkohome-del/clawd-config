@@ -4,6 +4,7 @@ import 'package:crypto_market/features/market/models/listing.dart';
 import 'package:crypto_market/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class ListingDetailScreen extends StatefulWidget {
   const ListingDetailScreen({super.key, required this.listingId});
@@ -574,10 +575,9 @@ class _ListingDetailScreenState extends State<ListingDetailScreen> {
     final state = context.read<ListingDetailCubit>().state;
     if (state.listing != null) {
       // Navigate to swap initiation flow
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Buy Now functionality - initiating swap...'),
-        ),
+      context.pushNamed(
+        'swap-initiation',
+        pathParameters: {'listingId': state.listing!.id},
       );
     }
   }

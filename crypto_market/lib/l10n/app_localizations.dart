@@ -1051,6 +1051,738 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Other'**
   String get categoryOther;
+
+  /// No description provided for @paymentMethods.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Methods'**
+  String get paymentMethods;
+
+  /// No description provided for @managePaymentMethods.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Payment Methods'**
+  String get managePaymentMethods;
+
+  /// No description provided for @paymentMethodsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Add and manage your payment methods for secure transactions.'**
+  String get paymentMethodsDescription;
+
+  /// No description provided for @addPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Payment Method'**
+  String get addPaymentMethod;
+
+  /// No description provided for @editPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Payment Method'**
+  String get editPaymentMethod;
+
+  /// No description provided for @noPaymentMethods.
+  ///
+  /// In en, this message translates to:
+  /// **'No Payment Methods'**
+  String get noPaymentMethods;
+
+  /// No description provided for @addPaymentMethodPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a payment method to start making secure transactions.'**
+  String get addPaymentMethodPrompt;
+
+  /// No description provided for @selectPaymentType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Payment Type'**
+  String get selectPaymentType;
+
+  /// No description provided for @bankTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Transfer'**
+  String get bankTransfer;
+
+  /// No description provided for @bankTransferDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct bank to bank transfer'**
+  String get bankTransferDescription;
+
+  /// No description provided for @digitalWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Digital Wallet'**
+  String get digitalWallet;
+
+  /// No description provided for @digitalWalletDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'PayPal, Wise, Venmo, etc.'**
+  String get digitalWalletDescription;
+
+  /// No description provided for @cash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get cash;
+
+  /// No description provided for @cashDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'In-person cash payment'**
+  String get cashDescription;
+
+  /// No description provided for @accountNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Number'**
+  String get accountNumber;
+
+  /// No description provided for @accountNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your account number'**
+  String get accountNumberHint;
+
+  /// No description provided for @accountNumberRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Account number is required'**
+  String get accountNumberRequired;
+
+  /// No description provided for @routingNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Routing Number'**
+  String get routingNumber;
+
+  /// No description provided for @routingNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter routing number'**
+  String get routingNumberHint;
+
+  /// No description provided for @routingNumberRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Routing number is required'**
+  String get routingNumberRequired;
+
+  /// No description provided for @accountHolderName.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Holder Name'**
+  String get accountHolderName;
+
+  /// No description provided for @accountHolderNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter account holder name'**
+  String get accountHolderNameHint;
+
+  /// No description provided for @accountHolderNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Account holder name is required'**
+  String get accountHolderNameRequired;
+
+  /// No description provided for @bankName.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Name'**
+  String get bankName;
+
+  /// No description provided for @bankNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter bank name'**
+  String get bankNameHint;
+
+  /// No description provided for @bankNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank name is required'**
+  String get bankNameRequired;
+
+  /// No description provided for @swiftCode.
+  ///
+  /// In en, this message translates to:
+  /// **'SWIFT Code'**
+  String get swiftCode;
+
+  /// No description provided for @swiftCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter SWIFT/BIC code (optional)'**
+  String get swiftCodeHint;
+
+  /// No description provided for @iban.
+  ///
+  /// In en, this message translates to:
+  /// **'IBAN'**
+  String get iban;
+
+  /// No description provided for @ibanHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter IBAN number (optional)'**
+  String get ibanHint;
+
+  /// No description provided for @walletId.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet ID'**
+  String get walletId;
+
+  /// No description provided for @walletIdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter wallet ID or email'**
+  String get walletIdHint;
+
+  /// No description provided for @walletIdRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet ID is required'**
+  String get walletIdRequired;
+
+  /// No description provided for @provider.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider'**
+  String get provider;
+
+  /// No description provided for @providerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., PayPal, Wise, Venmo'**
+  String get providerHint;
+
+  /// No description provided for @providerRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider is required'**
+  String get providerRequired;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter email address'**
+  String get emailHint;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phoneNumber;
+
+  /// No description provided for @phoneNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter phone number'**
+  String get phoneNumberHint;
+
+  /// No description provided for @accountName.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Name'**
+  String get accountName;
+
+  /// No description provided for @accountNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter account name (optional)'**
+  String get accountNameHint;
+
+  /// No description provided for @meetingLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting Location'**
+  String get meetingLocation;
+
+  /// No description provided for @meetingLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter meeting location'**
+  String get meetingLocationHint;
+
+  /// No description provided for @meetingLocationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting location is required'**
+  String get meetingLocationRequired;
+
+  /// No description provided for @preferredTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred Time'**
+  String get preferredTime;
+
+  /// No description provided for @preferredTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter preferred meeting time'**
+  String get preferredTimeHint;
+
+  /// No description provided for @preferredTimeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferred time is required'**
+  String get preferredTimeRequired;
+
+  /// No description provided for @contactInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Information'**
+  String get contactInfo;
+
+  /// No description provided for @contactInfoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or phone number'**
+  String get contactInfoHint;
+
+  /// No description provided for @contactInfoRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact information is required'**
+  String get contactInfoRequired;
+
+  /// No description provided for @specialInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Instructions'**
+  String get specialInstructions;
+
+  /// No description provided for @specialInstructionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Any special requirements (optional)'**
+  String get specialInstructionsHint;
+
+  /// No description provided for @optional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get optional;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @deletePaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Payment Method'**
+  String get deletePaymentMethod;
+
+  /// No description provided for @deletePaymentMethodConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this payment method? This action cannot be undone.'**
+  String get deletePaymentMethodConfirmation;
+
+  /// No description provided for @verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get verified;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pending;
+
+  /// No description provided for @rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejected;
+
+  /// No description provided for @lastUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Used'**
+  String get lastUsed;
+
+  /// No description provided for @paymentProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Proof'**
+  String get paymentProof;
+
+  /// No description provided for @submitPaymentProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Payment Proof'**
+  String get submitPaymentProof;
+
+  /// No description provided for @paymentProofDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload proof of your payment to complete the transaction.'**
+  String get paymentProofDescription;
+
+  /// No description provided for @paymentProofSecurityNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your proof will be securely stored on IPFS and only shared with the transaction counterparty.'**
+  String get paymentProofSecurityNote;
+
+  /// No description provided for @selectProofType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Proof Type'**
+  String get selectProofType;
+
+  /// No description provided for @receipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt'**
+  String get receipt;
+
+  /// No description provided for @transactionId.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction ID'**
+  String get transactionId;
+
+  /// No description provided for @photo.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get photo;
+
+  /// No description provided for @confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation'**
+  String get confirmation;
+
+  /// No description provided for @uploadProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Proof'**
+  String get uploadProof;
+
+  /// No description provided for @uploadReceiptOrPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Receipt or Photo'**
+  String get uploadReceiptOrPhoto;
+
+  /// No description provided for @uploadInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo or upload a receipt/transaction confirmation'**
+  String get uploadInstructions;
+
+  /// No description provided for @retake.
+  ///
+  /// In en, this message translates to:
+  /// **'Retake'**
+  String get retake;
+
+  /// No description provided for @chooseAnother.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Another'**
+  String get chooseAnother;
+
+  /// No description provided for @transactionDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Details'**
+  String get transactionDetails;
+
+  /// No description provided for @transactionIdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter transaction ID (if applicable)'**
+  String get transactionIdHint;
+
+  /// No description provided for @transactionIdRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction ID is required'**
+  String get transactionIdRequired;
+
+  /// No description provided for @additionalNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Notes'**
+  String get additionalNotes;
+
+  /// No description provided for @additionalNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Any additional information (optional)'**
+  String get additionalNotesHint;
+
+  /// No description provided for @submitProof.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Proof'**
+  String get submitProof;
+
+  /// No description provided for @pleaseUploadImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please upload an image as proof'**
+  String get pleaseUploadImage;
+
+  /// No description provided for @imagePickerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error selecting image'**
+  String get imagePickerError;
+
+  /// No description provided for @paymentProofSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment proof submitted successfully'**
+  String get paymentProofSubmitted;
+
+  /// No description provided for @paymentProofSubmitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to submit payment proof'**
+  String get paymentProofSubmitError;
+
+  /// No description provided for @buyFlowTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Listing'**
+  String get buyFlowTitle;
+
+  /// No description provided for @buyFlowCancelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get buyFlowCancelButton;
+
+  /// No description provided for @buyFlowErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred during the buy process'**
+  String get buyFlowErrorMessage;
+
+  /// No description provided for @buyFlowErrorRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get buyFlowErrorRetry;
+
+  /// No description provided for @buyFlowPriceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Price'**
+  String get buyFlowPriceTitle;
+
+  /// No description provided for @buyFlowPriceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the current price and cryptocurrency conversion rate before proceeding.'**
+  String get buyFlowPriceDescription;
+
+  /// No description provided for @buyFlowConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Purchase'**
+  String get buyFlowConfirmTitle;
+
+  /// No description provided for @buyFlowConfirmDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please review your purchase details below before proceeding to payment.'**
+  String get buyFlowConfirmDescription;
+
+  /// No description provided for @buyFlowConfirmListing.
+  ///
+  /// In en, this message translates to:
+  /// **'Listing'**
+  String get buyFlowConfirmListing;
+
+  /// No description provided for @buyFlowConfirmSeller.
+  ///
+  /// In en, this message translates to:
+  /// **'Seller'**
+  String get buyFlowConfirmSeller;
+
+  /// No description provided for @buyFlowUsdAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'USD Amount'**
+  String get buyFlowUsdAmount;
+
+  /// No description provided for @buyFlowCryptoAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Crypto Amount'**
+  String get buyFlowCryptoAmount;
+
+  /// No description provided for @buyFlowPaymentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure Payment'**
+  String get buyFlowPaymentTitle;
+
+  /// No description provided for @buyFlowPaymentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment will be secured through an atomic swap contract to protect both buyer and seller.'**
+  String get buyFlowPaymentDescription;
+
+  /// No description provided for @buyFlowPaymentGenerating.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating secure payment...'**
+  String get buyFlowPaymentGenerating;
+
+  /// No description provided for @buyFlowConfirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Purchase'**
+  String get buyFlowConfirmButton;
+
+  /// No description provided for @buyFlowCompleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase Successful'**
+  String get buyFlowCompleteTitle;
+
+  /// No description provided for @buyFlowCompleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your purchase has been initiated successfully!'**
+  String get buyFlowCompleteSuccess;
+
+  /// No description provided for @buyFlowCompleteSwapCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Swap ID: {swapId}'**
+  String buyFlowCompleteSwapCreated(Object swapId);
+
+  /// No description provided for @buyFlowCompleteNextSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Steps'**
+  String get buyFlowCompleteNextSteps;
+
+  /// No description provided for @buyFlowCompleteStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact {seller} to arrange payment'**
+  String buyFlowCompleteStep1(Object seller);
+
+  /// No description provided for @buyFlowCompleteStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete payment and submit proof'**
+  String get buyFlowCompleteStep2;
+
+  /// No description provided for @buyFlowCompleteStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Seller will release cryptocurrency upon payment confirmation'**
+  String get buyFlowCompleteStep3;
+
+  /// No description provided for @buyFlowBackButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get buyFlowBackButton;
+
+  /// No description provided for @buyFlowNextButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get buyFlowNextButton;
+
+  /// No description provided for @buyFlowErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get buyFlowErrorTitle;
+
+  /// No description provided for @buyFlowErrorCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get buyFlowErrorCancel;
+
+  /// No description provided for @buyFlowStepPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get buyFlowStepPrice;
+
+  /// No description provided for @buyFlowStepConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get buyFlowStepConfirm;
+
+  /// No description provided for @buyFlowStepPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get buyFlowStepPayment;
+
+  /// No description provided for @buyFlowStepCompletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get buyFlowStepCompletion;
+
+  /// No description provided for @buyFlowRefreshButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get buyFlowRefreshButton;
+
+  /// No description provided for @buyFlowExchangeRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange Rate'**
+  String get buyFlowExchangeRate;
+
+  /// No description provided for @buyFlowPriceStaleWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Price may be stale. Tap refresh to update.'**
+  String get buyFlowPriceStaleWarning;
+
+  /// No description provided for @buyFlowLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Updated'**
+  String get buyFlowLastUpdated;
 }
 
 class _AppLocalizationsDelegate

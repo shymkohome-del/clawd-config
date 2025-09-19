@@ -10,6 +10,8 @@ import 'package:crypto_market/features/market/providers/market_service_provider.
 import 'package:crypto_market/features/market/screens/create_listing_screen.dart';
 import 'package:crypto_market/features/market/screens/listing_detail_screen.dart';
 import 'package:crypto_market/features/market/screens/search_screen.dart';
+import 'package:crypto_market/features/market/screens/buy_listing_screen.dart';
+import 'package:crypto_market/features/market/models/listing.dart';
 import 'package:crypto_market/core/routing/protected_route.dart';
 
 /// Main application router configuration
@@ -63,6 +65,35 @@ class AppRouter {
             child: ListingDetailScreen(listingId: state.pathParameters['id']!),
           ),
         ),
+      ),
+      GoRoute(
+        path: '/buy/:listingId',
+        name: 'buy-listing',
+        builder: (context, state) {
+          // For now, we'll pass the listing data through the route
+          // In a real app, you might want to fetch the listing data here
+          final listingId = state.pathParameters['listingId']!;
+          return ProtectedRoute(
+            child: BuyListingScreen(
+              listing: Listing(
+                id: listingId,
+                seller: 'mock-seller',
+                title: 'Mock Listing',
+                description: 'Mock description',
+                priceUSD: 100,
+                cryptoType: 'BTC',
+                images: [],
+                category: 'Electronics',
+                condition: ListingCondition.newCondition,
+                location: 'Mock Location',
+                shippingOptions: ['shipping'],
+                status: ListingStatus.active,
+                createdAt: DateTime.now().millisecondsSinceEpoch,
+                updatedAt: DateTime.now().millisecondsSinceEpoch,
+              ),
+            ),
+          );
+        },
       ),
     ],
   );

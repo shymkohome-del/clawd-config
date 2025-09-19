@@ -1,0 +1,21 @@
+- Initialize the infinite delivery loop by switching to `develop` and pulling the latest changes.
+    - If the previous story branch is still open, finish the merge into `develop`, confirm it lands, then pull again.
+- Designate the orchestrator agent (e.g., Claude) as the conductor that plans, delegates, and tracks progress without executing development or QA tasks directly.
+    - Route every implementation task to the dev agent and every validation activity to the qa agent, capturing their outputs before progressing.
+    - If the orchestrator starts to perform dev or QA work, immediately stop, restate the delegation rules, and reissue the request to the correct agent.
+    - Maintain momentum: if work appears idle or blocked, the orchestrator must immediately reassess the backlog, restate the next action, and delegate it—never conclude or pause the workflow while stories remain.
+- Enter the continuous cycle for each remaining story in priority order.
+    - Select the next story, refine the scope if anything is unclear, and document acceptance criteria, Definition of Done, and an up-to-date test plan before moving forward.
+    - Rewrite its status if needed, progressing through In Progress → Review → Ready for QA as work advances, and ensure each transition is justified in the tracker.
+    - Create and keep updating a story branch named with the story id and current status; if a branch already exists, the dev agent must check it out, fetch, rebase onto `develop`, and resolve conflicts immediately so the diff stays clean and no dependency slips through.
+    - Use the dev agent exclusively to iteratively design and implement: confirm dependencies, update configuration and feature flags, add or revise automated tests, run format/analyze/test locally, update docs/changelogs/instrumentation notes, and capture a clear QA handoff note plus evidence after every increment; if gaps remain, continue delivering increments until every acceptance criterion is satisfied.
+    - Open a PR to `develop`, enable automerge (never to `main`), ensure required labels are applied, link the story, and include the test summary along with the QA checklist in the description.
+    - Use the qa agent exclusively to validate against acceptance criteria, dev evidence, regression hotspots, accessibility/performance smoke checks, instrumentation signals, and documentation accuracy; if anything fails or is ambiguous, push the story back to the dev agent with explicit findings and required retests.
+    - When the qa agent signs off, confirm all checks are green, guardrails (code review, coverage, security scanning) completed, and only then allow automerge; after merge, verify the PR landed in `develop` exactly once without drift, and promptly fix any merge failures or conflicts that surface remotely.
+    - Sync `develop` locally, resolve residual issues, verify the feature end-to-end in the integrated branch, ensure the remote stays clean, and attach any final validation notes.
+    - Mark the story Done in the tracker immediately after verifying the merged state and archive QA evidence so no work item is left undocumented.
+- After marking Done, return to the top of the cycle and grab the next story without pausing.
+- If any blocker, risk, or dependency surfaces, stop the merge path, document the issue, align with stakeholders, and keep the story open until the gap is closed.
+- When no unstarted stories remain, keep polling the backlog; if a new story appears, re-enter the loop immediately.
+- Continue indefinitely until every story is implemented, QA-validated, and merged into `develop` with none left behind.
+- If the workflow halts unexpectedly before the backlog is empty or the repos diverge, the orchestrator must immediately relaunch the loop, reconcile `develop` with any outstanding story branches, and resume delegation without prompting.

@@ -7,6 +7,7 @@ import 'dart:async' as _i4;
 
 import 'package:crypto_market/features/market/models/create_listing_request.dart'
     as _i5;
+import 'package:crypto_market/features/market/models/listing.dart' as _i7;
 import 'package:crypto_market/features/market/models/search_filters.dart'
     as _i6;
 import 'package:crypto_market/features/market/models/search_listings_result.dart'
@@ -101,4 +102,12 @@ class MockMarketService extends _i1.Mock implements _i3.MarketService {
             ),
           )
           as _i4.Future<_i2.SearchListingsResult>);
+
+  @override
+  _i4.Future<_i7.Listing?> getListingById(String? listingId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getListingById, [listingId]),
+            returnValue: _i4.Future<_i7.Listing?>.value(),
+          )
+          as _i4.Future<_i7.Listing?>);
 }

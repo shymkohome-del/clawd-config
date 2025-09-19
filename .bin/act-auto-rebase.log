@@ -1,0 +1,9 @@
+time="2025-09-18T12:59:36+03:00" level=info msg="Using docker host 'unix:///var/run/docker.sock', and daemon socket 'unix:///var/run/docker.sock'"
+[Auto Rebase Story PRs/rebase] ⭐ Run Set up job
+[Auto Rebase Story PRs/rebase] 🚀  Start image=ubuntu:22.04
+[Auto Rebase Story PRs/rebase]   🐳  docker pull image=ubuntu:22.04 platform=linux/amd64 username= forcePull=true
+[Auto Rebase Story PRs/rebase] using DockerAuthConfig authentication for docker pull
+[Auto Rebase Story PRs/rebase] Error response from daemon: failed to resolve reference "docker.io/library/ubuntu:22.04": failed to authorize: failed to fetch oauth token: unexpected status from GET request to https://auth.docker.io/token?scope=repository%3Alibrary%2Fubuntu%3Apull&service=registry.docker.io: 401 Unauthorized
+[Auto Rebase Story PRs/rebase]   ❌  Failure - Set up job
+[Auto Rebase Story PRs/rebase] 🏁  Job failed
+Error: Error response from daemon: failed to resolve reference "docker.io/library/ubuntu:22.04": failed to authorize: failed to fetch oauth token: unexpected status from GET request to https://auth.docker.io/token?scope=repository%3Alibrary%2Fubuntu%3Apull&service=registry.docker.io: 401 Unauthorized
