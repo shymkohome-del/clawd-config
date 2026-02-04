@@ -6,6 +6,17 @@ set -e
 
 HANDOFF_DIR="/Users/vitaliisimko/clawd/memory"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+
+# 🧹 CLEANUP: Delete ALL old handoff files before creating new one
+# Only the newly created handoff should exist
+echo "🧹 Cleaning up old handoff files..."
+OLD_HANDOFF_COUNT=$(ls $HANDOFF_DIR/HANDOFF-*.md 2>/dev/null | wc -l || echo "0")
+if [ "$OLD_HANDOFF_COUNT" -gt 0 ]; then
+    rm -f $HANDOFF_DIR/HANDOFF-*.md
+    echo "✅ Deleted $OLD_HANDOFF_COUNT old handoff file(s)"
+else
+    echo "✅ No old handoff files to clean"
+fi
 DATE=$(date +%Y-%m-%d)
 DATETIME=$(date -u +"%Y-%m-%d %H:%M UTC")
 HANDOFF_FILE="$HANDOFF_DIR/HANDOFF-SESSION-$TIMESTAMP.md"
@@ -130,6 +141,7 @@ Delete this file to avoid re-reading in future sessions.
 EOF
 
 echo "✅ Session handoff created: $HANDOFF_FILE"
+echo "✅ Old handoff files cleaned up (kept only the newest)"
 echo ""
 echo "🧠 Vector memory synced: $TODAY_MEMORY"
 echo ""
@@ -140,6 +152,6 @@ echo ""
 echo "🎯 NEXT: You can now safely run /new or /reset"
 echo "🤖 After /new, BOOTSTRAP.md will auto-recover context via vector memory"
 echo ""
-echo "💡 Pro tip: Handoff file auto-deletes after successful recovery"
+echo "💡 Pro tip: Only ONE handoff file kept at a time (old ones auto-deleted)"
 
 exit 0
