@@ -77,7 +77,7 @@
 | **flutter-dev** 🕵️ | Flutter Detective | Business logic, BLoC, Repository pattern, state mgmt |
 | **flutter-dev-ui** 🎨 | Flutter UI Specialist | Screens, widgets, animations, responsive design |
 | **icp-backend-specialist** ⚡ | ICP Backend Dev | Canister development, Motoko/Rust, blockchain logic |
-| **flutter-user-emulator** 👤 | UX Tester | User journey testing, edge cases, flows |
+| **flutter-user-emulator** 🤖 | **QA/UX Tester** | **Automated testing, Flutter Driver, user emulation** |
 
 ---
 
@@ -240,6 +240,38 @@ Before any operation:
 `,
   // model НЕ вказуємо — використовується дефолтна з конфіга!
   runTimeoutSeconds: 600
+})
+```
+
+### Для flutter-user-emulator (QA/Testing)
+```javascript
+sessions_spawn({
+  agentId: "flutter-user-emulator",  // ← ОБОВ'ЯЗКОВО вказувати!
+  task: `
+## Role: flutter-user-emulator (Flutter User Emulator / QA Bot)
+## Specialty: Automated UI testing via Flutter Driver + Dart MCP
+
+### Your Tools:
+- Flutter Driver (flutter_driver extension)
+- Dart MCP Server (connect_dart_tooling_daemon)
+- Widget tree inspection
+- Automated user emulation (tap, enterText, screenshot)
+
+### Task: [UI testing task]
+- Launch app: flutter run --profile -t lib/main_driver.dart --print-dtd
+- Connect to DTD
+- Emulate user behavior
+- Verify UI states
+- Take screenshots
+- Report pass/fail
+
+### Constraints:
+- Local environment only
+- Test wallets only
+- Cleanup after testing (stop app)
+`,
+  // model НЕ вказуємо — використовується дефолтна з конфіга!
+  runTimeoutSeconds: 900
 })
 ```
 
@@ -432,6 +464,47 @@ sessions_spawn({
 - ❌ Критичний баг (потребує мого аналізу)
 - ❌ Архітектурні рішення (це моя робота)
 - ❌ OpenCode не працює / ліміти досягнуті
+
+---
+
+## 🚨 ABSOLUTE FORBIDDEN для Main Agent (КРИТИЧНО)
+
+### ⛔ Я НІКОЛИ НЕ МАЮ робити сам (delegate only):
+
+| Задача | Хто має робити | Чому заборонено мені |
+|--------|----------------|----------------------|
+| **Flutter тести** | `flutter-user-emulator` | Я не маю tools для Flutter Driver |
+| **Запуск `flutter test`** | `flutter-user-emulator` | Тільки він має доступ до Flutter MCP |
+| **Компіляція проєкту** | `flutter-dev` або `flutter-dev-ui` | Можу зламати build |
+| **ICP canister операції** | `icp-backend-specialist` | Safety risk, потрібен safety protocol |
+| **UI тестування** | `flutter-user-emulator` | Вимагає спеціальних tools |
+| **Термінал команди** | Sub-agent з context'ом | Я можу втратити контекст |
+
+### 🎯 Workflow для делегування:
+
+**ЯКЩО немає відповідного агента:**
+1. **СПОЧАТКУ** — створити агента з необхідними параметрами через `sessions_spawn()`
+2. **ПОТІМ** — делегувати йому задачу
+3. **НІКОЛИ** — не виконувати самому!
+
+**Приклад (правильний):**
+```javascript
+// ❌ НЕПРАВИЛЬНО — сам роблю тести
+exec({command: "flutter test ..."})  
+
+// ✅ ПРАВИЛЬНО — створюю агента і делегую
+sessions_spawn({
+  agentId: "flutter-user-emulator",  // ← Спочатку створити/вказати
+  task: "Run automated UI tests for 9 scenarios..."
+})
+```
+
+### 🔍 Перевірка перед дією:
+- [ ] Чи є для цієї задачі спеціалізований агент?
+- [ ] Якщо НІ — створити агента СПОЧАТКУ
+- [ ] Якщо ТАК — делегувати йому
+- [ ] Чи я намагаюсь зробити щось зі списку FORBIDDEN?
+- [ ] Якщо ТАК — ЗУПИНИТИСЬ і делегувати
 
 ---
 
