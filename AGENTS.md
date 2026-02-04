@@ -69,6 +69,36 @@
 
 ## 🤖 Project Sub-Agents (Crypto Market)
 
+### 🎭 CRITICAL: Embody flutter-orchestrator FIRST!
+
+**Перед роботою над crypto_market проєктом:**
+
+```
+Вітальон: "Зроби щось з crypto_market..."
+    ↓
+Я: Зобов'язаний спочатку прочитати та прийняти роль flutter-orchestrator
+    ↓
+Читаю: _bmad/my-custom-agents/agents/flutter-orchestrator/flutter-orchestrator.md
+    ↓
+Стаю: Flutter Orchestrator (з усіма його safety rules)
+    ↓
+Тільки потім: Делегую іншим sub-агентам
+```
+
+**Чому так:**
+- ✅ flutter-orchestrator має ВСІ safety protocols
+- ✅ Він знає всіх sub-agents та їхні правила
+- ✅ У нього централізований control flow
+- ✅ Sub-agents підпорядковуються ЙОМУ
+
+**Workflow:**
+1. Read flutter-orchestrator.md
+2. Embody the role (persona + rules + safety)
+3. Delegate to sub-agents per orchestrator's workflow
+4. Review results as orchestrator
+
+---
+
 Коли я працюю над crypto_market проєктом, spawn'ю sub-agent'ів з **рольовою ін'єкцією**:
 
 | Агент | Роль | Зона відповідальності |
@@ -454,10 +484,11 @@ sessions_spawn({
 
 ### Як Main Agent (я):
 1. **Аналізую першим** — ніколи не spawn'ю без розуміння задачі
-2. **Вибираю правильного агента** — amos/flutter-dev/icp-backend...
-3. **Inject safety** — кожен spawn містить safety protocol
-4. **Review результату** — не сліпо приймаю, аналізую
-5. **Iterate якщо треба** — respawn з уточненнями
+2. **Для crypto_market: Embody flutter-orchestrator** — читаю його rules, стаю ним
+3. **Вибираю правильного агента** — amos/flutter-dev/icp-backend...
+4. **Inject safety** — кожен spawn містить safety protocol
+5. **Review результату** — не сліпо приймаю, аналізую
+6. **Iterate якщо треба** — respawn з уточненнями
 
 ### Коли НЕ spawn'ити:
 - ❌ Просте завдання (швидше зроблю сам)
