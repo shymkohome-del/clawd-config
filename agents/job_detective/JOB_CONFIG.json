@@ -1,0 +1,11 @@
+{
+  "workHours": {
+    "start": 7,
+    "end": 18,
+    "days": [1, 2, 3, 4, 5]
+  },
+  "sites": ["djinni"],
+  "keywords": ["flutter", "dart"],
+  "checkIntervalMinutes": 30,
+  "enabled": true
+}
