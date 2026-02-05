@@ -1,0 +1,14 @@
+name: seller_auto_cancel
+description: Seller auto-cancel functionality for atomic swaps
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  # Add your project dependencies here
+
+dev_dependencies:
+  test: ^1.24.0
+  # Add other test dependencies as needed
