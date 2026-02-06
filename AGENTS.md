@@ -1299,6 +1299,215 @@ If issues found, revert commit: `git revert HEAD`
 
 ---
 
+## 🆕 MANDATORY CONTEXT LOADING PROTOCOL (Added 2026-02-06)
+
+**⚠️ CRITICAL: Sub-agents MUST load and understand context BEFORE any work**
+
+### Pre-Work Discovery Phase (Sub-Agent MUST Complete)
+
+```markdown
+## CONTEXT LOADING CHECKLIST (Complete Before Any Edit)
+
+### Step 1: Read & Quote Key Files
+For EACH file you will modify or reference, you MUST:
+- [ ] Read file completely (not skim)
+- [ ] Quote relevant sections (2+ lines) in your response
+- [ ] Identify patterns used in similar code
+
+**Required files to check:**
+- [ ] Target file(s) mentioned in task
+- [ ] Project README.md (first 100 lines)
+- [ ] CONTRIBUTING.md or style guide (if exists)
+- [ ] 2+ similar files in same directory (to understand patterns)
+
+### Step 2: Pattern Identification
+State explicitly:
+```
+Pattern found in [file:lines]:
+[Quote 2-3 lines showing the pattern]
+
+I will follow this pattern for my changes.
+```
+
+### Step 3: Convention Confirmation
+State explicitly:
+```
+Project conventions identified:
+- Import style: [absolute/relative]
+- Error handling: [exceptions/Result type]
+- Naming: [camelCase/snake_case]
+- Testing: [pattern used]
+```
+
+### Step 4: Scope Definition
+List EXACTLY what you will modify:
+```
+I will ONLY modify:
+- File: [path] — lines [X-Y]: [specific change]
+- File: [path] — lines [A-B]: [specific change]
+I will NOT modify any other files.
+```
+```
+
+### 🚫 STRICT RULES
+
+**FORBIDDEN (Zero Tolerance):**
+- ❌ Making edits before reading target file completely
+- ❌ Guessing patterns from memory
+- ❌ Assuming conventions without evidence
+- ❌ "I think this is how it works" — ONLY "I found this pattern at [file:lines]"
+
+**REQUIRED (Must Follow):**
+- ✅ Read file → Quote relevant lines → Explain pattern → Then edit
+- ✅ If pattern unclear → [NEEDS_CLARIFICATION] + specific questions
+- ✅ Cite evidence: "As shown in [file.dart:45-48], the pattern is..."
+- ✅ List ALL files you will read BEFORE starting
+
+### Magic Phrases for Context Issues
+
+```markdown
+## When context is unclear, use:
+
+"[NEEDS_CLARIFICATION] I found 3 different patterns for X:
+1. Pattern A in [file:lines]
+2. Pattern B in [file:lines]
+3. Pattern C in [file:lines]
+
+Which pattern should I follow?"
+
+"[NEEDS_CLARIFICATION] Target file [path] does not exist.
+I found similar files: [list]. Should I create new file or modify existing?"
+
+"[NEEDS_CLARIFICATION] Project conventions unclear for [specific case].
+I found conflicting examples: [quote lines]. Which is correct?"
+```
+
+---
+
+## 🆕 MAESTRO DISCOVERY PHASE PROTOCOL (Added 2026-02-06)
+
+**Main Agent (Maestro) MUST perform discovery BEFORE spawning sub-agents**
+
+### Why This Matters
+Sub-agents (MiniMax M2.1) are HANDS, not BRAIN. They cannot:
+- Reason about architecture
+- Infer context from incomplete information
+- Make decisions about approach
+- Understand complex interdependencies
+
+**Maestro MUST provide complete context in the task.**
+
+### Discovery Phase Checklist (Maestro MUST Complete)
+
+```markdown
+## BEFORE SPAWNING — Maestro Discovery
+
+### Step 1: File Inventory
+```bash
+ls -la target_directory/
+find . -name "*.dart" | grep -i pattern | head -10
+```
+**Document:** All relevant files and their purposes
+
+### Step 2: Pattern Analysis
+```bash
+grep -r "pattern" lib/ --include="*.dart" | head -20
+```
+**Document:** 
+- How similar tasks are done (with file:line references)
+- Common patterns in the codebase
+- Anti-patterns to avoid
+
+### Step 3: Convention Detection
+Read 2-3 files similar to target:
+- Import style (absolute vs relative)
+- Error handling pattern
+- Naming conventions
+- Testing patterns
+
+**Document:** Explicit conventions sub-agent must follow
+
+### Step 4: Dependency Mapping
+```bash
+grep -r "import.*target_file" lib/ test/ --include="*.dart"
+```
+**Document:** What depends on the target file
+
+### Step 5: Task Preparation
+Based on discovery, prepare task with:
+- [ ] Exact file paths
+- [ ] Line numbers where applicable
+- [ ] Pattern references ("As done in [file:lines]")
+- [ ] Convention summary
+- [ ] Specific changes required
+```
+
+### Task Template with Discovery Context
+
+```markdown
+## 🎭 ROLE: [agent-name]
+
+## 📋 DISCOVERY CONTEXT (Provided by Maestro)
+
+### Target Files
+| File | Purpose | Lines of Interest |
+|------|---------|-------------------|
+| [path] | [purpose] | [X-Y, A-B] |
+
+### Pattern Reference
+Similar implementation found in:
+- `[file:lines]` — [description of pattern]
+- `[file:lines]` — [description of pattern]
+
+### Project Conventions
+- **Imports:** [absolute/relative]
+- **Error handling:** [pattern]
+- **Naming:** [convention]
+
+## 🎯 TASK
+[Specific instructions with file:line references]
+
+## ✅ VERIFICATION
+[How to verify success]
+```
+
+### Example: Good vs Bad Task
+
+**❌ BAD (No Discovery):**
+```markdown
+Fix the auth errors in the test files
+```
+
+**✅ GOOD (With Discovery):**
+```markdown
+## DISCOVERY CONTEXT
+Target: test/regression/solana_regression_test.dart
+Pattern found: Uses throwsA() for exceptions (line 36, 57, 71)
+Similar tests: test/regression/tron_regression_test.dart uses same pattern
+Convention: Tests expect exceptions, not Result types
+
+## TASK
+Fix 24 tests in test/regression/solana_regression_test.dart
+Tests expect exceptions but receive success responses.
+
+## CHANGES NEEDED
+Line 36: Change expect pattern from... to...
+[Specific line-by-line instructions]
+```
+
+### Enforcement
+
+**Maestro MUST NOT spawn if:**
+- [ ] Haven't read AGENTS.md today
+- [ ] No discovery performed
+- [ ] Task is vague (no file paths, no line numbers)
+- [ ] No pattern references provided
+- [ ] No convention summary
+
+**Violation:** Sub-agent will fail, waste tokens, frustrate user.
+
+---
+
 ### Sub-Agent Return Requirements (NON-NEGOTIABLE):
 
 **EVERY sub-agent MUST return detailed report:**
