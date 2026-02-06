@@ -6,7 +6,7 @@
 
 ### 1. run-config.yaml (ОСНОВНИЙ файл з усіма секретами)
 ```
-/Volumes/workspace-drive/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml
+/Users/vitaliisimko/workspace/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml
 ```
 **Містить:**
 - PINATA_JWT (Pinata токен)
@@ -20,7 +20,7 @@
 
 ### 2. Шаблон (не чутливий, але важливий)
 ```
-/Volumes/workspace-drive/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml.example
+/Users/vitaliisimko/workspace/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml.example
 ```
 
 ---
@@ -67,17 +67,17 @@
 
 ### 7. Поточні .env файли
 ```
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.stg
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.prod
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.dev
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.staging
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.stg
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.prod
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.dev
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.staging
 ```
 
 ### 8. Кореневі .env
 ```
-/Volumes/workspace-drive/projects/other/crypto_market/.env
-/Volumes/workspace-drive/projects/other/crypto_market/.env.example
+/Users/vitaliisimko/workspace/projects/other/crypto_market/.env
+/Users/vitaliisimko/workspace/projects/other/crypto_market/.env.example
 ```
 
 ---
@@ -86,14 +86,14 @@
 
 ### 9. Anthropic/BMAD налаштування
 ```
-/Volumes/workspace-drive/projects/other/crypto_market/_bmad/my-custom-agents/settings.local.json
-/Volumes/workspace-drive/projects/other/crypto_market/_bmad/_config/custom/my-custom-agents/settings.local.json
+/Users/vitaliisimko/workspace/projects/other/crypto_market/_bmad/my-custom-agents/settings.local.json
+/Users/vitaliisimko/workspace/projects/other/crypto_market/_bmad/_config/custom/my-custom-agents/settings.local.json
 ```
 
 ### 10. Canister IDs (не чутливі але важливі)
 ```
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/canister_ids.json
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.dfx/local/canister_ids.json
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/canister_ids.json
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.dfx/local/canister_ids.json
 ```
 
 ---
@@ -102,36 +102,36 @@
 
 ### 11. .env бекапи (займають місце)
 ```
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_154628
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_154753
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_155043
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_155056
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_155105
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_160544
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_161407
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_164544
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_171405
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_171431
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_172109
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_172124
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_180412
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_180422
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_181132
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_181149
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_191913
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.backup.20260202_192747
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_154628
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_154753
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_155043
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_155056
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_155105
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_160544
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_161407
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_164544
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_171405
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_171431
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_172109
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_172124
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_180412
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_180422
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_181132
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_181149
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_191913
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.backup.20260202_192747
 ```
 
 ### 12. run-config бекапи
 ```
-/Volumes/workspace-drive/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml.backup.20260202_164612
-/Volumes/workspace-drive/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml.bak
-/Volumes/workspace-drive/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml.bak.bak
+/Users/vitaliisimko/workspace/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml.backup.20260202_164612
+/Users/vitaliisimko/workspace/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml.bak
+/Users/vitaliisimko/workspace/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml.bak.bak
 ```
 
 ### 13. Інші бекапи
 ```
-/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env.fixed
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env.fixed
 ```
 
 ---
@@ -144,7 +144,7 @@
 mkdir -p ~/Desktop/crypto-market-secrets-backup-2026-02-02
 
 # 1. run-config.yaml
-cp /Volumes/workspace-drive/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml ~/Desktop/crypto-market-secrets-backup-2026-02-02/
+cp /Users/vitaliisimko/workspace/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml ~/Desktop/crypto-market-secrets-backup-2026-02-02/
 
 # 2. DFX identities
 cp -r ~/.config/dfx/identity ~/Desktop/crypto-market-secrets-backup-2026-02-02/
@@ -153,14 +153,14 @@ cp ~/.config/dfx/config.json ~/Desktop/crypto-market-secrets-backup-2026-02-02/
 
 # 3. .env файли
 mkdir ~/Desktop/crypto-market-secrets-backup-2026-02-02/env-files
-cp /Volumes/workspace-drive/projects/other/crypto_market/crypto_market/.env* ~/Desktop/crypto-market-secrets-backup-2026-02-02/env-files/
-cp /Volumes/workspace-drive/projects/other/crypto_market/.env* ~/Desktop/crypto-market-secrets-backup-2026-02-02/env-files/
+cp /Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/.env* ~/Desktop/crypto-market-secrets-backup-2026-02-02/env-files/
+cp /Users/vitaliisimko/workspace/projects/other/crypto_market/.env* ~/Desktop/crypto-market-secrets-backup-2026-02-02/env-files/
 
 # 4. API settings
-cp /Volumes/workspace-drive/projects/other/crypto_market/_bmad/my-custom-agents/settings.local.json ~/Desktop/crypto-market-secrets-backup-2026-02-02/
+cp /Users/vitaliisimko/workspace/projects/other/crypto_market/_bmad/my-custom-agents/settings.local.json ~/Desktop/crypto-market-secrets-backup-2026-02-02/
 
 # 5. Canister IDs
-cp /Volumes/workspace-drive/projects/other/crypto_market/crypto_market/canister_ids.json ~/Desktop/crypto-market-secrets-backup-2026-02-02/
+cp /Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/canister_ids.json ~/Desktop/crypto-market-secrets-backup-2026-02-02/
 
 echo "Бекап готовий в: ~/Desktop/crypto-market-secrets-backup-2026-02-02/"
 ```

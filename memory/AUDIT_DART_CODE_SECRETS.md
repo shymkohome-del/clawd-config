@@ -1,7 +1,7 @@
 # Аудит Dart/Flutter коду: Hardcoded секрети та URL
 
 **Дата аудиту:** 2025-02-02  
-**Проект:** /Volumes/workspace-drive/projects/other/crypto_market/crypto_market  
+**Проект:** /Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market  
 **Scope:** lib/ директорія
 
 ---

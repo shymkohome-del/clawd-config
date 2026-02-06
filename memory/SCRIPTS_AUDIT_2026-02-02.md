@@ -8,7 +8,7 @@
 
 ## 📁 Структура скриптів
 
-**Розташування:** `/Volumes/workspace-drive/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/`
+**Розташування:** `/Users/vitaliisimko/workspace/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/`
 
 ### Скрипти в директорії `scripts/` (18 файлів)
 
@@ -40,7 +40,7 @@
 - `step-01-env-select.md` та інші - документація кроків
 
 ### Конфігураційний файл:
-- `/Volumes/workspace-drive/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml`
+- `/Users/vitaliisimko/workspace/projects/other/crypto_market/_bmad/my-custom-agents/workflows/run/config/run-config.yaml`
 
 ---
 

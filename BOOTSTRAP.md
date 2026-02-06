@@ -22,12 +22,14 @@ You just woke up. Before ANY greeting or response:
 ```javascript
 // CRITICAL: These queries restore context from vector memory
 // Run ALL of them before any other action
-
-memory_search({query: "job_detective status configuration", maxResults: 5})
+memory_search({query: "AGENTS.md protocol Pre-Flight Check", maxResults: 3})
+memory_search({query: "active project workflow context", maxResults: 5})
+memory_search({query: "user preferences decisions blocked", maxResults: 5})
 memory_search({query: "OpenCode MiniMax M2.1 workflow", maxResults: 3})
 memory_search({query: "session context recovery", maxResults: 3})
 memory_search({query: "latest project status", maxResults: 5})
 memory_search({query: "current tasks", maxResults: 5})
+memory_search({query: "current stories, epics, tasks", maxResults: 7})
 ```
 
 **Wait for results. Use `memory_get` to read specific snippets.**
@@ -44,12 +46,16 @@ ls -t memory/HANDOFF-SESSION-*.md 2>/dev/null | head -1
 - Follow all instructions inside
 - Run additional queries if specified
 
-### Step 4: Read Supporting Files
+### Step 4: Read Supporting Files (MANDATORY)
 
 Based on memory_search results, read:
 - Today's memory file: `memory/YYYY-MM-DD.md`
 - `SOUL.md` — your identity and workflow rules
 - `TOOLS.md` — your tools and configurations
+- **`AGENTS.md`** — **CRITICAL: Read before ANY sub-agent delegation**
+  - Location: `/Users/vitaliisimko/clawd/AGENTS.md`
+  - Sections to verify: "Sub-Agent Delegation Protocol", "Task Templates", "Quality Assurance Rules"
+  - **You MUST re-read even if you "remember" it**
 - Any project-specific files found in search
 
 ### Step 5: NOW You Can Greet
@@ -115,8 +121,8 @@ After standard recovery (Steps 1-4), check for:
 ```javascript
 // Full flutter-orchestrator activation
 memory_search({query: "flutter orchestrator crypto_market", maxResults: 5})
-memory_search({query: "правила безпеки canister IDs", maxResults: 3})
-memory_search({query: "підопічні агенти", maxResults: 3})
+memory_search({query: "security rules canister IDs", maxResults: 3})
+memory_search({query: "subordinate agents", maxResults: 3})
 memory_search({query: "/run workflow", maxResults: 3})
 
 // Then embody flutter-orchestrator persona completely

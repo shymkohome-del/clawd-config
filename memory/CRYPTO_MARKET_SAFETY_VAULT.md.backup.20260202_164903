@@ -107,7 +107,7 @@ This document contains **ALL critical information** for the crypto_market projec
 
 ### 4. Canister IDs Registry
 
-**Master File:** `/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/canister_ids.json`
+**Master File:** `/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/canister_ids.json`
 
 **Status:** ✅ VERIFIED - All IDs correct
 

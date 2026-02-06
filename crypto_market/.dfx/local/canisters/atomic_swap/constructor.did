@@ -1,9 +1,0 @@
-type SwapResult = 
- variant {
-   err: text;
-   ok: text;
- };
-service : {
-  healthCheck: () -> (bool) query;
-  initiateSwap: (amount: nat, targetToken: text) -> (SwapResult);
-}

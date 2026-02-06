@@ -92,8 +92,8 @@ memory_get({path: "memory/2026-01-30.md", from: 1, lines: 50})
 - "Bitcoin testing"
 
 **Critical files:**
-- `/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/SESSION_LOG_EPIC_4_5_CURRENT.md`
-- `/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/SESSION_LOG_EPIC_4_5.md`
+- `/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/SESSION_LOG_EPIC_4_5_CURRENT.md`
+- `/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/SESSION_LOG_EPIC_4_5.md`
 - `PROJECT_STATUS.md`
 
 ### ICP Tokens Blocker (PERMANENT until resolved)

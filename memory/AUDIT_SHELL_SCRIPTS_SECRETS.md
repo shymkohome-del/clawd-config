@@ -11,7 +11,7 @@
 
 ### 1. secrets/run-config.yaml - HARDCODED СЕКРЕТИ
 
-**Файл:** `/Volumes/workspace-drive/projects/other/crypto_market/secrets/run-config.yaml`
+**Файл:** `/Users/vitaliisimko/workspace/projects/other/crypto_market/secrets/run-config.yaml`
 
 **Знайдені секрети:**
 
@@ -48,7 +48,7 @@
 
 ### 2. safety-check.sh - Hardcoded Production IDs
 
-**Файл:** `/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/scripts/safety/safety-check.sh`
+**Файл:** `/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/scripts/safety/safety-check.sh`
 
 **Знайдено:**
 ```bash
@@ -76,7 +76,7 @@ LOCAL_IDENTITY_PRINCIPAL="bibc2-doxoe-vtsrh-skwdg-yzeth-le466-hgo3f-ykxin-6woib-
 
 ### 3. switch-identity.sh - Hardcoded Production IDs
 
-**Файл:** `/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/scripts/safety/switch-identity.sh`
+**Файл:** `/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/scripts/safety/switch-identity.sh`
 
 **Знайдено:**
 ```bash
@@ -98,7 +98,7 @@ STAGING_ATOMIC_SWAP="6p4bg-hiaaa-aaaad-ad6ea-cai"
 
 ### 4. run_manual_qa.sh - Hardcoded Addresses
 
-**Файл:** `/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/run_manual_qa.sh`
+**Файл:** `/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/run_manual_qa.sh`
 
 **Знайдено:**
 ```bash
@@ -116,8 +116,8 @@ ETH_ADDRESS="0xa83b38cf5544fb897b9ab6565c947d81255952c8"
 ### 5. build-android.sh / build-ios.sh - Secrets у Dart Defines
 
 **Файли:**
-- `/Volumes/workspace-drive/projects/other/crypto_market/scripts/build-android.sh`
-- `/Volumes/workspace-drive/projects/other/crypto_market/scripts/build-ios.sh`
+- `/Users/vitaliisimko/workspace/projects/other/crypto_market/scripts/build-android.sh`
+- `/Users/vitaliisimko/workspace/projects/other/crypto_market/scripts/build-ios.sh`
 
 **Проблема:**
 ```bash

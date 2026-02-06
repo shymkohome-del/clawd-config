@@ -7,6 +7,14 @@ description: Preserve and recover full session context across /new or /reset com
 
 This skill ensures complete session continuity across `/new` or `/reset` commands by creating detailed handoff files and providing automatic recovery instructions.
 
+## Smart Handoff Principle
+
+**Critical:** `/handoff` ALWAYS saves FULL context, regardless of `/compact` state.
+- `/compact` = UI cleanup (creates summary for display only)
+- `/handoff` = Persistence (saves complete context for recovery)
+- Handoff reads **original files**, not summary
+- Context restored after `/new` is always complete
+
 ## When to Use This Skill
 
 **Trigger situations:**
@@ -15,14 +23,39 @@ This skill ensures complete session continuity across `/new` or `/reset` command
 - User asks to "save context", "preserve session", "create handoff"
 - After `/new` or `/reset` to recover previous context
 
+**IMPORTANT:** Even if `/compact` was used, still save FULL context in handoff.
+
 ## What This Skill Does
 
-### 1. Creates HANDOFF File
+### 1. Smart Handoff Protocol
+When user runs `/handoff`:
+
+```javascript
+// Step 1: Check if session was compacted
+const wasCompacted = checkForSummaryInHistory();
+
+// Step 2: Read ORIGINAL files (not summary!)
+read("SOUL.md")
+read("AGENTS.md") 
+read("TOOLS.md")
+read("memory/YYYY-MM-DD.md")
+// + any project-specific files mentioned in session
+
+// Step 3: Generate specific memory_search queries
+// Based on ACTUAL work done, not generic templates
+const queries = generateQueriesFromContext();
+
+// Step 4: Create handoff file with full context
+// Step 5: Update memory/YYYY-MM-DD.md (with dedup)
+```
+
+### 2. Creates HANDOFF File
 Generates `memory/HANDOFF-SESSION-[timestamp].md` with:
-- Current project status
-- Specific `memory_search` queries to run
+- Current project status (from original files, not summary)
+- Specific `memory_search` queries based on actual work
 - Files to read after reset
-- Instructions for context recovery
+- Recovery instructions
+- **was_compacted** flag (for logging only)
 
 ### 2. Provides Recovery Instructions
 After `/new`, the next session agent should:
@@ -32,7 +65,21 @@ After `/new`, the next session agent should:
 4. Read files specified in handoff
 5. Continue work with full context
 
-### 3. Maintains Continuity
+### 3. Handles /compact Correctly
+**Smart Handoff ignores `/compact` summary:**
+- Summary is for UI only (displays truncated history)
+- Handoff reads original source files
+- Full context preserved even after `/compact`
+- No data loss guaranteed
+
+### 4. Deduplication
+Before appending to `memory/YYYY-MM-DD.md`:
+- Check if similar entry exists (last 1 hour)
+- If yes: update existing entry
+- If no: append new entry
+- Prevent duplicate handoff records
+
+### 5. Maintains Continuity
 - Preserves job_detective status
 - Saves OpenCode workflow configuration
 - Keeps project state across sessions
@@ -92,7 +139,8 @@ Complete guide for recovering context after `/new` or `/reset`.
 
 **Created:** 2026-02-03 19:35 UTC  
 **Session:** agent:main  
-**Status:** 🟢 READY FOR RECOVERY
+**Status:** 🟢 READY FOR RECOVERY  
+**was_compacted:** true/false (for logging only - full context preserved)
 
 ---
 
@@ -113,7 +161,7 @@ memory_search({query: "OpenCode workflow", maxResults: 3})
 ---
 
 ## 📋 Current Project Status
-[Detailed status here]
+[Detailed status here - from ORIGINAL files, not summary]
 ```
 
 ## Integration with BOOTSTRAP.md
@@ -132,11 +180,57 @@ The `BOOTSTRAP.md` file should include:
 
 ## Best Practices
 
+### Smart Handoff Rules
+- **ALWAYS read original files** — never use summary as source
+- **ALWAYS save full context** — regardless of `/compact` state
+- **Generate specific queries** — based on actual work, not templates
+- **Check was_compacted** — log it, but ignore for saving
+- **Deduplicate memory writes** — prevent duplicate entries
+
+### General Practices
 - Always create handoff before `/new` or `/reset`
 - Delete old handoff files after successful recovery
 - Include specific, actionable memory_search queries
 - Reference exact file paths, not vague descriptions
 - Mark status clearly (🟢 ready, 🟡 pending, 🔴 blocked)
+
+## Implementation for AI
+
+When user runs `/handoff`, AI must:
+
+```javascript
+// 1. Detect if session was compacted
+const sessionHistory = getSessionHistory();
+const wasCompacted = sessionHistory.includes("<summary>");
+
+// 2. Read ORIGINAL source files (NOT summary!)
+const soul = read("SOUL.md");
+const agents = read("AGENTS.md");
+const tools = read("TOOLS.md");
+const todayMemory = read("memory/YYYY-MM-DD.md");
+
+// 3. Generate context-specific queries
+const queries = [];
+if (soul.includes("OpenCode")) {
+  queries.push("OpenCode MiniMax workflow configuration");
+}
+if (todayMemory.includes("crypto_market")) {
+  queries.push("crypto_market project status");
+}
+
+// 4. Create handoff with FULL context
+writeHandoffFile({
+  wasCompacted, // log only
+  queries,
+  filesToRead: ["SOUL.md", "AGENTS.md", "memory/YYYY-MM-DD.md"],
+  fullContext: true // always true
+});
+
+// 5. Update memory with dedup
+deduplicatedAppend("memory/YYYY-MM-DD.md", handoffInfo);
+```
+
+**Key point:** was_compacted is ONLY for logging. Full context always saved.
 
 ## Troubleshooting
 

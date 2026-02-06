@@ -87,17 +87,17 @@ browser({action:"act", request:{kind:"click", ref:"e17"}})
 ### How to use:
 ```javascript
 // Search for project status
-memory_search({query: "останній проект статус", maxResults: 5})
+memory_search({query: "latest project status", maxResults: 5})
 
 // Search for user's current tasks  
-memory_search({query: "Вітальон поточні задачі", maxResults: 5})
+memory_search({query: "Vitalii current tasks", maxResults: 5})
 
 // Search for recent decisions
-memory_search({query: "останні рішення", maxResults: 3})
+memory_search({query: "recent decisions", maxResults: 3})
 ```
 
 ### When to use (REQUIRED):
-1. **At session start** — query="останній проект статус"
+1. **At session start** — query="latest project status"
 2. **When user asks about previous work** — search before answering
 3. **When resuming projects** — search for project name + status
 4. **Before making decisions** — search for related previous decisions
@@ -148,53 +148,75 @@ browser({action:"snapshot", refs:"aria"})
 
 ---
 
-# OpenCode + MiniMax M2.1 — Primary Coding Tool
+# Sub-Agents (MiniMax M2.1) — Primary Coding Tool
 
 **This is my PRIMARY tool for code generation.**
 
-## Config
-```bash
-# ~/.local/share/opencode/config.json
-{
-  "model": "minimax/minimax-m2.1",
-  "provider": "openrouter"
-}
-```
-
-## Workflow (Default Mode)
-
-**By default I use OpenCode for all coding tasks.**
+## Architecture: Brain vs Hands
 
 ```
-Вітальон (coding task)
+┌─────────────────────────────────────────────────────────────────┐
+│                    MAIN AGENT (Kimi/Claude)                      │
+│                    ME - Architect/Orchestrator                   │
+│                                                                  │
+│  Responsibilities:                                               │
+│  - Analyze task from user                                        │
+│  - Decompose into sub-tasks                                      │
+│  - Choose specialized sub-agent                                  │
+│  - Spawn via sessions_spawn()                                    │
+│  - Review and integrate results                                  │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │ sessions_spawn()
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              SUB-AGENT (MiniMax M2.1 - cheap/fast)               │
+│                                                                  │
+│  Responsibilities:                                               │
+│  - Execute specific task                                         │
+│  - Isolated session (agent:main:subagent:<uuid>)                │
+│  - Receives AGENTS.md + TOOLS.md + project context              │
+│  - Announces result back to chat                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Workflow
+
+```
+User (coding task)
     ↓
 Me (analyze + decompose + design)
     ↓
-LAUNCH OpenCode (opencode run --model openrouter/minimax/minimax-m2.1)
+SPAWN sub-agent (sessions_spawn with MiniMax M2.1)
+    ↓
+Sub-agent executes in isolated session
     ↓
 Me (review + iterate + integrate)
     ↓
 Result
 ```
 
-## When NOT to use OpenCode:
-- ❌ OpenCode not working / broken
-- ❌ Limits reached (tokens, money on OpenRouter)
+## Usage
+
+```javascript
+// Spawn a sub-agent for specific task
+sessions_spawn({
+  task: `
+## Role: flutter-dev
+## Task: Fix compilation errors in lib/auth.dart
+## Requirements:
+- Fix all type mismatches
+- Follow existing code style
+- Run flutter analyze after fixes
+`,
+  runTimeoutSeconds: 300
+})
+```
+
+## When NOT to use sub-agents:
+- ❌ Limits reached (tokens, money)
 - ❌ Task requires architectural analysis (complex decisions)
 - ❌ Context too specific for auto-generation
 - ❌ Critical bug — faster to do myself
-
-## Usage
-```bash
-# One-shot with prompt
-opencode run --model openrouter/minimax/minimax-m2.1 "create Python function..."
-
-# With files
-opencode run -f src/main.py --model openrouter/minimax/minimax-m2.1 "refactor this"
-
-# Interactive mode
-opencode
-```
 
 ## Rules
 1. **Architecture first** — I analyze, then give clear prompt

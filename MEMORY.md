@@ -3,7 +3,7 @@
 ## ⚠️ FOR NEW AGENTS: READ SESSION_LOG FIRST!
 
 **When continuing work on Epic 4.5 or any ongoing project:**
-- **CHECK:** `/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/SESSION_LOG_EPIC_4_5_CURRENT.md`
+- **CHECK:** `/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/SESSION_LOG_EPIC_4_5_CURRENT.md`
 - This contains the CURRENT state — swap IDs, amounts, errors, next steps
 - **NEVER start work without reading the session log first!**
 
@@ -11,9 +11,9 @@
 
 ## Epic 4.5 Transaction Broadcasting - QA Test Plan (PERMANENT)
 
-**Location:** `/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/TEST_PLAN_EPIC_4_5_FINAL.md`
+**Location:** `/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/TEST_PLAN_EPIC_4_5_FINAL.md`
 
-**SESSION LOG:** `/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/SESSION_LOG_EPIC_4_5.md` - READ THIS FIRST!
+**SESSION LOG:** `/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/SESSION_LOG_EPIC_4_5.md` - READ THIS FIRST!
 
 ### ⚠️ CRITICAL LESSONS FROM 2025-01-30 SESSION
 
@@ -212,13 +212,13 @@ Analyzed Flutter + ICP decentralized marketplace project.
   - ✅ Local flow works (create, lock, complete)
   - ❌ HTTP outcall requires real IC network
   - ❌ Playground: canister too large (~3MB)
-  - **SESSION LOG:** `/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/SESSION_LOG_EPIC_4_5_CURRENT.md`
-  - **GUIDE:** `/Volumes/workspace-drive/projects/other/crypto_market/crypto_market/HUMAN_GUIDE.md`
+  - **SESSION LOG:** `/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/SESSION_LOG_EPIC_4_5_CURRENT.md`
+  - **GUIDE:** `/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/HUMAN_GUIDE.md`
   - **To complete:** Need ICP tokens (~$5-10) for IC deployment
 
 ### Story 6.4: Dispute Priority Queue — COMPLETE
 - **Status:** ✅ DONE
-- **Location:** `/Volumes/workspace-drive/projects/other/crypto_market/crypto_market`
+- **Location:** `/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market`
 - **Changes:**
   - Added priority score calculation based on user reputation
   - Updated queue position logic to use priorityScore

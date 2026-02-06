@@ -5,7 +5,7 @@
 **Name:** Crypto Market  
 **Type:** Decentralized P2P Cryptocurrency Marketplace  
 **Stack:** Flutter + Internet Computer (ICP)  
-**Location:** `/Volumes/workspace-drive/projects/other/crypto_market`
+**Location:** `/Users/vitaliisimko/workspace/projects/other/crypto_market`
 
 ---
 

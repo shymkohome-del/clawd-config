@@ -39,7 +39,7 @@
 
 ```bash
 # 1. Navigate to project
-cd /Volumes/workspace-drive/projects/other/crypto_market/crypto_market
+cd /Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market
 
 # 2. Create timestamped backup
 BACKUP_DIR="backups/$(date +%Y-%m-%d-%H%M%S)"

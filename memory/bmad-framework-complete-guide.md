@@ -2,7 +2,7 @@
 
 ## Overview
 
-**BMAD (Business Model Agent-Driven)** is an AI-powered, agent-driven development framework designed for systematic software project management, planning, and implementation. The framework was discovered in the `crypto_market` project at `/Volumes/workspace-drive/projects/other/crypto_market`.
+**BMAD (Business Model Agent-Driven)** is an AI-powered, agent-driven development framework designed for systematic software project management, planning, and implementation. The framework was discovered in the `crypto_market` project at `/Users/vitaliisimko/workspace/projects/other/crypto_market`.
 
 **Version:** 6.0.0-alpha.23  
 **Author:** bmadcode  
