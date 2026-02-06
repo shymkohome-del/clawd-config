@@ -1451,6 +1451,97 @@ I found conflicting examples: [quote lines]. Which is correct?"
 
 ---
 
+## 🎯 AGENT SELECTION MATRIX — WHEN TO USE WHICH AGENT
+
+**CRITICAL: Choose the RIGHT agent for the task. Wrong agent = wasted time & money.**
+
+### Quick Decision Tree
+
+```
+Task involves...
+├── Flutter/Dart code?
+│   ├── UI widgets, screens, layouts? → flutter-dev-ui
+│   ├── Business logic, BLoC, repositories? → flutter-dev
+│   ├── Writing tests? → flutter-test-dev
+│   └── UI automation, QA? → flutter-user-emulator
+│
+├── Security/audit needed?
+│   └── Code review, vulnerabilities? → amos
+│
+├── ICP/Blockchain?
+│   ├── Canister code (Motoko)? → backend-dev
+│   └── Canister operations? → icp-backend-specialist
+│
+├── Infrastructure?
+│   ├── CI/CD, deployment? → devops-engineer
+│   └── Shell scripts? → shell-scripter
+│
+├── Planning/Architecture?
+│   ├── Task breakdown, sprints? → pm
+│   ├── System design? → architect
+│   └── Deep research? → gemini-researcher
+│
+└── Other?
+    ├── Prompt optimization? → prompt-optimizer
+    └── End-to-end feature? → fullstack-dev
+```
+
+### Detailed Agent Guide
+
+| Agent | Use For | DON'T Use For | Example Task |
+|-------|---------|---------------|--------------|
+| **flutter-dev** | Business logic, BLoC/Cubit, repositories, data models, API integration, validation | UI widgets, screens, styling | "Fix AuthCubit login logic" |
+| **flutter-dev-ui** | Widgets, screens, layouts, animations, Material Design, responsive UI | Business logic, state management | "Create LoginScreen with form" |
+| **flutter-test-dev** | Unit tests, widget tests, integration tests, mocks, test coverage | Writing production code | "Add tests for AuthCubit" |
+| **flutter-user-emulator** | UI automation, Flutter Driver, manual QA flows, screenshots | Writing code | "Test login flow, take screenshots" |
+| **flutter-qa** | QA processes, test planning, validation | Implementation | "Review test coverage" |
+| **amos** | 🔍 Security audit, adversarial review, logic flaws, best practices | Implementation | "Security review of atomic_swap" |
+| **backend-dev** | ICP canisters, Motoko, smart contracts, blockchain logic | Flutter UI | "Implement HTLC in Motoko" |
+| **devops-engineer** | CI/CD, deployment, infrastructure, Docker | Feature code | "Setup GitHub Actions workflow" |
+| **shell-scripter** | Bash scripts, automation, text processing | Complex logic | "Create deploy script" |
+| **architect** | System design, ADRs, scalability planning | Implementation | "Design payment architecture" |
+| **pm** | Task breakdown, prioritization, sprint planning | Coding | "Break down Epic 4 into stories" |
+| **gemini-researcher** | Deep research, documentation, analysis | Implementation | "Research HTLC best practices" |
+| **prompt-optimizer** | Optimize prompts, refine instructions | Coding | "Improve this prompt" |
+| **fullstack-dev** | End-to-end features across stack | Specialized deep work | "Implement full auth flow" |
+
+### Decision Examples
+
+**❌ WRONG:**
+```javascript
+// UI task given to flutter-dev
+sessions_spawn({task: "Create a beautiful login screen", agentId: "flutter-dev"})
+// Result: Poor UI, wrong agent
+```
+
+**✅ CORRECT:**
+```javascript
+// UI task → flutter-dev-ui
+sessions_spawn({task: "Create login screen", agentId: "flutter-dev-ui"})
+
+// Business logic → flutter-dev  
+sessions_spawn({task: "Fix AuthCubit validation", agentId: "flutter-dev"})
+
+// Tests → flutter-test-dev
+sessions_spawn({task: "Add unit tests for AuthCubit", agentId: "flutter-test-dev"})
+
+// Security audit → amos
+sessions_spawn({task: "Security review of swap logic", agentId: "amos"})
+```
+
+### Parallel Agent Usage
+
+**For complex tasks, spawn multiple agents in parallel:**
+
+```javascript
+// Story implementation: UI + Logic + Tests
+sessions_spawn({task: "UI for login screen", agentId: "flutter-dev-ui"})
+sessions_spawn({task: "AuthCubit logic", agentId: "flutter-dev"})
+sessions_spawn({task: "Tests for auth", agentId: "flutter-test-dev"})
+```
+
+---
+
 ## 🆕 MAESTRO DISCOVERY PHASE PROTOCOL (Added 2026-02-06)
 
 **Main Agent (Maestro) MUST perform discovery BEFORE spawning sub-agents**
