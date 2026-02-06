@@ -1,70 +1,181 @@
 # AGENTS.md - Coding Agents Configuration
 
-Цей файл містить конфігурацію coding агентів та workflow для генерації коду.
+## 🔴 ABSOLUTE REQUIREMENT: READ THIS FILE COMPLETELY BEFORE USE
 
-**⚠️ ВАЖЛИВО: Агенти беруться з crypto_market проєкту. Цей файл містить тільки посилання та додаткові правила.**
+**⚠️⚠️⚠️ YOU MUST READ THIS ENTIRE FILE BEFORE SPAWNING ANY SUB-AGENT ⚠️⚠️⚠️**
+
+**THIS IS NOT OPTIONAL. THIS IS NOT A SUGGESTION. THIS IS MANDATORY.**
+
+### ⛔ IF YOU HAVE NOT READ THIS FILE:
+- **DO NOT** spawn any sub-agent
+- **DO NOT** delegate any task
+- **DO NOT** assume you "know the rules"
+- **DO NOT** skip to "relevant section"
+
+### ✅ READING CHECKLIST (Confirm before spawn):
+- [ ] Read "Architecture: Brain vs Hands" — understand YOUR role as BRAIN
+- [ ] Read "BLOCKCHAIN MINDSET" — understand 0 warnings policy
+- [ ] Read "Sub-Agent Control Protocol" — understand Pre-Flight Check
+- [ ] Read "Quality Assurance Rules" — understand type/mock rules
+- [ ] Read "Task Templates" — understand required template format
+- [ ] Read "Sub-Agent Delegation Protocol" — understand ALL requirements
+
+### 🔴 READING CONFIRMATION REQUIRED:
+Before spawning first sub-agent in ANY session, state:
+```
+"AGENTS.md read completely. All sections verified.
+Ready to provide imperative instructions with Pre-Flight Check.
+Ready to enforce 6-section return format."
+```
+
+**FAILURE TO READ = FAILURE TO DELEGATE PROPERLY = USER FRUSTRATION**
 
 ---
 
-## 🧠 Архітектура: Мозок vs Руки
+**⚠️ IMPORTANT: Agents are taken from the crypto_market project. This file contains only references and additional rules.**
+
+---
+
+## 🧠 Architecture: Brain vs Hands
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                    MAIN AGENT (Kimi/Claude)                      │
-│                  Я - архітектор/оркестратор                      │
+│                  I am architect/orchestrator                     │
 │                                                                  │
-│  Робота:                                                         │
-│  - Аналіз задачі від Вітальона                                   │
-│  - Декомпозиція на підзадачі                                     │
-│  - Вибір спеціалізованого sub-agent'а                            │
-│  - Spawn через sessions_spawn()                                  │
-│  - Рев'ю та інтеграція результатів                               │
+│  Responsibilities:                                               │
+│  - Analyze task from Vitalii                                      │
+│  - Decompose into sub-tasks                                      │
+│  - Choose specialized sub-agent                                  │
+│  - Spawn via sessions_spawn()                                     │
+│  - Review and integrate results                                  │
 └──────────────────────────┬───────────────────────────────────────┘
                            │ sessions_spawn()
                            ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│              SUB-AGENT (MiniMax M2.1 - дешевий/швидкий)          │
+│              SUB-AGENT (MiniMax M2.1 - cheap/fast)               │
 │                                                                  │
-│  Робота:                                                         │
-│  - Виконання конкретного завдання                                │
-│  - Ізольована сесія (agent:main:subagent:<uuid>)                │
-│  - Отримує AGENTS.md + TOOLS.md + project context               │
-│  - Анонсує результат назад в чат                                 │
+│  Responsibilities:                                               │
+│  - Execute specific task                                         │
+│  - Isolated session (agent:main:subagent:<uuid>)                │
+│  - Receives AGENTS.md + TOOLS.md + project context              │
+│  - Announces result back to chat                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🚀 Основна модель
+## 🚀 Main Model
 
 ### Main Agent (Default)
-- **Model:** `kimi-code/kimi-for-coding` (або `anthropic/claude-opus-4-5` для складних задач)
-- **Роль:** Архітектор, планувальник, інтегратор
-- **Завжди перший:** Аналізую задачу перед spawn'ом sub-agent'ів
+- **Model:** `kimi-code/kimi-for-coding` (or `anthropic/claude-opus-4-5` for complex tasks)
+- **Role:** Architect, planner, integrator
+- **Always first:** Analyze task before spawning sub-agents
 
-### Sub-Agent (для виконання) — "РУКИ"
-- **Model:** `minimax/MiniMax-M2.1` (1M tokens, дешевий)
-- **Конфіг:** `agents.defaults.subagents.model`
-- **Provider:** MiniMax (прямий API, api.minimax.chat/v1)
-- **Max concurrent:** 4-8 (налаштовується)
-- **Автоматично:** Будь-який новий субагент без явного `model` отримує MiniMax
+### Sub-Agent (for execution) — "HANDS"
+- **Model:** `minimax/MiniMax-M2.1` (1M tokens, cheap)
+- **Config:** `agents.defaults.subagents.model`
+- **Provider:** MiniMax (direct API, api.minimax.chat/v1)
+- **Max concurrent:** 4-8 (configurable)
+- **Automatic:** Any new sub-agent without explicit `model` gets MiniMax
 
-**⚠️ КРИТИЧНО: Ця модель СЛАБША і не вміє мислити архітектурно!**
+**⚠️ CRITICAL: This model is WEAKER and does NOT think architecturally!**
 
-| MiniMax M2.1 (руки) | Kimi/Claude (мозок) |
-|---------------------|---------------------|
-| ❌ Не вміє архітектурувати | ✅ Архітектура, планування |
-| ❌ Не розуміє абстракції | ✅ Розуміє контекст |
-| ✅ Виконує конкретні задачі | ✅ Аналізує та інтегрує |
-| ✅ Швидка і дешева | ✅ Якісна, дорожча |
+## 🚨 BLOCKCHAIN MINDSET (2026-02-05)
 
-**🎯 Імперативний стиль для MiniMax:**
+**THIS IS NOT A GAME. THIS IS REAL PEOPLE'S MONEY.**
+
+### Strict rules for crypto_market project:
+
+| What | Why it matters | Consequence of error |
+|-----|----------------|------------------|
+| **0 warnings** | Each warning is potential attack vector | Loss of users' cryptocurrencies |
+| **0 assumptions** | Blockchain doesn't forgive mistakes | Irreversible transactions |
+| **0 "probably"** | Code works as written, not as intended | Exploits, drains, hacks |
+
+### Golden rules:
+
+1. **WARNING = ERROR**
+   - No "just warnings" in blockchain
+   - Every unused identifier is potential hole
+   - Every "operator may trap" is possible funds freeze
+   - **Goal: 0 warnings, 0 errors, 0 compromises**
+
+2. **Check EVERYTHING**
+   - Nat underflow? Check bounds explicitly.
+   - Division by zero? Check before dividing.
+   - Array index? Check bounds.
+   - Principal validation? Check format.
+
+3. **Fail fast, but safely**
+   - Better to stop operation than lose funds
+   - assert() is your friend for critical invariants
+   - All throws must be handled
+
+4. **Trust nothing**
+   - Input data is attack until proven otherwise
+   - Caller can be anyone
+   - Time can be manipulated
+   - External calls can fail
+
+5. **Comments = promises**
+   - If you wrote "BUG FIX" — it must be fix, not workaround
+   - TODO = P0 if it's security
+   - Every comment must be current
+
+### Specifically for Motoko:
+
+```motoko
+// ❌ BAD - may trap
+let result = a - b;
+
+// ✅ GOOD - explicit check
+let result = if (a >= b) { a - b } else { return #err("underflow") };
+
+// ❌ BAD - unused parameter
+func process(data : Text, transform : TransformFn) { ... }
+
+// ✅ GOOD - explicitly mark unused
+func process(data : Text, _transform : TransformFn) { ... }
+
+// ❌ BAD - ignoring warning
+warning [M0155], operator may trap
+
+// ✅ GOOD - fix or handle explicitly
+if (divisor == 0) { return #err("division_by_zero") };
+let result = dividend / divisor;
 ```
-❌ НЕ ПРАЦЮЄ: "Зроби краще архітектуру auth"
-✅ ПРАЦЮЄ: "Винеси функцію validateEmail з AuthCubit в окремий файл validators.dart"
 
-❌ НЕ ПРАЦЮЄ: "Порефактори код"
-✅ ПРАЦЮЄ: "Заміни всі print на logger.d в файлі lib/services/api_service.dart"
+### Responsibility:
+
+> **"If there's a warning in the code, I haven't finished the work."**
+
+- Pushing code with warnings = betrayal of user trust
+- "Works" ≠ "secure"
+- Every line of code is potential responsibility
+
+### Reminder to myself:
+
+**Vitalii trusted me with access to a project where people hold real money.**
+
+My carelessness = real losses for real people.
+
+**Always double-check, always verify, never assume.**
+
+| MiniMax M2.1 (hands) | Kimi/Claude (brain) |
+|---------------------|---------------------|
+| ❌ Can't architect | ✅ Architecture, planning |
+| ❌ Doesn't understand abstractions | ✅ Understands context |
+| ✅ Executes specific tasks | ✅ Analyzes and integrates |
+| ✅ Fast and cheap | ✅ Quality, more expensive |
+
+**🎯 Imperative style for MiniMax:**
+```
+❌ DOESN'T WORK: "Make auth architecture better"
+✅ WORKS: "Extract validateEmail function from AuthCubit into separate validators.dart file"
+
+❌ DOESN'T WORK: "Refactor the code"
+✅ WORKS: "Replace all print with logger.d in lib/services/api_service.dart"
 ```
 
 ---
@@ -73,95 +184,99 @@
 
 ### 🎭 CRITICAL: Embody flutter-orchestrator FIRST!
 
-**⚠️⚠️⚠️ Це НЕ просто "прочитати файл". Це ІДЕАЛЬНЕ ВИВЧЕННЯ правил! ⚠️⚠️⚠️**
+**⚠️⚠️⚠️ This is NOT just "read a file". This is PERFECT STUDY of rules! ⚠️⚠️⚠️**
 
-**Перед роботою над crypto_market проєктом:**
+**Before working on crypto_market project:**
 
 ```
-Вітальон: "Зроби щось з crypto_market..."
+Vitalii: "Do something with crypto_market..."
     ↓
-Я: Зобов'язаний спочатку ВИВЧИТИ ДОСКОНАЛО flutter-orchestrator
+I: OBLIGED to first STUDY PERFECTLY the project rules
     ↓
-Читаю: _bmad/my-custom-agents/agents/flutter-orchestrator/flutter-orchestrator.md
+Read: memory/CRYPTO_MARKET_SAFETY_VAULT.md and other critical files
     ↓
-ВИВЧАЮ: Кожне правило, кожен safety protocol, кожного sub-agent
+STUDY: Every rule, every safety protocol, every sub-agent
     ↓
-ЗАПАМ'ЯТОВУЮ: Всі правила мають бути в пам'яті під час роботи
+MEMORIZE: All rules must be in memory during work
     ↓
-Стаю: Flutter Orchestrator (повна трансформація)
+Become: Project Coordinator (full transformation)
     ↓
-Тільки потім: Делегую іншим sub-агентам
+Only then: Delegate to other sub-agents
 ```
 
-**🔴 КРИТИЧНО ВАЖЛИВО:**
-- ❌ НЕ просто "проглянути" файл
-- ❌ НЕ просто "ознайомитися" з правилами
-- ✅ **ІДЕАЛЬНЕ ВИВЧЕННЯ** — досконало, до деталей
-- ✅ **ТРИМАТИ В ПАМ'ЯТІ** — всі правила активні під час роботи
-- ✅ **СЛІДКУВАТИ** — за кожним safety protocol без винятків
+**🔴 CRITICAL IMPORTANT:**
+- ❌ NOT just "glance at" the file
+- ❌ NOT just "familiarize" with rules
+- ✅ **PERFECT STUDY** — perfectly, to the details
+- ✅ **KEEP IN MEMORY** — all rules active during work
+- ✅ **FOLLOW** — every safety protocol without exceptions
 
-**Чому так:**
-- ✅ flutter-orchestrator має ВСІ safety protocols
-- ✅ Він знає всіх sub-agents та їхні правила (всі лежать в проєкті)
-- ✅ У нього централізований control flow
-- ✅ Sub-agents підпорядковуються ЙОМУ і мають свої набори правил
-- ✅ **Без ідеального вивчення — ризик помилки!**
+**Why:**
+- ✅ flutter-orchestrator has ALL safety protocols
+- ✅ It knows all sub-agents and their rules (all are in the project)
+- ✅ It has centralized control flow
+- ✅ Sub-agents answer to IT and have their own rule sets
+- ✅ **Without perfect study — risk of error!**
 
 **Workflow:**
 1. **Read** flutter-orchestrator.md
-2. **Study** кожне правило досконало
-3. **Memorize** — всі safety protocols в пам'яті
-4. **Embody** — повна трансформація в роль
-5. **Delegate** — відповідно до orchestrator's workflow
-6. **Review** — перевіряючи відповідність правилам
+2. **Study** every rule perfectly
+3. **Memorize** — all safety protocols in memory
+4. **Embody** — full transformation into the role
+5. **Delegate** — according to orchestrator's workflow
+6. **Review** — checking compliance with rules
 
 ---
 
-## 📁 Агенти з Crypto Market проєкту
+## 📁 Agents from `~/.clawdbot/agents/`
 
-**Шлях до агентів:** `/_bmad/my-custom-agents/agents/`
+**All agents are universal and stored in:** `~/.clawdbot/agents/`
 
-| Агент | Файл правил | Призначення |
+| Agent | Rules File | Purpose |
 |-------|-------------|-------------|
-| **flutter-orchestrator** | [flutter-orchestrator.md](../workspace/projects/other/crypto_market/_bmad/my-custom-agents/agents/flutter-orchestrator/flutter-orchestrator.md) | 🎯 **Головний координатор** — Embody first! Знає всіх агентів і правила |
-| **amos** | [amos.md](../workspace/projects/other/crypto_market/_bmad/my-custom-agents/agents/amos/amos.md) | 🔍 **Adversarial Code Reviewer** — Security audit, logic flaws, best practices |
-| **flutter-dev** | [flutter-dev.md](../workspace/projects/other/crypto_market/_bmad/my-custom-agents/agents/flutter-dev/flutter-dev.md) | 🕵️ **Flutter Detective** — Business logic, BLoC, Repository pattern, state mgmt |
-| **flutter-dev-ui** | [flutter-dev-ui.md](../workspace/projects/other/crypto_market/_bmad/my-custom-agents/agents/flutter-dev-ui/flutter-dev-ui.md) | 🎨 **Flutter UI Specialist** — Screens, widgets, animations, responsive design |
-| **flutter-user-emulator** | [flutter-user-emulator.md](../workspace/projects/other/crypto_market/_bmad/my-custom-agents/agents/flutter-user-emulator/flutter-user-emulator.md) | 🤖 **QA/UX Tester** — Automated testing, Flutter Driver, user emulation |
-| **icp-backend-specialist** | [icp-backend-specialist.md](../workspace/projects/other/crypto_market/_bmad/my-custom-agents/agents/icp-backend-specialist/icp-backend-specialist.md) | ⚡ **ICP Backend Dev** — Canister development, Motoko/Rust, blockchain logic |
-| **backend-dev** | [backend-dev.md](../workspace/projects/other/crypto_market/_bmad/my-custom-agents/agents/backend-dev/backend-dev.md) | 🖥️ **Backend Developer** — General backend logic |
-| **prompt-optimizer** | [prompt-optimizer.md](../workspace/projects/other/crypto_market/_bmad/my-custom-agents/agents/prompt-optimizer/prompt-optimizer.md) | ✨ **Prompt Engineer** — Optimize and refine prompts |
-| **bmad-master** | [bmad-master.md](../workspace/projects/other/crypto_market/_bmad/core/agents/bmad-master.md) | 🧠 **Core Orchestrator** — High-level coordination |
+| **amos** | `~/.clawdbot/agents/amos/system.md` | 🔍 **Adversarial Code Reviewer** — Security audit, logic flaws, best practices |
+| **flutter-dev** | `~/.clawdbot/agents/flutter-dev/system.md` | 🕵️ **Flutter Detective** — Business logic, BLoC, Repository pattern, state mgmt |
+| **flutter-dev-ui** | `~/.clawdbot/agents/flutter-dev-ui/system.md` | 🎨 **Flutter UI Specialist** — Screens, widgets, animations, responsive design |
+| **flutter-test-dev** | `~/.clawdbot/agents/flutter-test-dev/system.md` | 🧪 **Dart Test Engineer** — Unit/widget/integration tests |
+| **flutter-user-emulator** | `~/.clawdbot/agents/flutter-user-emulator/system.md` | 🤖 **QA/UX Tester** — Automated testing, Flutter Driver, user emulation |
+| **backend-dev** | `~/.clawdbot/agents/backend-dev/system.md` | 🖥️ **Backend Developer** — ICP canisters, Motoko/Rust, blockchain logic |
+| **architect** | `~/.clawdbot/agents/architect/system.md` | 🏗️ **System Architect** — System design, ADRs, scalability planning |
+| **devops-engineer** | `~/.clawdbot/agents/devops-engineer/system.md` | 🚀 **DevOps Engineer** — CI/CD, infrastructure, deployment automation |
+| **fullstack-dev** | `~/.clawdbot/agents/fullstack-dev/system.md` | 💻 **Fullstack Developer** — End-to-end features across the stack |
+| **gemini-researcher** | `~/.clawdbot/agents/gemini-researcher/system.md` | 🔬 **Research Specialist** — Deep research using Gemini API |
+| **pm** | `~/.clawdbot/agents/pm/system.md` | 📋 **Project Manager** — Task breakdown, prioritization, sprint planning |
+| **prompt-optimizer** | `~/.clawdbot/agents/prompt-optimizer/system.md` | ✨ **Prompt Engineer** — Optimize and refine prompts |
+| **shell-scripter** | `~/.clawdbot/agents/shell-scripter/system.md` | 🐚 **Bash Automation** — Shell scripts, text processing, system admin |
 
-**📋 Коли делегувати якому агенту:**
+**📋 When to delegate to which agent:**
 
-| Тип задачі | Агент | Приклад |
+| Task Type | Agent | Example |
 |------------|-------|---------|
-| Security audit | `amos` | "Перевір atomic_swap на вразливості" |
-| Business logic, BLoC | `flutter-dev` | "Додай валідацію в AuthCubit" |
-| UI екрани, віджети | `flutter-dev-ui` | "Зроби екран профілю" |
-| Manual QA, UI тести | `flutter-user-emulator` | "Протестуй flow покупки" |
-| Canister, ICP | `icp-backend-specialist` | "Деплой canister на local" |
-| Координація | `flutter-orchestrator` | "Сплануй рефакторинг" |
+| Security audit | `amos` | "Check atomic_swap for vulnerabilities" |
+| Business logic, BLoC | `flutter-dev` | "Add validation to AuthCubit" |
+| UI screens, widgets | `flutter-dev-ui` | "Create profile screen" |
+| Manual QA, UI tests | `flutter-user-emulator` | "Test purchase flow" |
+| Canister, ICP | `icp-backend-specialist` | "Deploy canister to local" |
+| Coordination | `flutter-orchestrator` | "Plan refactoring" |
 
 ---
 
-## 🆕 Додаткові агенти (не в проєкті)
+## 🆕 Additional Agents (not in project)
 
 ### flutter-test-dev (Dart Test Engineer)
-**Призначення:** Написання Dart тестів (unit/widget/integration)
+**Purpose:** Writing Dart tests (unit/widget/integration)
 
-**Коли використовувати:**
-- Написання `integration_test/` тестів
-- Unit тести для BLoC/Cubit
-- Mock-и, фікстури
-- Перевірка покриття коду
+**When to use:**
+- Writing `integration_test/` tests
+- Unit tests for BLoC/Cubit
+- Mocks, fixtures
+- Code coverage verification
 
-**Коли НЕ використовувати:**
-- UI емуляція (це `flutter-user-emulator`)
-- Запуск тестів через Flutter Driver (це `flutter-user-emulator`)
+**When NOT to use:**
+- UI emulation (that's `flutter-user-emulator`)
+- Running tests via Flutter Driver (that's `flutter-user-emulator`)
 
-**Приклад spawn:**
+**Spawn example:**
 ```javascript
 sessions_spawn({
   task: `
@@ -201,12 +316,12 @@ sessions_spawn({
 2. ❌ NEVER use `default` for mainnet
 3. ❌ NEVER run raw `dfx deploy --network ic`
 4. ❌ NEVER modify `canister_ids.json` manually
-5. ❌ NEVER deploy to mainnet without Вітальон approval
+5. ❌ NEVER deploy to mainnet without Vitalii approval
 
 ### For ICP Operations:
 - Local dev: ✅ Safe
 - Staging: ⚠️ Requires verification
-- Production: 🚨 MUST ask Вітальон first
+- Production: 🚨 MUST ask Vitalii first
 
 ### Swap Operations (if applicable):
 - [ ] Secret/hash consistency verified
@@ -216,169 +331,169 @@ sessions_spawn({
 
 ---
 
-## 🚨 ABSOLUTE FORBIDDEN for Main Agent (КРИТИЧНО)
+## 🚨 ABSOLUTE FORBIDDEN for Main Agent (CRITICAL)
 
 ### ⛔ NO EXCEPTIONS — Delegate ONLY:
 
-| Задача | Кому делегувати | Наслідок порушення |
+| Task | Delegate to | Violation consequence |
 |--------|-----------------|-------------------|
-| **Написання Dart коду** | `flutter-dev`, `flutter-dev-ui`, або `flutter-test-dev` | 💸 Витрати $$, неякісний код |
-| **Рефакторинг** | `flutter-dev` | 💸 Витрати $$, порушення архітектури |
-| **Розбивка файлів** | `flutter-dev` | 💸 Витрати $$, порушення структури |
-| **Виправлення помилок компіляції** | `flutter-dev` | 💸 Витрати $$ |
-| **Створення тестів (Dart)** | `flutter-test-dev` | 💸 Витрати $$ |
-| **Емуляція UI (тапи, скріншоти)** | `flutter-user-emulator` | ❌ Я не маю Flutter Driver |
-| **Запуск flutter test** | `flutter-user-emulator` | ❌ Я не маю Flutter Driver |
-| **Canister операції** | `icp-backend-specialist` | 🛡️ Safety ризики |
-| **Термінальні команди з кодом** | Відповідний sub-agent | 💸 Витрати $$ |
+| **Writing Dart code** | `flutter-dev`, `flutter-dev-ui`, or `flutter-test-dev` | 💸 Wasted $$, poor quality code |
+| **Refactoring** | `flutter-dev` | 💸 Wasted $$, architecture violation |
+| **File splitting** | `flutter-dev` | 💸 Wasted $$, structure violation |
+| **Fixing compilation errors** | `flutter-dev` | 💸 Wasted $$ |
+| **Creating tests (Dart)** | `flutter-test-dev` | 💸 Wasted $$ |
+| **UI emulation (taps, screenshots)** | `flutter-user-emulator` | ❌ I don't have Flutter Driver |
+| **Running flutter test** | `flutter-user-emulator` | ❌ I don't have Flutter Driver |
+| **Canister operations** | `icp-backend-specialist` | 🛡️ Safety risks |
+| **Terminal commands with code** | Appropriate sub-agent | 💸 Wasted $$ |
 
 ### 🔴 ABSOLUTE RULES:
 
 **NO EXCEPTIONS means:**
-- ❌ Не "швидше зробити самому"
-- ❌ Не "це просто copy-paste"
-- ❌ Не "агент зайнятий"
-- ❌ Не "зараз немає такого агента" → **СТВОРИТИ спочатку!**
-- ✅ **ТІЛЬКИ делегування**
+- ❌ Not "faster to do it myself"
+- ❌ Not "it's just copy-paste"
+- ❌ Not "agent is busy"
+- ❌ Not "no such agent now" → **CREATE one first!**
+- ✅ **ONLY delegation**
 
-### 🔍 Перевірка перед дією:
-- [ ] Чи є для цієї задачі спеціалізований агент?
-- [ ] Якщо НІ — створити агента СПОЧАТКУ (визначити роль і spawn)
-- [ ] Якщо ТАК — делегувати йому
-- [ ] Чи я намагаюсь зробити щось зі списку FORBIDDEN?
-- [ ] Якщо ТАК — **ЗУПИНИТИСЬ** і делегувати
+### 🔍 Check before action:
+- [ ] Is there a specialized agent for this task?
+- [ ] If NO — create agent FIRST (define role and spawn)
+- [ ] If YES — delegate to them
+- [ ] Am I trying to do something from FORBIDDEN list?
+- [ ] If YES — **STOP** and delegate
 
-### ⚠️ ВИНЯТОК — Коли я можу взяти відповідальність на себе:
-**ТІЛЬКИ якщо:**
-1. Суб-агент не може виконати задачу (завис, помилка, ліміти)
-2. Задача критична і потребує негайного вирішення
-3. Немає часу створити нового агента
-4. Це архітектурне рішення (моя компетенція як оркестратора)
+### ⚠️ EXCEPTION — When I can take responsibility:
+**ONLY if:**
+1. Sub-agent cannot complete task (hung, error, limits)
+2. Task is critical and requires immediate resolution
+3. No time to create new agent
+4. This is architectural decision (my competence as orchestrator)
 
-**ДОЗВОЛЕНО:**
-- ✅ Аналіз задачі перед делегуванням
-- ✅ Review та інтеграція результатів
-- ✅ Координація між агентами
-- ✅ Стратегічні рішення
+**ALLOWED:**
+- ✅ Analysis before delegating
+- ✅ Review and integration of results
+- ✅ Coordination between agents
+- ✅ Strategic decisions
 
-**ЗАБОРОНЕНО:**
-- ❌ Виконання технічних задач замість агентів
-- ❌ Ручне тестування UI
-- ❌ Компіляція/деплой без делегування
-- ❌ Термінальні команди без крайньої потреби
+**FORBIDDEN:**
+- ❌ Executing technical tasks instead of agents
+- ❌ Manual UI testing
+- ❌ Compilation/deploy without delegation
+- ❌ Terminal commands without extreme need
 
 ---
 
-## 📋 Workflow: Як я spawn'ю sub-agent'ів
+## 📋 Workflow: How I spawn sub-agents
 
-### Крок 1: Аналіз
+### Step 1: Analysis
 ```
-Вітальон: "Зроби code review для atomic_swap canister"
+Vitalii: "Do code review for atomic_swap canister"
     ↓
-Я: Аналізую - це security audit → потрібен amos
+I: Analyze - this is security audit → need amos
 ```
 
-### Крок 2: Spawn з контекстом
+### Step 2: Spawn with context
 ```javascript
 sessions_spawn({
   task: `
 ## Your Role: amos (Adversarial Code Reviewer)
-## Source File: _bmad/my-custom-agents/agents/amos/amos.md
-## Task: [конкретне завдання]
-## Context: [проєкт, файли]
-## Constraints: [обмеження]
-## Expected Output: [формат результату]
+## Source File: ~/.clawdbot/agents/amos/system.md
+## Task: [specific task]
+## Context: [project, files]
+## Constraints: [limitations]
+## Expected Output: [result format]
 `
 })
 ```
 
-### Крок 3: Очікування та інтеграція
+### Step 3: Waiting and integration
 ```
-Sub-agent працює → Анонсує результат → Я аналізую → Інтегрую/ітерую
+Sub-agent works → Announces result → I analyze → Integrate/iterate
 ```
 
 ---
 
-## 🤖 Автоматична конфігурація для нових субагентів
+## 🤖 Automatic Configuration for New Sub-Agents
 
-Будь-який субагент, запущений через `sessions_spawn()` **без явного `model`**, 
-автоматично використовує:
+Any sub-agent spawned via `sessions_spawn()` **without explicit `model`**, 
+automatically uses:
 
 - **Model:** `minimax/MiniMax-M2.1`
 - **Provider:** `minimax` 
 - **Base URL:** `api.minimax.chat/v1`
 
-### Що це означає
+### What This Means
 
-Для кастомних субагентів (наприклад, `flutter-test-dev`) **не потрібно нічого налаштовувати**:
+For custom sub-agents (e.g., `flutter-test-dev`) **no configuration needed**:
 
 ```javascript
-// ✅ ПРАВИЛЬНО — автоматично отримає MiniMax M2.1
+// ✅ CORRECT — automatically gets MiniMax M2.1
 sessions_spawn({
   task: "## Your Role: flutter-test-dev...",
-  // model НЕ вказуємо!
+  // DON'T specify model!
   runTimeoutSeconds: 300
 })
 ```
 
-### Коли вказувати model явно
+### When to specify model explicitly
 
-Тільки якщо потрібна **інша модель** для конкретного завдання:
+Only if a **different model** is needed for a specific task:
 
 ```javascript
-// Тільки якщо треба НЕ MiniMax (наприклад, Kimi для складного аналізу)
+// Only if NOT MiniMax is needed (e.g., Kimi for complex analysis)
 sessions_spawn({
   task: "## Complex architectural decision...",
-  model: "kimi-code/kimi-for-coding",  // ← Тільки для специфічних задач
+  model: "kimi-code/kimi-for-coding",  // ← Only for specific tasks
   runTimeoutSeconds: 300
 })
 ```
 
-**⚠️ Увага:** Якщо вказати `model` явно — вона має бути **точною** (з великими літерами: `minimax/MiniMax-M2.1`). 
-Неправильний формат: `minimax/minimax-m2.1` ❌
+**⚠️ Warning:** If specifying `model` explicitly — it must be **exact** (with correct case: `minimax/MiniMax-M2.1`). 
+Incorrect format: `minimax/minimax-m2.1` ❌
 
 ---
 
-## 🌐 Мовна політика (CRITICAL)
+## 🌐 Language Policy (CRITICAL)
 
-**⚠️ ОБОВ'ЯЗКОВО ДОТРИМУВАТИСЯ:**
+**⚠️ MUST FOLLOW:**
 
-| З ким | Мова | Приклад |
+| With whom | Language | Example |
 |-------|------|---------|
-| **Вітальон** | ТАКА Ж як у нього 🇺🇦🇬🇧 | Відповідаю на тій мові, на якій він звертається |
-| **Sub-агенти** | Англійська 🇬🇧 | ВСЕ: документація, коментарі, промпти |
-| **Код** | Англійська 🇬🇧 | Змінні, функції, коментарі в коді |
+| **Vitalii** | SAME as his 🇺🇦🇬🇧 | Reply in the language he addresses me |
+| **Sub-agents** | English 🇬🇧 | EVERYTHING: documentation, comments, prompts |
+| **Code** | English 🇬🇧 | Variables, functions, code comments |
 
-### Правила:
-1. **Документація** (AGENTS.md, SOUL.md, etc.) → Англійська
-2. **Промпти для sub-agent** → Англійська
-3. **Код та коментарі** → Англійська
-4. **Відповіді sub-agent** → Англійська (я перекладу для Вітальона якщо треба)
-5. **Спілкування з Вітальоном** → **ТА МОВА, ЯКОЮ ВІН ЗВЕРТАЄТЬСЯ**
+### Rules:
+1. **Documentation** (AGENTS.md, SOUL.md, etc.) → English
+2. **Prompts for sub-agent** → English
+3. **Code and comments** → English
+4. **Sub-agent replies** → English (I'll translate for Vitalii if needed)
+5. **Communication with Vitalii** → **THE LANGUAGE HE USES**
 
-### Чому:
-- MiniMax краще розуміє англійську
-- Код має бути англійською для consistency
-- Уникаємо мішанини мов в проєкті
-- З Вітальоном — на його мові (він визначає)
+### Why:
+- MiniMax understands English better
+- Code must be in English for consistency
+- Avoid language mixing in the project
+- With Vitalii — in his language (he decides)
 
 ---
 
-## 📝 Як формулювати завдання для Sub-Agent
+## 📝 How to Formulate Tasks for Sub-Agent
 
-**⚠️ MiniMax M2.1 — менш самостійна за Kimi/Claude.**
+**⚠️ MiniMax M2.1 — less independent than Kimi/Claude.**
 
-Вона **МОЖЕ** мислити, але:
-- ❌ Не так глибоко — пропускає нюанси
-- ❌ Менше контексту — швидко губить зв'язок
-- ❌ Слабша абстракція — краще працює з конкретикою
-- ❌ Може "заблукати" в складних завданнях
+It CAN think, but:
+- ❌ Not as deeply — misses nuances
+- ❌ Less context — loses connection quickly
+- ❌ Weaker abstraction — works better with specifics
+- ❌ Can "get lost" in complex tasks
 
-**Тому я як "мозок" маю дати їй:**
-- ✅ Чітку структуру завдання
-- ✅ Контекст і обмеження
-- ✅ Очікуваний формат результату
-- ✅ План дій (якщо складно)
+**So as "brain" I need to give it:**
+- ✅ Clear task structure
+- ✅ Context and constraints
+- ✅ Expected result format
+- ✅ Action plan (if complex)
 
 ---
 
@@ -429,57 +544,1013 @@ sessions_spawn({
 
 ---
 
-## 🔄 Приклад повного workflow
+## 🔄 Example of Complete Workflow
 
 ```
-Вітальон: "Зроби рефакторинг auth flow в Flutter"
+Vitalii: "Refactor auth flow in Flutter"
     ↓
-Я: Аналізую
-   - Це business logic (BLoC/Repository)
-   - Потрібен flutter-dev
-   - Можна розбити на підзадачі
+I: Analyze
+   - This is business logic (BLoC/Repository)
+   - Need flutter-dev
+   - Can split into subtasks
     ↓
-Я: Spawn sub-agent #1
-   - flutter-dev аналізує поточну архітектуру
-   - Час: 5 хв
+I: Spawn sub-agent #1
+   - flutter-dev analyzes current architecture
+   - Time: 5 min
     ↓
-[Чекаю анонс]
+[Waiting for announcement]
     ↓
-Sub-agent #1: "Знайшов проблеми: 1).. 2).. 3).."
+Sub-agent #1: "Found problems: 1).. 2).. 3).."
     ↓
-Я: Аналізую рекомендації
+I: Analyze recommendations
     ↓
-Я: Spawn sub-agent #2  
-   - flutter-dev рефакторить згідно плану
-   - Час: 15 хв
+I: Spawn sub-agent #2  
+   - flutter-dev refactors according to plan
+   - Time: 15 min
     ↓
-[Чекаю анонс]
+[Waiting for announcement]
     ↓
-Sub-agent #2: "Рефакторинг завершено. Файли: ..."
+Sub-agent #2: "Refactoring complete. Files: ..."
     ↓
-Я: Рев'ю змін
-   - Перевіряю код
-   - Готую summary для Вітальона
+I: Review changes
+   - Check code
+   - Prepare summary for Vitalii
     ↓
-Я: Відповідаю Вітальону
-   "Готово! Зроблено:
-    1. Винесено auth logic в окремий BLoC
-    2. Додано Repository pattern для API calls
-    3. Покрито тестами
-    Файли: lib/auth/..."
+I: Reply to Vitalii
+   "Done! Accomplished:
+    1. Extracted auth logic into separate BLoC
+    2. Added Repository pattern for API calls
+    3. Covered with tests
+    Files: lib/auth/..."
 ```
 
 ---
 
-## 📁 Файли
+## 📁 Files
 
-- `AGENTS.md` — цей файл (конфігурація workflow)
-- `SOUL.md` — особистість та принципи
-- `memory/CRYPTO_MARKET_SAFETY_VAULT.md` — критичні assets
-- `memory/ENVIRONMENT_SAFETY_MANIFEST.md` — environment правила
-- `memory/AGENT_SAFETY_GUIDELINES.md` — safety для агентів
-- **Crypto Market агенти:** `_bmad/my-custom-agents/agents/*` — одне джерело правди
+- `AGENTS.md` — this file (workflow configuration)
+- `SOUL.md` — personality and principles
+- `memory/CRYPTO_MARKET_SAFETY_VAULT.md` — critical assets
+- `memory/ENVIRONMENT_SAFETY_MANIFEST.md` — environment rules
+- `memory/AGENT_SAFETY_GUIDELINES.md` — safety for agents
+- **Universal agents:** `~/.clawdbot/agents/*` — single source of truth
 
 ---
 
-*Оновлено: 2026-02-04 — додано посилання на агентів проєкту, flutter-test-dev, посилено ABSOLUTE FORBIDDEN*
+---
+
+## 🛡️ QUALITY ASSURANCE RULES (Added 2026-02-05)
+
+**⚠️ These rules are MANDATORY for all sub-agents writing code**
+
+### For flutter-dev and flutter-test-dev (Dart/Flutter)
+
+#### 1. Type Consistency Rule
+```dart
+// ❌ FORBIDDEN - using type without prefix when there's collision
+Future<Result<User, AuthError>> login(...)
+
+// ✅ MANDATORY - use prefix for Result
+Future<jwt_service.Result<User, AuthError>> login(...)
+```
+**When to apply:**
+- Always check imports in the file
+- If Result is imported from `jwt_service` — use prefix
+- Before saving file — run `flutter analyze` on that file
+
+#### 2. Mock Interface Compliance Rule
+```dart
+// ❌ FORBIDDEN - method signature doesn't match interface
+class MockAuthService implements AuthService {
+  Future<Result<User, AuthError>> login(...) // mismatch!
+}
+
+// ✅ MANDATORY - exact interface match
+class MockAuthService implements AuthService {
+  Future<jwt_service.Result<User, AuthError>> login(...) // exact match!
+}
+```
+**Verification steps:**
+1. Open original interface (abstract class)
+2. Copy method signatures 1:1
+3. Check that all interface methods are implemented
+4. Add `@override` to each method
+
+#### 3. Deprecated API Rule
+```dart
+// ❌ FORBIDDEN - deprecated API
+MaterialStateProperty.all(...)
+MaterialState.selected
+MaterialStateTextStyle
+
+// ✅ MANDATORY - modern alternatives
+WidgetStateProperty.all(...)
+WidgetState.selected
+WidgetStateTextStyle
+```
+**Check before commit:**
+- Run `flutter analyze` — it will show all deprecated
+- Fix all warnings before saving
+
+#### 4. Theme API Compatibility Rule
+```dart
+// ❌ FORBIDDEN - old APIs
+CardTheme(...)
+DialogTheme(...)
+
+// ✅ MANDATORY - new APIs
+CardThemeData(...)
+DialogThemeData(...)
+```
+**Check:**
+- Flutter 3.24+ uses *Data suffix
+- Always check parameter types in ThemeData
+
+#### 5. Import Verification Rule
+Before saving any file:
+```bash
+# Check that all used identifiers are imported
+flutter analyze <file_path>
+```
+**Common mistakes:**
+- Forgot `import 'border_radius.dart';`
+- Forgot `import 'dart:ui' as ui;`
+- Using class without import
+
+### For icp-backend-specialist (Motoko)
+
+#### 1. Pattern Matching Rule
+```motoko
+// ❌ FORBIDDEN - wildcard matches everything including null
+switch (optionalValue) {
+  case (_) { ... };  // matches both ?val and null!
+  case (null) { ... }; // unreachable!
+}
+
+// ✅ MANDATORY - explicit match non-null optional
+switch (optionalValue) {
+  case (?_) { ... };  // matches only ?val
+  case (null) { ... }; // reachable!
+}
+```
+
+#### 2. Unused Variable Rule
+```motoko
+// ❌ FORBIDDEN - unused variables
+func process(data : Text, transform : TransformFn) { ... }
+
+// ✅ MANDATORY - prefix with _ for intentional unused
+func process(data : Text, _transform : TransformFn) { ... }
+```
+
+#### 3. Warning Zero Rule
+**After any changes in .mo files:**
+```bash
+# Check there are no warnings
+dfx build <canister_name>
+```
+**If there are warnings — fix before commit!**
+
+## 🔍 SUB-AGENT CONTROL PROTOCOL (2026-02-05)
+
+**Goal: Maximize sub-agent success through enhanced validation.**
+
+### Pre-Flight Check (BEFORE spawn)
+```javascript
+// 1. Verify files exist
+exec({command: "ls -la <file_path>"})
+
+// 2. Get exact error lines
+exec({command: "flutter analyze <file> 2>&1 | grep -A 2 -B 2 'error'"})
+
+// 3. Check context availability
+read({path: "<target_file>", limit: 50})
+```
+
+### Task Template (MANDATORY)
+```markdown
+## Your Role: <agent_name>
+## Task: <specific action>
+## Project: crypto_market
+
+## Pre-Verified Context
+Files confirmed to exist:
+- lib/path/to/file.dart (lines X-Y affected)
+
+## Exact Errors to Fix
+1. Line 45: "undefined_method 'foo'"
+2. Line 67: "type mismatch Result<String> vs Result<int>"
+
+## Fix Strategy
+[Specific approach, not vague]
+
+## Verification Steps
+AFTER each file modification:
+1. Run: flutter analyze <modified_file>
+2. Confirm: 0 errors in that file
+3. Report: "Fixed N errors in <file>"
+
+## Output
+- Modified files with error counts
+- Final flutter analyze showing 0 errors
+```
+
+### Incremental Verification (DURING)
+**After EACH file modification:**
+```javascript
+// Immediate verification
+exec({command: "flutter analyze <just_modified_file> 2>&1 | grep -c 'error'"})
+// If > 0 errors → agent must continue fixing, not proceed to next file
+```
+
+### Post-Completion Validation (AFTER)
+```javascript
+// 1. Verify session completed
+sessions_list({kinds: ["subagent"], activeMinutes: 5})
+
+// 2. Check actual results
+exec({command: "flutter analyze 2>&1 | grep -E '^\s+error' | wc -l"})
+
+// 3. Compare before/after
+// Before: 75 errors
+// After: must be < 75, ideally 0
+
+// 4. If agent failed (no improvement):
+// → Automatic fallback to main agent
+// → Or spawn different sub-agent with clearer instructions
+```
+
+### Fallback Triggers
+**Auto-fallback to main agent if:**
+- [ ] Agent reports "no output" but errors remain
+- [ ] Error count increased after agent work
+- [ ] Agent modified wrong files
+- [ ] Agent created syntax errors
+- [ ] 3+ retry attempts failed
+
+### Success Metrics
+| Metric | Target | Action if missed |
+|--------|--------|------------------|
+| Files modified | ≥1 | Clarify task |
+| Errors reduced | ≥50% | Manual intervention |
+| Syntax errors | 0 | Revert + retry |
+| Final analyze | 0 errors in scope | Extend or fallback |
+
+### Pre-Commit Checklist for ALL agents
+
+Before declaring task complete:
+
+- [ ] `flutter analyze` on modified files — 0 errors
+- [ ] All types match interfaces
+- [ ] All deprecated API replaced with modern
+- [ ] All imports present
+- [ ] For tests: mocks exactly match original interfaces
+- [ ] For Motoko: `dfx build` — 0 warnings
+
+## 📋 TASK TEMPLATES BY TYPE
+
+### Template 1: Fix Specific File Errors
+**WHEN:** Known file, known errors
+```markdown
+## Task: Fix [N] errors in [file_path]
+
+## Context
+- File: [full_path]
+- Error lines: [X, Y, Z]
+- Error types: [undefined_method, type_mismatch, etc.]
+
+## BEFORE You Start
+1. Read the file: `read({path: "[file]", limit: 50})`
+2. Read errors: `flutter analyze [file]`
+3. Confirm you understand each error
+
+## Fix ONE error at a time
+For each error:
+1. Locate the exact line
+2. Understand the fix needed
+3. Apply fix
+4. IMMEDIATELY run: `flutter analyze [file]`
+5. Confirm error is gone
+6. Move to next error
+
+## Output Format
+✅ Fixed: [error_description] at line [N]
+✅ Fixed: [error_description] at line [N]
+✅ Final: 0 errors in [file]
+```
+
+### Template 2: Add Missing Getters/Methods
+**WHEN:** Need to add multiple similar items
+```markdown
+## Task: Add [N] missing getters to [class]
+
+## Context
+- Target class: [full_path]
+- Missing items: [list]
+- Pattern to follow: [existing example]
+
+## Steps
+1. Read target file completely
+2. Find where similar items are defined
+3. Add ALL missing items in ONE edit
+4. Run `flutter analyze [file]`
+5. Confirm 0 errors
+
+## Output Format
+✅ Added: [item1], [item2], ... ([N] total)
+✅ Verified: 0 errors
+```
+
+### Template 3: Fix Type Mismatches
+**WHEN:** Result<T,E> or similar type issues
+```markdown
+## Task: Fix Result type mismatches in [file]
+
+## Pattern
+- Wrong: `Result.ok(value)` or `Result<String>`
+- Right: `jwt_service.Result.ok(value)` or `jwt_service.Result<String, Error>`
+
+## Steps
+1. Check import: `import '...jwt_service.dart' as jwt_service;`
+2. Replace ALL Result references with `jwt_service.Result`
+3. Verify type arguments match: `<SuccessType, ErrorType>`
+4. Run analyze
+
+## Output Format
+✅ Fixed: [N] Result type references
+✅ Verified: 0 errors
+```
+
+---
+
+## 📝 Note Regarding Agent Paths
+
+**Old paths (deprecated):**
+- `~/workspace/projects/other/crypto_market/_bmad/my-custom-agents/agents/` — left for historical purposes
+
+**New paths (current):**
+- `~/.clawdbot/agents/` — universal agents
+- `~/.clawdbot/clawdbot.json` — agent registry
+
+## ❌ BAD vs ✅ GOOD Task Examples
+
+### BAD (Vague):
+```
+Fix the auth errors in the test files
+```
+**Why bad:** Which files? Which errors? How many?
+
+### GOOD (Specific):
+```
+## Task: Fix 3 errors in test/unit/auth_test.dart
+
+## Errors to fix:
+1. Line 45: "Undefined name 'AuthError'" → import 'package:.../errors.dart'
+2. Line 67: "The argument type 'String' can't be assigned to 'int'" → parse to int
+3. Line 89: "Missing required parameter 'createdAtMillis'" → add createdAtMillis: 0
+
+## Steps:
+1. Read file lines 40-95
+2. Fix each error ONE BY ONE
+3. After each fix: flutter analyze test/unit/auth_test.dart
+4. Report: "Fixed error N at line X: [description]"
+```
+
+---
+
+## 🔴 SUB-AGENT DELEGATION PROTOCOL (MANDATORY)
+
+**CRITICAL: This protocol applies to EVERY session when delegating to sub-agents.**
+
+Sub-agents use **MiniMax M2.1** — weaker models WITHOUT reasoning capabilities. They cannot think architecturally, abstract, or make decisions. They execute ONLY what is explicitly instructed.
+
+### Architecture: Brain vs Hands
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    MAIN AGENT (Kimi/Claude)                      │
+│                         YOU = BRAIN                              │
+│                                                                  │
+│  Responsibilities:                                               │
+│  - Analyze task from user                                        │
+│  - Decompose into specific sub-tasks                             │
+│  - Choose appropriate sub-agent                                  │
+│  - Provide IMPERATIVE, DETAILED instructions                     │
+│  - Review and integrate results                                  │
+└──────────────────────────┬───────────────────────────────────────┘
+                           │ sessions_spawn()
+                           ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              SUB-AGENT (MiniMax M2.1 - HANDS)                    │
+│                                                                  │
+│  Capabilities:                                                   │
+│  - Execute specific, concrete tasks ONLY                         │
+│  - NO architectural thinking                                     │
+│  - NO abstract reasoning                                         │
+│  - NO decision making                                            │
+│  - Isolated session (agent:main:subagent:<uuid>)                │
+│  - Receives AGENTS.md + TOOLS.md + project context              │
+│  - Announces result back to chat                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### BEFORE Spawning ANY Sub-Agent (Maestro MUST):
+
+#### 1. CONFIRM AGENTS.md READING (ABSOLUTE REQUIREMENT)
+**⚠️ EVERY TIME before spawn — confirm:**
+
+State aloud:
+```
+"AGENTS.md read. Sub-Agent Delegation Protocol confirmed:
+- Brain vs Hands understood
+- Pre-Flight Check will be performed
+- Imperative instructions only
+- Task Template will be used
+- 6-section return required
+- Incremental verification enforced"
+```
+
+**If you cannot state this → STOP and READ AGENTS.md again.**
+
+#### 2. READ THIS SECTION COMPLETELY
+- Understand: Sub-agents are HANDS, not BRAIN
+- Accept: You are responsible for PERFECT instructions
+- Commit: No shortcuts, no assumptions, no vague tasks
+
+#### 3. PRE-FLIGHT CHECK (MANDATORY)
+```javascript
+// Step 1: Verify files exist
+exec({command: "ls -la <file_path>"})
+
+// Step 2: Get exact error lines
+exec({command: "flutter analyze <file> 2>&1 | grep -E '(error|warning)'"})
+
+// Step 3: Read context
+read({path: "<target_file>", limit: 50})
+```
+
+**Verify:**
+- [ ] Exact file paths confirmed to exist
+- [ ] Exact error lines captured with line numbers
+- [ ] Context understood BEFORE delegating
+- [ ] Task broken into specific, verifiable steps
+
+#### 3. USE IMPERATIVE INSTRUCTIONS ONLY
+
+**❌ FORBIDDEN (too abstract):**
+```
+"Improve the code"
+"Make it better"
+"Refactor this"
+"Fix errors"
+"Optimize performance"
+```
+
+**✅ REQUIRED (concrete, specific):**
+```
+"Extract function validateEmail from AuthCubit 
+ into separate file lib/validators.dart"
+ 
+"Replace all print() with logger.d() in 
+ lib/services/api_service.dart lines 15-47"
+ 
+"Add @override annotation to method initState 
+ in lib/screens/home_screen.dart line 23"
+ 
+"Fix 'Undefined name AuthError' at line 45 
+ by adding import 'package:.../errors.dart'"
+```
+
+**Rule:** If instruction contains words like "improve", "better", "refactor" without specifics → REWRITE.
+
+#### 4. TASK TEMPLATE (MUST USE FOR EVERY SPAWN)
+
+```markdown
+## Your Role: [agent_name]
+## Task: [specific action]
+## Project: [name]
+
+## Pre-Verified Context
+Files confirmed to exist:
+- lib/path/to/file.dart (lines X-Y affected)
+- test/path/to/test.dart (lines A-B affected)
+
+## Exact Errors to Fix
+1. Line 45: "undefined_method 'foo'"
+2. Line 67: "type mismatch Result<String> vs Result<int>"
+3. Line 89: "missing_required_param 'createdAtMillis'"
+
+## Fix Strategy
+[Specific approach for each error]
+
+## Constraints
+- [ ] Do NOT modify files outside scope
+- [ ] Follow existing code style exactly
+- [ ] Use prefix for Result types: jwt_service.Result
+- [ ] Add @override for all overridden methods
+
+## Verification Steps
+AFTER each file modification:
+1. Run: flutter analyze <modified_file>
+2. Confirm: 0 errors in that file
+3. Report: "Fixed N errors in <file>: [list]"
+
+## Expected Output Format
+- Modified files with full paths
+- Before/After error counts
+- Final flutter analyze showing 0 errors
+- Any issues encountered and resolutions
+```
+
+#### 5. LANGUAGE REQUIREMENT
+- **Prompts to sub-agents:** ENGLISH ONLY
+- **Your communication with user:** Match user's language
+- **Code and comments:** ENGLISH ONLY
+
+### 🆕 SUB-AGENT COMMUNICATION PROTOCOL 2026 (MANDATORY)
+
+**IMPROVED PROTOCOL for tighter collaboration and better results**
+
+---
+
+#### 1. PRE-FLIGHT CHECKLIST (Before Starting)
+
+**Sub-agent MUST confirm understanding BEFORE any work:**
+
+```markdown
+## BEFORE STARTING — Confirm:
+- [ ] I have read the file(s) mentioned in task
+- [ ] I understand what errors need to be fixed
+- [ ] I know which lines to modify
+- [ ] If any file doesn't exist, I will STOP and report immediately
+
+## IF UNCLEAR:
+STOP and ask for clarification. Do NOT guess.
+Use phrase: "[NEEDS_CLARIFICATION] Cannot proceed because..."
+```
+
+**Maestro enforces:** Sub-agent cannot proceed until checklist is confirmed.
+
+---
+
+#### 2. STEP-BY-STEP EXECUTION (Incremental)
+
+**Break complex tasks into steps with checkpoints:**
+
+```markdown
+## Step 1: READ
+Read [file.dart] and report:
+- Line count
+- Current structure (first 50 lines)
+- Where the errors are
+
+STOP. Wait for confirmation before Step 2.
+
+## Step 2: PLAN
+Propose specific changes:
+- Line X: change [old] → [new]
+- Line Y: add [code]
+
+STOP. Wait for approval.
+
+## Step 3: IMPLEMENT
+Make the changes.
+
+## Step 4: VERIFY
+Run: `flutter analyze [file.dart]`
+Report: "Errors before: X, After: Y"
+```
+
+**Maestro enforces:** Agent reports after EACH step, not just at end.
+
+---
+
+#### 3. STRUCTURED REPORT TEMPLATE (MUST FOLLOW)
+
+**Every sub-agent return MUST use this format:**
+
+```markdown
+## REPORT TEMPLATE (MUST FOLLOW):
+
+### 1. Files Modified
+| File | Lines Changed | Type |
+|------|---------------|------|
+| x.dart | +15, -3 | Added methods |
+
+### 2. Changes Made (Be Specific!)
+```
+Line 45: Added import 'package:x/y.dart';
+Line 67: Changed `final String? x` → `final String x`
+```
+
+### 3. Verification
+```bash
+$ flutter analyze x.dart
+# Output: No issues found!
+```
+
+### 4. Before/After
+| Metric | Before | After |
+|--------|--------|-------|
+| Errors | 24 | 0 |
+| Warnings | 5 | 2 |
+
+### 5. Risks/Concerns
+- [ ] None
+- [x] Added TODO for future implementation
+- [ ] Potential breaking change
+
+### 6. Next Steps
+- Run integration tests
+- Update documentation
+```
+
+**Maestro enforces:** Reject any report not following this format.
+
+---
+
+#### 4. REAL-TIME PROGRESS UPDATES (During Work)
+
+**For long tasks (>2 minutes):**
+
+```markdown
+## Progress Updates (Every 2 minutes):
+Send brief status:
+- "Step 2/5 complete. Fixing error in line 120..."
+- "Found unexpected issue. Stopping for clarification."
+- "3 files done, 2 remaining. ETA 3 minutes."
+```
+
+**Maestro monitors:** If no update for 3+ minutes, check agent status.
+
+---
+
+#### 5. EVIDENCE-BASED DECISIONS (Every Change)
+
+**Each change must be justified:**
+
+```markdown
+## For EACH change, explain:
+
+**WHY:** This fixes "undefined method" error because...
+**EVIDENCE:** flutter analyze showed: "error • The method 'x' isn't defined"
+**ALTERNATIVES CONSIDERED:**
+- Option A: Add method (chosen - minimal change)
+- Option B: Change test (rejected - tests are spec)
+```
+
+**Maestro enforces:** Why + Evidence required for non-trivial changes.
+
+---
+
+#### 6. SELF-CORRECTION PROTOCOL (When Issues)
+
+**Sub-agent MUST STOP on:**
+
+```markdown
+## If you encounter:
+- File doesn't exist → STOP, report immediately
+- More errors than expected → STOP, ask for guidance
+- Unclear how to fix → STOP, don't guess
+- Breaking changes needed → WARN before doing
+
+## Magic phrase to STOP:
+"[NEEDS_CLARIFICATION] Cannot proceed because..."
+```
+
+**Maestro responds:** Immediately clarify or adjust task scope.
+
+---
+
+#### 7. INTERACTIVE CONFIRMATION (Decision Points)
+
+**When multiple solutions exist:**
+
+```markdown
+## Decision Points:
+
+[DECISION_NEEDED]
+I found 2 ways to fix this:
+A) Add missing method to service (cleaner)
+B) Change test to not call method (faster)
+
+Which approach? (Reply A or B)
+```
+
+**Maestro decides:** Within 1 minute, or agent proceeds with safest option.
+
+---
+
+#### 8. CHECKPOINTS (Time-Based Milestones)
+
+```markdown
+## Checkpoints:
+- [x] Checkpoint 1: Files read (2 min)
+- [x] Checkpoint 2: Errors identified (3 min)
+- [ ] Checkpoint 3: First file fixed (5 min)
+- [ ] Checkpoint 4: All files fixed (10 min)
+- [ ] Checkpoint 5: Verification passed (2 min)
+
+Missed checkpoint? Escalate to parent agent.
+```
+
+**Maestro escalates:** If checkpoint missed by >50% time.
+
+---
+
+#### 9. BEFORE/AFTER SNAPSHOTS (Proof)
+
+```markdown
+## Snapshot Before:
+```bash
+$ flutter analyze lib/ 2>&1 | grep "error" | wc -l
+24
+```
+
+## Snapshot After:
+```bash
+$ flutter analyze lib/ 2>&1 | grep "error" | wc -l
+0
+```
+
+## Delta: -24 errors
+```
+
+**Maestro verifies:** Snapshots must show actual command output.
+
+---
+
+#### 10. RISK ASSESSMENT (Before Committing)
+
+```markdown
+## Risk Level: [LOW/MEDIUM/HIGH]
+
+### Potential Issues:
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|--------|------------|
+| Breaking change | Low | High | Added @deprecated |
+| Test failures | Medium | Medium | Will run tests next |
+
+## Rollback Plan:
+If issues found, revert commit: `git revert HEAD`
+```
+
+**Maestro decides:** Approve HIGH risk changes or request alternatives.
+
+---
+
+### Sub-Agent Return Requirements (NON-NEGOTIABLE):
+
+**EVERY sub-agent MUST return detailed report:**
+
+#### Required Sections:
+
+**1. WHAT WAS DONE**
+- Exact files modified (full paths)
+- Exact lines changed (line numbers)
+- Specific changes made
+
+**2. HOW IT WAS DONE**
+- Approach taken for each fix
+- Reasoning (if applicable)
+- Patterns followed
+
+**3. VERIFICATION RESULTS**
+- All commands run
+- Actual output (copy-paste)
+- Status: ✅ PASS / ❌ FAIL for each check
+
+**4. BEFORE/AFTER METRICS**
+```
+- Errors before: [N]
+- Errors after: [N]
+- Warnings before: [N]
+- Warnings after: [N]
+- Tests passing: [N]/[N]
+```
+
+**5. MODIFIED FILES LIST**
+```
+1. /full/path/to/file1.dart — [what changed]
+2. /full/path/to/file2.dart — [what changed]
+```
+
+**6. ISSUES ENCOUNTERED**
+- Any problems found
+- How they were resolved
+- Blockers (if any)
+
+#### Standard Return Format:
+```markdown
+## Task Completed: [specific task name]
+
+### Files Modified
+1. [full_path] — [specific change]
+2. [full_path] — [specific change]
+
+### Verification Results
+| Check | Command | Output | Status |
+|-------|---------|--------|--------|
+| analyze lib/a.dart | flutter analyze | 0 errors | ✅ |
+| analyze lib/b.dart | flutter analyze | 0 errors | ✅ |
+
+### Before/After
+- Errors: 12 → 0
+- Warnings: 5 → 2
+- Tests: 45/50 → 50/50
+
+### Issues Encountered
+- Issue: [description]
+  → Resolution: [how fixed]
+
+### Summary
+[1-2 sentences about completion]
+```
+
+### Incremental Verification (DURING):
+
+**After EACH file modification:**
+```javascript
+// Immediate verification
+exec({command: "flutter analyze <just_modified_file>"})
+// If errors > 0 → continue fixing, do NOT proceed to next file
+```
+
+**Maestro MUST verify:**
+- [ ] Agent reported verification for each file
+- [ ] Error counts decreased (or reached 0)
+- [ ] No new syntax errors introduced
+- [ ] Modified files match what was requested
+
+### Post-Completion Validation (AFTER):
+
+```javascript
+// 1. Verify sub-agent session completed
+sessions_list({kinds: ["subagent"], activeMinutes: 5})
+
+// 2. Check actual results
+exec({command: "flutter analyze 2>&1 | grep -c 'error'"})
+
+// 3. Compare before/after
+// Before: 75 errors
+// After: Must be < 75, ideally 0
+
+// 4. Review return format compliance
+// - All 6 sections present?
+// - Specific files/lines mentioned?
+// - Verification results included?
+```
+
+### Fallback Triggers:
+
+**Auto-fallback to Maestro if:**
+- [ ] Agent reports "no output" but errors remain
+- [ ] Error count INCREASED after agent work
+- [ ] Agent modified WRONG files
+- [ ] Agent created SYNTAX errors
+- [ ] Return format is VAGUE (no specific files/lines)
+- [ ] 3+ retry attempts failed
+
+**Fallback Action:**
+1. STOP delegation
+2. ANALYZE what went wrong (instructions unclear? scope too big?)
+3. REWRITE task with more specifics
+4. SPAWN again with refined instructions
+5. Or handle manually if critical
+
+### VIOLATION CONSEQUENCES:
+
+**If Maestro gives vague instructions:**
+- Sub-agent will do something random
+- Critical details will be missed
+- Results will be incomplete
+- Tokens and time wasted
+- User frustration
+
+**If sub-agent returns vague report:**
+- Maestro MUST REJECT immediately
+- Demand detailed report with specific files/lines
+- Do NOT proceed until verification is complete
+- Consider fallback if pattern continues
+
+### MANDATORY MANTRA:
+
+> **"Sub-agents have NO reasoning. They are HANDS, not BRAIN."**
+> 
+> **"I am the BRAIN. I MUST provide perfect instructions."**
+> 
+> **"If sub-agent fails → It's MY fault for unclear instructions."**
+> 
+> **"NO EXCEPTIONS. NO SHORTCUTS. VERIFY EVERYTHING."**
+
+### FINAL SPAWN CHECKLIST (COMPLETE ALL):
+
+**Before hitting 'Enter' on sessions_spawn() — verify:**
+
+```
+[ ] AGENTS.md read today (not "I remember", but PHYSICALLY READ)
+[ ] This protocol section re-read
+[ ] Pre-Flight Check completed (ls, analyze, read)
+[ ] Task uses imperative, specific language
+[ ] Task Template applied with all sections
+[ ] Expected output format specified
+[ ] I am ready to enforce 6-section return
+[ ] I am ready to reject vague reports
+```
+
+**If ANY unchecked → DO NOT SPAWN. Fix first.**
+
+### Pre-Commit Checklist for Maestro:
+
+Before declaring task complete:
+- [ ] Sub-agent returned ALL 6 required sections
+- [ ] Specific files and line numbers mentioned
+- [ ] Verification commands output included
+- [ ] Before/After metrics documented
+- [ ] `flutter analyze` shows 0 errors in scope
+- [ ] All types match interfaces
+- [ ] All deprecated API replaced
+- [ ] All imports present
+- [ ] For Motoko: `dfx build` shows 0 warnings
+
+---
+
+## 🔀 GITHUB WORKFLOW RULES (CRITICAL — Added 2026-02-06)
+
+### ⚠️ PULL REQUEST MANDATORY RULE
+
+**NEVER push directly to `main` or `develop`. ALWAYS use Pull Requests.**
+
+| Action | Forbidden ❌ | Required ✅ |
+|--------|-------------|-------------|
+| Push to `main` | `git push origin main` | Create PR → Review → Merge |
+| Push to `develop` | `git push origin develop` | Create PR → Review → Merge |
+| Direct commits | Any direct push | Always through PR |
+
+### 📋 PR Workflow Checklist
+
+**BEFORE any push:**
+```bash
+# 1. Check for open PRs
+gh pr list --repo Vatalion/crypto_market
+
+# 2. Check current branch
+git branch --show-current
+
+# 3. If on main/develop → STOP and create feature branch
+git checkout -b feature/descriptive-name
+```
+
+**CORRECT WORKFLOW:**
+```bash
+# 1. Create feature branch from develop
+git checkout develop
+git pull origin develop
+git checkout -b feature/my-changes
+
+# 2. Make commits
+git add .
+git commit -m "feat: descriptive message"
+
+# 3. Push branch (NOT main/develop)
+git push origin feature/my-changes
+
+# 4. Create PR via GitHub CLI or website
+gh pr create --title "feat: my changes" --body "Description"
+
+# 5. Wait for review/approval
+# 6. Merge via GitHub (not command line)
+```
+
+### 🔍 PR Tracking Rule
+
+**ALWAYS check for open PRs before starting work:**
+
+```javascript
+// Mandatory check at session start
+exec({command: "gh pr list --repo Vatalion/crypto_market --state open"})
+```
+
+**If open PRs exist:**
+- Review their status
+- Determine if they block current work
+- Ask user: "Should I merge PR #X or work on current branch?"
+
+**Current Open PRs (as of 2026-02-06):**
+- #66: feat: Complete HTLC atomic swap implementation — OPEN since Sep 19, 2025
+- #64: feat(E4.S1): Complete payment method capture — OPEN since Sep 19, 2025
+
+### 🚨 VIOLATION CONSEQUENCES
+
+**Pushing directly to main/develop:**
+- Bypasses code review
+- Risk of breaking production
+- Messes up git history
+- User frustration (as experienced 2026-02-06)
+
+**REMEMBER:**
+> "Direct push = failed workflow. Always PR."
+
+---
+
+*Updated: 2026-02-06 — Added GitHub Workflow Rules with mandatory PR requirement*
