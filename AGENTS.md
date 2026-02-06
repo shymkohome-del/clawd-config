@@ -414,6 +414,73 @@ Sub-agent works → Announces result → I analyze → Integrate/iterate
 
 ---
 
+## 🚨 CRITICAL: Working Directory for Sub-Agents
+
+**⚠️ AGENTS ARE UNIVERSAL — they have NO project-specific paths in their configs!**
+
+### The Problem
+- Sub-agents run in isolated workspaces (`~/.clawdbot/agents/<agent-name>/`)
+- They DON'T have access to your project directory by default
+- If you say "fix lib/main.dart" — they look in THEIR directory, not your project!
+
+### The Solution — ALWAYS Specify Full Paths
+
+**When spawning ANY sub-agent, you MUST:**
+
+1. **Determine the project root** (check `pwd` or ask if unclear)
+2. **Include FULL ABSOLUTE PATHS** in the task
+3. **Explicitly state the working directory**
+
+### Example — CORRECT spawn:
+
+```javascript
+sessions_spawn({
+  task: `
+## Your Role: flutter-dev
+## Task: Fix compilation errors
+
+### ⚠️ CRITICAL: Project Location
+Work in this EXACT directory:
+/Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/
+
+### Files to Fix (use FULL paths):
+- /Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/lib/core/file.dart
+- /Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/pubspec.yaml
+
+### Before starting:
+1. Verify directory exists: ls -la /Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/
+2. Check file exists: ls -la /Users/vitaliisimko/workspace/projects/other/crypto_market/crypto_market/lib/core/file.dart
+3. Only then proceed with fixes
+
+### DO NOT:
+- Use relative paths like "lib/file.dart" 
+- Assume you're in the project directory
+- Create files in your isolated workspace
+`
+})
+```
+
+### Template for ANY spawn:
+
+```markdown
+### Project Root: [FULL_PATH]
+### File: [FULL_ABSOLUTE_PATH_TO_FILE]
+### Verification:
+Before working, run: ls -la [FULL_PATH]
+```
+
+### Universal Agents Rule
+
+**NEVER put project-specific paths in agent system.md files!**
+
+- ✅ agent system.md — universal instructions
+- ✅ Your spawn task — project-specific paths
+- ❌ agent system.md — project paths (FORBIDDEN)
+
+This ensures agents work across ALL projects.
+
+---
+
 ## 🤖 Automatic Configuration for New Sub-Agents
 
 Any sub-agent spawned via `sessions_spawn()` **without explicit `model`**, 
