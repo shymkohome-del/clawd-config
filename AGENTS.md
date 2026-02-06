@@ -1529,16 +1529,133 @@ sessions_spawn({task: "Add unit tests for AuthCubit", agentId: "flutter-test-dev
 sessions_spawn({task: "Security review of swap logic", agentId: "amos"})
 ```
 
-### Parallel Agent Usage
+### 🔄 **Parallel vs Sequential — When to Use Which**
 
-**For complex tasks, spawn multiple agents in parallel:**
+**Parallel = Multiple agents at same time (faster, but risky)**
+**Sequential = One after another (slower, but safer)**
+
+#### ✅ **Use PARALLEL When:**
+
+| Scenario | Example | Why Parallel Works |
+|----------|---------|-------------------|
+| **Independent tasks** | UI screen + Business logic | No dependencies between files |
+| **Different layers** | flutter-dev (backend) + flutter-dev-ui (frontend) | Work on separate codebases |
+| **Tests + Implementation** | flutter-dev (code) + flutter-test-dev (tests) | Tests validate implementation |
+| **Multiple similar tasks** | Fix 3 unrelated files | Same agent type, different targets |
+| **Research + Implementation** | gemini-researcher (research) + flutter-dev (code) | Research doesn't block coding |
 
 ```javascript
-// Story implementation: UI + Logic + Tests
-sessions_spawn({task: "UI for login screen", agentId: "flutter-dev-ui"})
-sessions_spawn({task: "AuthCubit logic", agentId: "flutter-dev"})
-sessions_spawn({task: "Tests for auth", agentId: "flutter-test-dev"})
+// ✅ CORRECT: Parallel — independent tasks
+sessions_spawn({task: "Create LoginScreen UI", agentId: "flutter-dev-ui"})     // Screen A
+sessions_spawn({task: "Create SignupScreen UI", agentId: "flutter-dev-ui"})    // Screen B (independent)
+sessions_spawn({task: "AuthCubit logic", agentId: "flutter-dev"})              // Backend (independent)
 ```
+
+#### ✅ **Use SEQUENTIAL When:**
+
+| Scenario | Example | Why Sequential Required |
+|----------|---------|------------------------|
+| **Dependencies exist** | Model → Repository → BLoC | B needs A to be done first |
+| **Same file modified** | Fix errors then add features | Avoid conflicts |
+| **Validation required** | Implement → Test → Fix | Each step validates previous |
+| **Architecture decisions** | Design → Review → Implement | Design must be approved |
+| **Risky changes** | Security audit → Fix → Re-audit | Safety first |
+| **Complex coordination** | UI needs specific data structure | Backend contract must be ready |
+
+```javascript
+// ✅ CORRECT: Sequential — dependencies
+// Step 1: Define model (needed by others)
+await sessions_spawn({task: "Create UserModel", agentId: "flutter-dev"})
+
+// Step 2: Repository uses model (depends on step 1)
+await sessions_spawn({task: "Create UserRepository using UserModel", agentId: "flutter-dev"})
+
+// Step 3: BLoC uses repository (depends on step 2)
+await sessions_spawn({task: "Create UserCubit using UserRepository", agentId: "flutter-dev"})
+
+// Step 4: Tests for everything (depends on all above)
+await sessions_spawn({task: "Add tests for User flow", agentId: "flutter-test-dev"})
+```
+
+#### ⚠️ **DANGER: Wrong Parallel Usage**
+
+```javascript
+// ❌ WRONG: Both modify same file
+sessions_spawn({task: "Add login method to AuthCubit", agentId: "flutter-dev"})
+sessions_spawn({task: "Add logout method to AuthCubit", agentId: "flutter-dev"})
+// Result: CONFLICTS, lost changes, broken code
+
+// ❌ WRONG: B depends on A, but run parallel
+sessions_spawn({task: "Create UserModel", agentId: "flutter-dev"})
+sessions_spawn({task: "Use UserModel in AuthCubit", agentId: "flutter-dev"})
+// Result: Second fails because UserModel doesn't exist yet
+
+// ❌ WRONG: UI needs specific API contract
+sessions_spawn({task: "Create LoginScreen", agentId: "flutter-dev-ui"})
+sessions_spawn({task: "Define login API response", agentId: "flutter-dev"})
+// Result: UI makes assumptions, API changes, UI breaks
+```
+
+#### 🎯 **Decision Flowchart**
+
+```
+Can agents work in parallel?
+│
+├── Do they modify THE SAME FILE?
+│   └── YES → SEQUENTIAL ❌
+│
+├── Does B DEPEND on A's output?
+│   └── YES → SEQUENTIAL ❌
+│
+├── Is there SHARED STATE between them?
+│   └── YES → SEQUENTIAL ❌
+│
+├── Is VALIDATION needed before next step?
+│   └── YES → SEQUENTIAL ❌
+│
+└── NO to all above → PARALLEL ✅
+```
+
+#### 📊 **Common Patterns**
+
+**Pattern 1: Story Implementation (Mixed)**
+```javascript
+// Phase 1: Design (sequential)
+await sessions_spawn({task: "Design API contract", agentId: "architect"})
+
+// Phase 2: Implementation (parallel)
+sessions_spawn({task: "Backend: Auth API", agentId: "flutter-dev"})
+sessions_spawn({task: "Frontend: Login UI", agentId: "flutter-dev-ui"})
+
+// Phase 3: Integration (sequential)
+await sessions_spawn({task: "Connect UI to API", agentId: "flutter-dev"})
+await sessions_spawn({task: "Add integration tests", agentId: "flutter-test-dev"})
+```
+
+**Pattern 2: Bug Fixes (Parallel)**
+```javascript
+// Multiple independent bugs in different files
+sessions_spawn({task: "Fix bug in auth.dart", agentId: "flutter-dev"})
+sessions_spawn({task: "Fix bug in payments.dart", agentId: "flutter-dev"})
+sessions_spawn({task: "Fix bug in chat.dart", agentId: "flutter-dev"})
+// All independent → parallel saves time
+```
+
+**Pattern 3: Security Review (Sequential)**
+```javascript
+// Must be sequential for safety
+await sessions_spawn({task: "Security audit", agentId: "amos"})
+await sessions_spawn({task: "Fix vulnerabilities", agentId: "flutter-dev"})
+await sessions_spawn({task: "Re-audit fixes", agentId: "amos"})
+```
+
+#### 🚨 **Golden Rules**
+
+1. **When in doubt → SEQUENTIAL** (safer)
+2. **Same file → NEVER parallel**
+3. **Dependency exists → ALWAYS sequential**
+4. **Different layers → USUALLY parallel**
+5. **Complex coordination → START sequential, optimize later**
 
 ---
 
